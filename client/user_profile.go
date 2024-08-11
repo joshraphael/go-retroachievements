@@ -1,4 +1,4 @@
-package user
+package client
 
 import (
 	"encoding/json"
@@ -53,13 +53,13 @@ func (rp *rawProfile) ToProfile() (*models.Profile, error) {
 	}, nil
 }
 
-func (user *User) GetUserProfile(username string) (*models.Profile, error) {
-	u, err := url.Parse(user.Host + "/API/API_GetUserProfile.php")
+func (c *Client) GetUserProfile(username string) (*models.Profile, error) {
+	u, err := url.Parse(c.host + "/API/API_GetUserProfile.php")
 	if err != nil {
 		return nil, fmt.Errorf("parsing GetUserProfile url: %w", err)
 	}
 	q := u.Query()
-	q.Set("y", user.secret)
+	q.Set("y", c.secret)
 	q.Set("u", username)
 	u.RawQuery = q.Encode()
 	resp, err := http.Get(u.String())

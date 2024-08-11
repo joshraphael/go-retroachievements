@@ -16,12 +16,10 @@ func main() {
 
 	raClient := client.New(host, secret)
 
-	resp, err := raClient.User.GetUserRecentAchievements("ChronoGear", 60)
+	resp, err := raClient.GetUserRecentAchievements("ChronoGear", 60)
 	if err != nil {
 		panic(err)
 	}
 
-	for i := range resp {
-		fmt.Printf("%+v\n", resp[i])
-	}
+	fmt.Printf("%+v\n", resp)
 }

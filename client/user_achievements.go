@@ -1,4 +1,4 @@
-package user
+package client
 
 import (
 	"encoding/json"
@@ -56,14 +56,14 @@ func (ra *rawAchievement) ToAchievement() (*models.Achievement, error) {
 	}, nil
 }
 
-func (user *User) GetUserRecentAchievements(username string, lookbackMinutes int) ([]*models.Achievement, error) {
+func (c *Client) GetUserRecentAchievements(username string, lookbackMinutes int) ([]models.Achievement, error) {
 
-	u, err := url.Parse(user.Host + "/API/API_GetUserRecentAchievements.php")
+	u, err := url.Parse(c.host + "/API/API_GetUserRecentAchievements.php")
 	if err != nil {
 		return nil, fmt.Errorf("parsing GetUserRecentAchievements url: %w", err)
 	}
 	q := u.Query()
-	q.Set("y", user.secret)
+	q.Set("y", c.secret)
 	q.Set("u", username)
 	q.Set("m", strconv.Itoa(lookbackMinutes))
 	u.RawQuery = q.Encode()
@@ -99,14 +99,14 @@ func (user *User) GetUserRecentAchievements(username string, lookbackMinutes int
 	if len(as) == 0 {
 		return nil, nil
 	}
-	achievements := []*models.Achievement{}
+	achievements := []models.Achievement{}
 	for i := range as {
 		achievement := as[i]
 		a, err := achievement.ToAchievement()
 		if err != nil {
 			return nil, fmt.Errorf("converting response to achievement: %w", err)
 		}
-		achievements = append(achievements, a)
+		achievements = append(achievements, *a)
 	}
 	return achievements, nil
 }
