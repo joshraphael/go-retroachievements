@@ -11,15 +11,17 @@ import (
 Test script for various endpoints. Add RA_API_KEY to your env and use `go run sandbox.go`
 */
 func main() {
-	host := "https://retroachievements.org/API"
+	host := "https://retroachievements.org"
 	secret := os.Getenv("RA_API_KEY")
 
 	client := retroachievements.New(host, secret)
 
-	profile, err := client.User.GetUserProfile("MaxMilyin")
+	resp, err := client.User.GetUserRecentAchievements("ChronoGear", 60)
 	if err != nil {
 		panic(err)
 	}
 
-	fmt.Printf("%+v\n", profile)
+	for i := range resp {
+		fmt.Printf("%+v\n", resp[i])
+	}
 }

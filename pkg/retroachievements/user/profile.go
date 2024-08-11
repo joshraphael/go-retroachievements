@@ -54,7 +54,7 @@ func (rp *rawProfile) ToProfile() (*models.Profile, error) {
 }
 
 func (user *User) GetUserProfile(username string) (*models.Profile, error) {
-	u, err := url.Parse(user.Host + "/API_GetUserProfile.php")
+	u, err := url.Parse(user.Host + "/API/API_GetUserProfile.php")
 	if err != nil {
 		return nil, fmt.Errorf("parsing GetUserProfile url: %w", err)
 	}
