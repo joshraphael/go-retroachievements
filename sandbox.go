@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"os"
 
-	"github.com/joshraphael/go-retroachievements/pkg/retroachievements"
+	"github.com/joshraphael/go-retroachievements/client"
 )
 
 /*
@@ -14,9 +14,9 @@ func main() {
 	host := "https://retroachievements.org"
 	secret := os.Getenv("RA_API_KEY")
 
-	client := retroachievements.New(host, secret)
+	raClient := client.New(host, secret)
 
-	resp, err := client.User.GetUserRecentAchievements("ChronoGear", 60)
+	resp, err := raClient.User.GetUserRecentAchievements("ChronoGear", 60)
 	if err != nil {
 		panic(err)
 	}

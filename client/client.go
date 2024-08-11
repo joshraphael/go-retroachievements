@@ -1,6 +1,6 @@
-package retroachievements
+package client
 
-import "github.com/joshraphael/go-retroachievements/pkg/retroachievements/user"
+import "github.com/joshraphael/go-retroachievements/user"
 
 type Client struct {
 	host   string

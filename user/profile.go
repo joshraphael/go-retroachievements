@@ -8,7 +8,7 @@ import (
 	"strings"
 	"time"
 
-	"github.com/joshraphael/go-retroachievements/pkg/retroachievements/models"
+	"github.com/joshraphael/go-retroachievements/models"
 )
 
 type rawProfile struct {
