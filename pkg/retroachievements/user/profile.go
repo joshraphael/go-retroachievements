@@ -6,9 +6,52 @@ import (
 	"net/http"
 	"net/url"
 	"strings"
+	"time"
 
 	"github.com/joshraphael/go-retroachievements/pkg/retroachievements/models"
 )
+
+type rawProfile struct {
+	User                string `json:"User"`
+	UserPic             string `json:"UserPic"`
+	MemberSince         string `json:"MemberSince"`
+	RichPresenceMsg     string `json:"RichPresenceMsg"`
+	LastGameID          int    `json:"LastGameID"`
+	ContribCount        int    `json:"ContribCount"`
+	ContribYield        int    `json:"ContribYield"`
+	TotalPoints         int    `json:"TotalPoints"`
+	TotalSoftcorePoints int    `json:"TotalSoftcorePoints"`
+	TotalTruePoints     int    `json:"TotalTruePoints"`
+	Permissions         int    `json:"Permissions"`
+	Untracked           int    `json:"Untracked"`
+	ID                  int    `json:"ID"`
+	UserWallActive      bool   `json:"UserWallActive"`
+	Motto               string `json:"Motto"`
+}
+
+func (rp *rawProfile) ToProfile() (*models.Profile, error) {
+	t, err := time.Parse(time.DateTime, rp.MemberSince)
+	if err != nil {
+		return nil, err
+	}
+	return &models.Profile{
+		User:                rp.User,
+		UserPic:             rp.UserPic,
+		MemberSince:         t,
+		RichPresenceMsg:     rp.RichPresenceMsg,
+		LastGameID:          rp.LastGameID,
+		ContribCount:        rp.ContribCount,
+		ContribYield:        rp.ContribYield,
+		TotalPoints:         rp.TotalPoints,
+		TotalSoftcorePoints: rp.TotalSoftcorePoints,
+		TotalTruePoints:     rp.TotalTruePoints,
+		Permissions:         rp.Permissions,
+		Untracked:           rp.Untracked,
+		ID:                  rp.ID,
+		UserWallActive:      rp.UserWallActive,
+		Motto:               rp.Motto,
+	}, nil
+}
 
 func (user *User) GetUserProfile(username string) (*models.Profile, error) {
 	u, err := url.Parse(user.Host + "/API_GetUserProfile.php")
@@ -45,10 +88,14 @@ func (user *User) GetUserProfile(username string) (*models.Profile, error) {
 	if resp.StatusCode != http.StatusOK {
 		return nil, fmt.Errorf("unknown error returned: %d", resp.StatusCode)
 	}
-	var profile models.Profile
+	var profile rawProfile
 	err = json.NewDecoder(resp.Body).Decode(&profile)
 	if err != nil {
 		return nil, fmt.Errorf("decoding response body profile: %w", err)
 	}
-	return &profile, nil
+	p, err := profile.ToProfile()
+	if err != nil {
+		return nil, fmt.Errorf("converting response to profile: %w", err)
+	}
+	return p, nil
 }
