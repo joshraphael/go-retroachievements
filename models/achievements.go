@@ -11,7 +11,7 @@ type Achievement struct {
 	BadgeName     string    `json:"BadgeName"`
 	Points        int       `json:"Points"`
 	TrueRatio     int       `json:"TrueRatio"`
-	Type          string    `json:"Type,omitempty"`
+	Type          string    `json:"Type"`
 	Author        string    `json:"Author"`
 	GameTitle     string    `json:"GameTitle"`
 	GameIcon      string    `json:"GameIcon"`
