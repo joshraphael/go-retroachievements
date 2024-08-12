@@ -64,7 +64,7 @@ func (c *Client) GetUserRecentAchievements(username string, lookbackMinutes int)
 	if err != nil {
 		return nil, fmt.Errorf("calling endpoint: %w", err)
 	}
-
+	defer resp.Body.Close()
 	rawAchievementList, err := raHttp.ResponseList[rawAchievement](resp)
 	if err != nil {
 		return nil, fmt.Errorf("parsing response list: %w", err)

@@ -9,7 +9,7 @@ import (
 	"github.com/joshraphael/go-retroachievements/models"
 )
 
-func UnmarshalResponseObject[A interface{}](resp *http.Response) (*A, error) {
+func unmarshalResponseObject[A interface{}](resp *http.Response) (*A, error) {
 	obj := new(A)
 	err := json.NewDecoder(resp.Body).Decode(&obj)
 	if err != nil {
@@ -18,7 +18,7 @@ func UnmarshalResponseObject[A interface{}](resp *http.Response) (*A, error) {
 	return obj, nil
 }
 
-func UnmarshalResponseList[A interface{}](resp *http.Response) ([]A, error) {
+func unmarshalResponseList[A interface{}](resp *http.Response) ([]A, error) {
 	obj := []A{}
 	err := json.NewDecoder(resp.Body).Decode(&obj)
 	if err != nil {
@@ -27,11 +27,23 @@ func UnmarshalResponseList[A interface{}](resp *http.Response) ([]A, error) {
 	return obj, nil
 }
 
+func parseError(resp *http.Response) error {
+	respError, err := unmarshalResponseObject[models.ErrorResponse](resp)
+	if err != nil {
+		return err
+	}
+	errText := []string{}
+	for i := range respError.Errors {
+		err := respError.Errors[i]
+		errText = append(errText, fmt.Sprintf("[%d] %s", err.Status, err.Title))
+	}
+	return fmt.Errorf("error responses: %s", strings.Join(errText, ", "))
+}
+
 func ResponseObject[A interface{}](resp *http.Response) (*A, error) {
-	defer resp.Body.Close()
 	switch resp.StatusCode {
 	case http.StatusOK:
-		return UnmarshalResponseObject[A](resp)
+		return unmarshalResponseObject[A](resp)
 	case http.StatusNotFound:
 		return nil, nil
 	case http.StatusUnauthorized:
@@ -42,26 +54,12 @@ func ResponseObject[A interface{}](resp *http.Response) (*A, error) {
 }
 
 func ResponseList[A interface{}](resp *http.Response) ([]A, error) {
-	defer resp.Body.Close()
 	switch resp.StatusCode {
 	case http.StatusOK:
-		return UnmarshalResponseList[A](resp)
+		return unmarshalResponseList[A](resp)
 	case http.StatusUnauthorized:
 		return nil, parseError(resp)
 	default:
 		return nil, fmt.Errorf("unknown error returned: %d", resp.StatusCode)
 	}
-}
-
-func parseError(resp *http.Response) error {
-	respError, err := UnmarshalResponseObject[models.ErrorResponse](resp)
-	if err != nil {
-		return err
-	}
-	errText := []string{}
-	for i := range respError.Errors {
-		err := respError.Errors[i]
-		errText = append(errText, fmt.Sprintf("[%d] %s", err.Status, err.Title))
-	}
-	return fmt.Errorf("error responses: %s", strings.Join(errText, ", "))
 }

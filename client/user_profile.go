@@ -61,7 +61,7 @@ func (c *Client) GetUserProfile(username string) (*models.Profile, error) {
 	if err != nil {
 		return nil, fmt.Errorf("calling endpoint: %w", err)
 	}
-
+	defer resp.Body.Close()
 	profile, err := raHttp.ResponseObject[rawProfile](resp)
 	if err != nil {
 		return nil, fmt.Errorf("parsing response object: %w", err)
