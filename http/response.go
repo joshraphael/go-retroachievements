@@ -27,7 +27,7 @@ func UnmarshalResponseList[A interface{}](resp *http.Response) ([]A, error) {
 	return obj, nil
 }
 
-func ResponseObjectOrError[A interface{}](resp *http.Response) (*A, error) {
+func ResponseObject[A interface{}](resp *http.Response) (*A, error) {
 	defer resp.Body.Close()
 	switch resp.StatusCode {
 	case http.StatusOK:
@@ -35,25 +35,25 @@ func ResponseObjectOrError[A interface{}](resp *http.Response) (*A, error) {
 	case http.StatusNotFound:
 		return nil, nil
 	case http.StatusUnauthorized:
-		return nil, ParseError(resp)
+		return nil, parseError(resp)
 	default:
 		return nil, fmt.Errorf("unknown error returned: %d", resp.StatusCode)
 	}
 }
 
-func ResponseListOrError[A interface{}](resp *http.Response) ([]A, error) {
+func ResponseList[A interface{}](resp *http.Response) ([]A, error) {
 	defer resp.Body.Close()
 	switch resp.StatusCode {
 	case http.StatusOK:
 		return UnmarshalResponseList[A](resp)
 	case http.StatusUnauthorized:
-		return nil, ParseError(resp)
+		return nil, parseError(resp)
 	default:
 		return nil, fmt.Errorf("unknown error returned: %d", resp.StatusCode)
 	}
 }
 
-func ParseError(resp *http.Response) error {
+func parseError(resp *http.Response) error {
 	respError, err := UnmarshalResponseObject[models.ErrorResponse](resp)
 	if err != nil {
 		return err
