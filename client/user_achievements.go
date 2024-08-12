@@ -1,14 +1,11 @@
 package client
 
 import (
-	"encoding/json"
 	"fmt"
 	"net/http"
-	"net/url"
-	"strconv"
-	"strings"
 	"time"
 
+	raHttp "github.com/joshraphael/go-retroachievements/http"
 	"github.com/joshraphael/go-retroachievements/models"
 )
 
@@ -57,51 +54,25 @@ func (ra *rawAchievement) ToAchievement() (*models.Achievement, error) {
 }
 
 func (c *Client) GetUserRecentAchievements(username string, lookbackMinutes int) ([]models.Achievement, error) {
-
-	u, err := url.Parse(c.host + "/API/API_GetUserRecentAchievements.php")
+	resp, err := c.do(
+		raHttp.Method(http.MethodGet),
+		raHttp.Path("/API/API_GetUserRecentAchievements.php"),
+		raHttp.APIToken(c.secret),
+		raHttp.Username(username),
+		raHttp.LookbackMinutes(lookbackMinutes),
+	)
 	if err != nil {
-		return nil, fmt.Errorf("parsing GetUserRecentAchievements url: %w", err)
+		return nil, fmt.Errorf("calling endpoint: %w", err)
 	}
-	q := u.Query()
-	q.Set("y", c.secret)
-	q.Set("u", username)
-	q.Set("m", strconv.Itoa(lookbackMinutes))
-	u.RawQuery = q.Encode()
-	resp, err := http.Get(u.String())
+
+	rawAchievementList, err := raHttp.ResponseListOrError[rawAchievement](resp)
 	if err != nil {
-		return nil, fmt.Errorf("calling GetUserRecentAchievements: %w", err)
-	}
-	defer resp.Body.Close()
-
-	if resp.StatusCode == http.StatusUnauthorized {
-		var respError models.ErrorResponse
-		err = json.NewDecoder(resp.Body).Decode(&respError)
-		if err != nil {
-			return nil, fmt.Errorf("decoding response error body: %w", err)
-		}
-		errText := []string{}
-		for i := range respError.Errors {
-			err := respError.Errors[i]
-			errText = append(errText, fmt.Sprintf("[%d] %s", err.Status, err.Title))
-		}
-		return nil, fmt.Errorf("calling get user profile: %s", strings.Join(errText, ", "))
-	}
-	if resp.StatusCode != http.StatusOK {
-		return nil, fmt.Errorf("unknown error returned: %d", resp.StatusCode)
+		return nil, fmt.Errorf("parsing response list: %w", err)
 	}
 
-	var as []rawAchievement
-	err = json.NewDecoder(resp.Body).Decode(&as)
-	if err != nil {
-		return nil, fmt.Errorf("decoding response body profile: %w", err)
-	}
-
-	if len(as) == 0 {
-		return nil, nil
-	}
 	achievements := []models.Achievement{}
-	for i := range as {
-		achievement := as[i]
+	for i := range rawAchievementList {
+		achievement := rawAchievementList[i]
 		a, err := achievement.ToAchievement()
 		if err != nil {
 			return nil, fmt.Errorf("converting response to achievement: %w", err)

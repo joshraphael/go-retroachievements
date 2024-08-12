@@ -16,7 +16,7 @@ func main() {
 
 	raClient := client.New(host, secret)
 
-	resp, err := raClient.GetUserRecentAchievements("ChronoGear", 60)
+	resp, err := raClient.GetUserProfile("HippopotamusRex")
 	if err != nil {
 		panic(err)
 	}

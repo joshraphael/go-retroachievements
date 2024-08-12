@@ -1,13 +1,11 @@
 package client
 
 import (
-	"encoding/json"
 	"fmt"
 	"net/http"
-	"net/url"
-	"strings"
 	"time"
 
+	raHttp "github.com/joshraphael/go-retroachievements/http"
 	"github.com/joshraphael/go-retroachievements/models"
 )
 
@@ -54,48 +52,20 @@ func (rp *rawProfile) ToProfile() (*models.Profile, error) {
 }
 
 func (c *Client) GetUserProfile(username string) (*models.Profile, error) {
-	u, err := url.Parse(c.host + "/API/API_GetUserProfile.php")
+	resp, err := c.do(
+		raHttp.Method(http.MethodGet),
+		raHttp.Path("/API/API_GetUserProfile.php"),
+		raHttp.APIToken(c.secret),
+		raHttp.Username(username),
+	)
 	if err != nil {
-		return nil, fmt.Errorf("parsing GetUserProfile url: %w", err)
-	}
-	q := u.Query()
-	q.Set("y", c.secret)
-	q.Set("u", username)
-	u.RawQuery = q.Encode()
-	resp, err := http.Get(u.String())
-	if err != nil {
-		return nil, fmt.Errorf("calling GetUserProfile: %w", err)
-	}
-	defer resp.Body.Close()
-
-	if resp.StatusCode == http.StatusNotFound {
-		return nil, nil
+		return nil, fmt.Errorf("calling endpoint: %w", err)
 	}
 
-	if resp.StatusCode == http.StatusUnauthorized {
-		var respError models.ErrorResponse
-		err = json.NewDecoder(resp.Body).Decode(&respError)
-		if err != nil {
-			return nil, fmt.Errorf("decoding response error body: %w", err)
-		}
-		errText := []string{}
-		for i := range respError.Errors {
-			err := respError.Errors[i]
-			errText = append(errText, fmt.Sprintf("[%d] %s", err.Status, err.Title))
-		}
-		return nil, fmt.Errorf("calling get user profile: %s", strings.Join(errText, ", "))
-	}
-	if resp.StatusCode != http.StatusOK {
-		return nil, fmt.Errorf("unknown error returned: %d", resp.StatusCode)
-	}
-	var profile rawProfile
-	err = json.NewDecoder(resp.Body).Decode(&profile)
+	profile, err := raHttp.ResponseObjectOrError[rawProfile](resp)
 	if err != nil {
-		return nil, fmt.Errorf("decoding response body profile: %w", err)
+		return nil, fmt.Errorf("parsing response object: %w", err)
 	}
-	p, err := profile.ToProfile()
-	if err != nil {
-		return nil, fmt.Errorf("converting response to profile: %w", err)
-	}
-	return p, nil
+
+	return profile.ToProfile()
 }
