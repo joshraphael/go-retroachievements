@@ -107,7 +107,10 @@ func TestGetUserProfile(tt *testing.T) {
 				require.NoError(t, err)
 				errBytes, err := json.Marshal(test.responseError)
 				require.NoError(t, err)
-				w.Write(test.response(profileBytes, errBytes))
+				resp := test.response(profileBytes, errBytes)
+				num, err := w.Write(resp)
+				require.NoError(t, err)
+				require.Equal(t, num, len(resp))
 			}))
 			defer server.Close()
 
