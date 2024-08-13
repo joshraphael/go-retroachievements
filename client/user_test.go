@@ -237,3 +237,124 @@ func TestGetUserRecentAchievements(tt *testing.T) {
 		})
 	}
 }
+
+func TestGetAchievementsEarnedBetween(tt *testing.T) {
+	now, err := time.Parse(time.DateTime, "2024-03-02 17:27:03")
+	require.NoError(tt, err)
+	later := now.Add(10 * time.Minute)
+	tests := []struct {
+		name                 string
+		username             string
+		fromTime             time.Time
+		toTime               time.Time
+		responseCode         int
+		responseAchievements []models.Achievement
+		responseError        models.ErrorResponse
+		response             func(achievementsBytes []byte, errorBytes []byte) []byte
+		assert               func(t *testing.T, achievements []models.Achievement, err error)
+	}{
+		{
+			name:         "error response",
+			username:     "Test",
+			fromTime:     now,
+			toTime:       later,
+			responseCode: http.StatusUnauthorized,
+			responseError: models.ErrorResponse{
+				Message: "test",
+				Errors: []models.ErrorDetail{
+					{
+						Status: http.StatusUnauthorized,
+						Code:   "unauthorized",
+						Title:  "Not Authorized",
+					},
+				},
+			},
+			response: func(achievementsBytes []byte, errorBytes []byte) []byte {
+				return errorBytes
+			},
+			assert: func(t *testing.T, achievements []models.Achievement, err error) {
+				require.Nil(t, achievements)
+				require.EqualError(t, err, "parsing response list: error responses: [401] Not Authorized")
+			},
+		},
+		{
+			name:         "error response",
+			username:     "Test",
+			fromTime:     now,
+			toTime:       later,
+			responseCode: http.StatusOK,
+			responseAchievements: []models.Achievement{
+				{
+					Date: models.DateTime{
+						Time: now,
+					},
+					HardcoreMode:  1,
+					AchievementID: 34425,
+					Title:         "Beat Level 1",
+					Description:   "Finish level 1",
+					BadgeName:     "840124",
+					Points:        10,
+					TrueRatio:     234,
+					Type:          "win_condition",
+					Author:        "jamiras",
+					GameTitle:     "Final Fantasy XXXXIIII",
+					GameIcon:      "/Images/056340.png",
+					GameID:        34897,
+					ConsoleName:   "SNES",
+					BadgeURL:      "/Badge/840124.png",
+					GameURL:       "/game/34897",
+				},
+			},
+			response: func(achievementsBytes []byte, errorBytes []byte) []byte {
+				return achievementsBytes
+			},
+			assert: func(t *testing.T, achievements []models.Achievement, err error) {
+				require.NotNil(t, achievements)
+				require.Len(t, achievements, 1)
+				require.Equal(t, models.DateTime{
+					Time: now,
+				}, achievements[0].Date)
+				require.Equal(t, 1, achievements[0].HardcoreMode)
+				require.Equal(t, 34425, achievements[0].AchievementID)
+				require.Equal(t, "Beat Level 1", achievements[0].Title)
+				require.Equal(t, "Finish level 1", achievements[0].Description)
+				require.Equal(t, "840124", achievements[0].BadgeName)
+				require.Equal(t, 10, achievements[0].Points)
+				require.Equal(t, 234, achievements[0].TrueRatio)
+				require.Equal(t, "win_condition", achievements[0].Type)
+				require.Equal(t, "jamiras", achievements[0].Author)
+				require.Equal(t, "Final Fantasy XXXXIIII", achievements[0].GameTitle)
+				require.Equal(t, "/Images/056340.png", achievements[0].GameIcon)
+				require.Equal(t, 34897, achievements[0].GameID)
+				require.Equal(t, "SNES", achievements[0].ConsoleName)
+				require.Equal(t, "/Badge/840124.png", achievements[0].BadgeURL)
+				require.Equal(t, "/game/34897", achievements[0].GameURL)
+				require.NoError(t, err)
+			},
+		},
+	}
+	for _, test := range tests {
+		tt.Run(test.name, func(t *testing.T) {
+			server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+				expectedPath := "/API/API_GetAchievementsEarnedBetween.php"
+				if r.URL.Path != expectedPath {
+					t.Errorf("Expected to request '%s', got: %s", expectedPath, r.URL.Path)
+				}
+				w.WriteHeader(test.responseCode)
+				achievementsBytes, err := json.Marshal(test.responseAchievements)
+				require.NoError(t, err)
+				errBytes, err := json.Marshal(test.responseError)
+				require.NoError(t, err)
+				resp := test.response(achievementsBytes, errBytes)
+				num, err := w.Write(resp)
+				require.NoError(t, err)
+				require.Equal(t, num, len(resp))
+			}))
+			defer server.Close()
+
+			client := client.New(server.URL, "some_secret")
+			achievements, err := client.GetAchievementsEarnedBetween(test.username, test.fromTime, test.toTime)
+			test.assert(t, achievements, err)
+		})
+	}
+}

@@ -3,6 +3,7 @@ package http
 import (
 	"fmt"
 	"strconv"
+	"time"
 )
 
 // Request holds values for an http call
@@ -62,6 +63,20 @@ func Username(username string) RequestDetail {
 func LookbackMinutes(minutes int) RequestDetail {
 	return requestDetailFn(func(r *Request) {
 		r.Params["m"] = strconv.Itoa(minutes)
+	})
+}
+
+// FromTime adds a start time to the query parameters in unix seconds
+func FromTime(t time.Time) RequestDetail {
+	return requestDetailFn(func(r *Request) {
+		r.Params["f"] = strconv.Itoa(int(t.Unix()))
+	})
+}
+
+// ToTime adds a end time to the query parameters in unix seconds
+func ToTime(t time.Time) RequestDetail {
+	return requestDetailFn(func(r *Request) {
+		r.Params["t"] = strconv.Itoa(int(t.Unix()))
 	})
 }
 
