@@ -24,14 +24,14 @@ jobs:
           version: v1.59
 
   coverage:
-    name: Go test coverage check
+    name: coverage
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
       - uses: actions/setup-go@v3
   
       - name: generate test coverage
-        run: go test ./... -coverprofile=./cover.out -covermode=atomic -coverpkg=./...
+        run: bash ./scripts/test.sh
 
       - name: check test coverage
         uses: vladopajic/go-test-coverage@v2
