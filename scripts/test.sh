@@ -1,7 +1,7 @@
 #!/bin/bash
 
 DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
-FILE_NAME="coverage"
+FILE_NAME="cover"
 OUT_FILE="$FILE_NAME.out"
 OUT_HTML="$FILE_NAME.html"
 OPEN_FILE="file://$DIR/../$OUT_HTML"
