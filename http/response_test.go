@@ -112,8 +112,7 @@ func TestResponseObject(tt *testing.T) {
 			},
 		},
 	}
-	for i := range tests {
-		test := tests[i]
+	for _, test := range tests {
 		tt.Run(test.name, func(t *testing.T) {
 			objBytes, err := json.Marshal(test.objBody)
 			require.NoError(t, err)
@@ -220,8 +219,7 @@ func TestResponseList(tt *testing.T) {
 			},
 		},
 	}
-	for i := range tests {
-		test := tests[i]
+	for _, test := range tests {
 		tt.Run(test.name, func(t *testing.T) {
 			listBytes, err := json.Marshal(test.listBody)
 			require.NoError(t, err)

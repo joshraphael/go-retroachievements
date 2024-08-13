@@ -20,5 +20,9 @@ func (c *Client) GetUserRecentAchievements(username string, lookbackMinutes int)
 		return nil, fmt.Errorf("calling endpoint: %w", err)
 	}
 	defer resp.Body.Close()
-	return raHttp.ResponseList[models.Achievement](resp)
+	achievements, err := raHttp.ResponseList[models.Achievement](resp)
+	if err != nil {
+		return nil, fmt.Errorf("parsing response list: %w", err)
+	}
+	return achievements, nil
 }

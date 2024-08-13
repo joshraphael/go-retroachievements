@@ -9,7 +9,7 @@ OPEN_FILE="file://$DIR/../$OUT_HTML"
 set -e
 cd $DIR/..
 go get -t ./...
-go test ./...  -coverpkg=./... -coverprofile ./$OUT_FILE.tmp
+go test $(go list ./... | grep -v /examples)  -coverpkg=./... -coverprofile ./$OUT_FILE.tmp
 cat $OUT_FILE.tmp | grep -v "mocks" > $OUT_FILE
 go tool cover -func ./$OUT_FILE
 go tool cover -html $OUT_FILE -o $OUT_HTML
