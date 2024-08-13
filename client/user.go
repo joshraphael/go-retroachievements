@@ -68,3 +68,23 @@ func (c *Client) GetAchievementsEarnedBetween(username string, from time.Time, t
 	}
 	return achievements, nil
 }
+
+// GetAchievementsEarnedOnDay gets all achievements earned on a specific day for a given username
+func (c *Client) GetAchievementsEarnedOnDay(username string, date time.Time) ([]models.Achievement, error) {
+	resp, err := c.do(
+		raHttp.Method(http.MethodGet),
+		raHttp.Path("/API/API_GetAchievementsEarnedOnDay.php"),
+		raHttp.APIToken(c.secret),
+		raHttp.Username(username),
+		raHttp.Date(date),
+	)
+	if err != nil {
+		return nil, fmt.Errorf("calling endpoint: %w", err)
+	}
+	defer resp.Body.Close()
+	achievements, err := raHttp.ResponseList[models.Achievement](resp)
+	if err != nil {
+		return nil, fmt.Errorf("parsing response list: %w", err)
+	}
+	return achievements, nil
+}

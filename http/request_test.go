@@ -23,6 +23,7 @@ func TestNewRequest(t *testing.T) {
 		raHttp.LookbackMinutes(10),
 		raHttp.FromTime(now),
 		raHttp.ToTime(later),
+		raHttp.Date(now),
 	)
 
 	expected := &raHttp.Request{
@@ -38,6 +39,7 @@ func TestNewRequest(t *testing.T) {
 			"u": "myUsername",
 			"f": "1709400423",
 			"t": "1709401023",
+			"d": "2024-03-02",
 		},
 	}
 

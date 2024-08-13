@@ -80,6 +80,13 @@ func ToTime(t time.Time) RequestDetail {
 	})
 }
 
+// Date adds a string date (ignoring timestamp) to the query parameters
+func Date(t time.Time) RequestDetail {
+	return requestDetailFn(func(r *Request) {
+		r.Params["d"] = t.Format(time.DateOnly)
+	})
+}
+
 // Path adds a URL path to the host
 func Path(path string) RequestDetail {
 	return requestDetailFn(func(r *Request) {
