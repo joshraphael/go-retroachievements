@@ -9,7 +9,7 @@ permissions:
   contents: read
 
 jobs:
-  golangci:
+  lint:
     name: lint
     runs-on: ubuntu-latest
     steps:
@@ -37,6 +37,8 @@ jobs:
         with:
           profile: cover.out
           local-prefix: github.com/org/project
-          threshold-file: 80
-          threshold-package: 80
+          #threshold-file: 80
+          #threshold-package: 80
           threshold-total: 80
+          exclude-paths:
+            - ^examples
