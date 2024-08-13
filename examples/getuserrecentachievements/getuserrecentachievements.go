@@ -1,3 +1,4 @@
+// Package getuserrecentachievements provides an example for a users achievements in the last X minutes
 package main
 
 import (

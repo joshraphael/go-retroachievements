@@ -9,8 +9,8 @@ import (
 	"github.com/joshraphael/go-retroachievements/models"
 )
 
-func unmarshalResponseObject[A interface{}](resp *http.Response) (*A, error) {
-	obj := new(A)
+func unmarshalResponseObject[Obj interface{}](resp *http.Response) (*Obj, error) {
+	obj := new(Obj)
 	err := json.NewDecoder(resp.Body).Decode(&obj)
 	if err != nil {
 		return nil, err
@@ -18,13 +18,13 @@ func unmarshalResponseObject[A interface{}](resp *http.Response) (*A, error) {
 	return obj, nil
 }
 
-func unmarshalResponseList[A interface{}](resp *http.Response) ([]A, error) {
-	obj := []A{}
-	err := json.NewDecoder(resp.Body).Decode(&obj)
+func unmarshalResponseList[Obj interface{}](resp *http.Response) ([]Obj, error) {
+	objs := []Obj{}
+	err := json.NewDecoder(resp.Body).Decode(&objs)
 	if err != nil {
 		return nil, err
 	}
-	return obj, nil
+	return objs, nil
 }
 
 func parseError(resp *http.Response) error {
@@ -40,10 +40,11 @@ func parseError(resp *http.Response) error {
 	return fmt.Errorf("error responses: %s", strings.Join(errText, ", "))
 }
 
-func ResponseObject[A interface{}](resp *http.Response) (*A, error) {
+// ResponseObject parses a http response and converts it to a generic object
+func ResponseObject[Obj interface{}](resp *http.Response) (*Obj, error) {
 	switch resp.StatusCode {
 	case http.StatusOK:
-		return unmarshalResponseObject[A](resp)
+		return unmarshalResponseObject[Obj](resp)
 	case http.StatusNotFound:
 		return nil, nil
 	case http.StatusUnauthorized:
@@ -53,10 +54,11 @@ func ResponseObject[A interface{}](resp *http.Response) (*A, error) {
 	}
 }
 
-func ResponseList[A interface{}](resp *http.Response) ([]A, error) {
+// ResponseList parses a http response and converts it to a generic list of objects
+func ResponseList[Obj interface{}](resp *http.Response) ([]Obj, error) {
 	switch resp.StatusCode {
 	case http.StatusOK:
-		return unmarshalResponseList[A](resp)
+		return unmarshalResponseList[Obj](resp)
 	case http.StatusUnauthorized:
 		return nil, parseError(resp)
 	default:

@@ -1,3 +1,4 @@
+// Package getuserprofile provides an example for getting a users profile
 package main
 
 import (

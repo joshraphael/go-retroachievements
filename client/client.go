@@ -1,3 +1,4 @@
+// Package client contains all call handlers to retro achievements
 package client
 
 import (

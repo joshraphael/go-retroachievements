@@ -4,3 +4,6 @@ outfile := coverage
 
 test:
 	bash ./scripts/test.sh --open
+
+docs:
+	godoc -http=:8080

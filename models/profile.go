@@ -1,5 +1,6 @@
 package models
 
+// Profile describes elements of a users profile
 type Profile struct {
 	User                string   `json:"User"`
 	UserPic             string   `json:"UserPic"`

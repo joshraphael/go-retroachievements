@@ -6,6 +6,7 @@ import (
 	"time"
 )
 
+// DateTime is a time data structure that can be used for string timestamps formatted as "2006-01-02 15:04:05"
 type DateTime struct {
 	time.Time
 }

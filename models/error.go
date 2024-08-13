@@ -1,12 +1,22 @@
 package models
 
+// ErrorResponse is the generic error response from the RetroAchievement API
 type ErrorResponse struct {
-	Message string        `json:"message"`
-	Errors  []ErrorDetail `json:"errors"`
+	// Readable problem returned from the API
+	Message string `json:"message"`
+
+	// Array of specific errors
+	Errors []ErrorDetail `json:"errors"`
 }
 
+// ErrorDetail describes an error reported back from the RetroAchievement API
 type ErrorDetail struct {
-	Status int    `json:"status"`
-	Code   string `json:"code"`
-	Title  string `json:"title"`
+	// HTTP response code status
+	Status int `json:"status"`
+
+	// Readable message of the response status
+	Code string `json:"code"`
+
+	// Readable problem for this error
+	Title string `json:"title"`
 }

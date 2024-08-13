@@ -5,6 +5,7 @@ import (
 	"strconv"
 )
 
+// Request holds values for an http call
 type Request struct {
 	Host    string
 	Path    string
@@ -29,42 +30,49 @@ func requestDetailFn(fn func(r *Request)) RequestDetail {
 	return &requestDetailInstance{fn: fn}
 }
 
+// Method tells what http verb the request will do
 func Method(method string) RequestDetail {
 	return requestDetailFn(func(r *Request) {
 		r.Method = method
 	})
 }
 
+// APIToken adds an api token to the query parameters
 func APIToken(token string) RequestDetail {
 	return requestDetailFn(func(r *Request) {
 		r.Params["y"] = token
 	})
 }
 
+// BearerToken adds an authorization header with bearer token
 func BearerToken(token string) RequestDetail {
 	return requestDetailFn(func(r *Request) {
 		r.Headers["Authorization"] = fmt.Sprintf("Bearer %s", token)
 	})
 }
 
+// Username adds the username to the query parameters
 func Username(username string) RequestDetail {
 	return requestDetailFn(func(r *Request) {
 		r.Params["u"] = username
 	})
 }
 
+// LookbackMinutes adds the lookback minutes to the query parameters
 func LookbackMinutes(minutes int) RequestDetail {
 	return requestDetailFn(func(r *Request) {
 		r.Params["m"] = strconv.Itoa(minutes)
 	})
 }
 
+// Path adds a URL path to the host
 func Path(path string) RequestDetail {
 	return requestDetailFn(func(r *Request) {
 		r.Path = path
 	})
 }
 
+// NewRequest initializes a http request using a host
 func NewRequest(host string, details ...RequestDetail) *Request {
 	request := &Request{
 		Host:    host,
