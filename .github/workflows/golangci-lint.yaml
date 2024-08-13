@@ -40,5 +40,4 @@ jobs:
           #threshold-file: 80
           #threshold-package: 80
           threshold-total: 80
-          exclude-paths:
-            - ^examples
+          exclude-paths: ^examples/
