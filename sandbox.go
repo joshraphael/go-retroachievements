@@ -1,6 +1,7 @@
 package main
 
 import (
+	"encoding/json"
 	"fmt"
 	"os"
 
@@ -21,5 +22,12 @@ func main() {
 		panic(err)
 	}
 
-	fmt.Printf("%+v\n", resp)
+	//fmt.Printf("%+v\n", resp)
+
+	b, err := json.Marshal(resp)
+	if err != nil {
+		fmt.Println(err)
+		return
+	}
+	fmt.Println(string(b))
 }
