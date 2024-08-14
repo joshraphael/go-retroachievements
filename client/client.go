@@ -9,12 +9,22 @@ import (
 	raHttp "github.com/joshraphael/go-retroachievements/http"
 )
 
+const (
+	RetroAchievementHost = "https://retroachievements.org"
+)
+
 type Client struct {
 	host       string
 	secret     string
 	HttpClient *http.Client
 }
 
+// DefaultClient makes a new client using the default retroachievement host
+func DefaultClient(secret string) *Client {
+	return New(RetroAchievementHost, secret)
+}
+
+// New creates a new client for a given hostname
 func New(host string, secret string) *Client {
 	return &Client{
 		host:   host,

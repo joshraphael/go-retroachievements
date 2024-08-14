@@ -12,10 +12,9 @@ import (
 Test script for getting user profile. Add RA_API_KEY to your env and use `go run getuserrecentachievements.go`
 */
 func main() {
-	host := "https://retroachievements.org"
 	secret := os.Getenv("RA_API_KEY")
 
-	raClient := client.New(host, secret)
+	raClient := client.DefaultClient(secret)
 
 	resp, err := raClient.GetUserRecentAchievements("jamiras", 1000)
 	if err != nil {

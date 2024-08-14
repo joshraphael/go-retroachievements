@@ -12,10 +12,9 @@ import (
 Test script for getting user profile. Add RA_API_KEY to your env and use `go run getgame.go`
 */
 func main() {
-	host := "https://retroachievements.org"
 	secret := os.Getenv("RA_API_KEY")
 
-	raClient := client.New(host, secret)
+	raClient := client.DefaultClient(secret)
 
 	resp, err := raClient.GetGame(293)
 	if err != nil {
