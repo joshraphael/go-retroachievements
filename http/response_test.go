@@ -1,9 +1,7 @@
 package http_test
 
 import (
-	"bytes"
 	"encoding/json"
-	"io"
 	"net/http"
 	"testing"
 
@@ -51,6 +49,36 @@ func TestResponseObject(tt *testing.T) {
 				require.Equal(t, "8710298370", obj.ID)
 				require.Equal(t, "test", obj.Name)
 				require.NoError(t, err)
+			},
+		},
+		{
+			name: "not found - success empty list",
+			code: http.StatusOK,
+			objBody: testObj{
+				ID:   "8710298370",
+				Name: "test",
+			},
+			readerInput: func(inputBytes []byte, errorBytes []byte) string {
+				return "[]"
+			},
+			assert: func(t *testing.T, obj *testObj, err error) {
+				require.Nil(t, obj)
+				require.NoError(t, err)
+			},
+		},
+		{
+			name: "unknown response error",
+			code: http.StatusOK,
+			objBody: testObj{
+				ID:   "8710298370",
+				Name: "test",
+			},
+			readerInput: func(inputBytes []byte, errorBytes []byte) string {
+				return `[{"test": "test}, {"test1": "test1"}]`
+			},
+			assert: func(t *testing.T, obj *testObj, err error) {
+				require.Nil(t, obj)
+				require.EqualError(t, err, "invalid character 't' after object key:value pair")
 			},
 		},
 		{
@@ -118,11 +146,9 @@ func TestResponseObject(tt *testing.T) {
 			require.NoError(t, err)
 			errBytes, err := json.Marshal(test.errBody)
 			require.NoError(t, err)
-			reader := bytes.NewBufferString(test.readerInput(objBytes, errBytes))
-			readerCloser := io.NopCloser(reader)
-			r := &http.Response{
+			r := &raHttp.Response{
 				StatusCode: test.code,
-				Body:       readerCloser,
+				Data:       []byte(test.readerInput(objBytes, errBytes)),
 			}
 			obj, err := raHttp.ResponseObject[testObj](r)
 			test.assert(t, obj, err)
@@ -225,11 +251,9 @@ func TestResponseList(tt *testing.T) {
 			require.NoError(t, err)
 			errBytes, err := json.Marshal(test.errBody)
 			require.NoError(t, err)
-			reader := bytes.NewBufferString(test.readerInput(listBytes, errBytes))
-			readerCloser := io.NopCloser(reader)
-			r := &http.Response{
+			r := &raHttp.Response{
 				StatusCode: test.code,
-				Body:       readerCloser,
+				Data:       []byte(test.readerInput(listBytes, errBytes)),
 			}
 			list, err := raHttp.ResponseList[testObj](r)
 			test.assert(t, list, err)

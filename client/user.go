@@ -20,7 +20,6 @@ func (c *Client) GetUserProfile(username string) (*models.Profile, error) {
 	if err != nil {
 		return nil, fmt.Errorf("calling endpoint: %w", err)
 	}
-	defer resp.Body.Close()
 	profile, err := raHttp.ResponseObject[models.Profile](resp)
 	if err != nil {
 		return nil, fmt.Errorf("parsing response object: %w", err)
@@ -40,7 +39,6 @@ func (c *Client) GetUserRecentAchievements(username string, lookbackMinutes int)
 	if err != nil {
 		return nil, fmt.Errorf("calling endpoint: %w", err)
 	}
-	defer resp.Body.Close()
 	achievements, err := raHttp.ResponseList[models.Achievement](resp)
 	if err != nil {
 		return nil, fmt.Errorf("parsing response list: %w", err)
@@ -61,7 +59,6 @@ func (c *Client) GetAchievementsEarnedBetween(username string, from time.Time, t
 	if err != nil {
 		return nil, fmt.Errorf("calling endpoint: %w", err)
 	}
-	defer resp.Body.Close()
 	achievements, err := raHttp.ResponseList[models.Achievement](resp)
 	if err != nil {
 		return nil, fmt.Errorf("parsing response list: %w", err)
@@ -81,7 +78,6 @@ func (c *Client) GetAchievementsEarnedOnDay(username string, date time.Time) ([]
 	if err != nil {
 		return nil, fmt.Errorf("calling endpoint: %w", err)
 	}
-	defer resp.Body.Close()
 	achievements, err := raHttp.ResponseList[models.Achievement](resp)
 	if err != nil {
 		return nil, fmt.Errorf("parsing response list: %w", err)

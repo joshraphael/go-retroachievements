@@ -87,6 +87,13 @@ func Date(t time.Time) RequestDetail {
 	})
 }
 
+// ID adds a target game id to the query parameters
+func ID(id int) RequestDetail {
+	return requestDetailFn(func(r *Request) {
+		r.Params["i"] = strconv.Itoa(id)
+	})
+}
+
 // Path adds a URL path to the host
 func Path(path string) RequestDetail {
 	return requestDetailFn(func(r *Request) {

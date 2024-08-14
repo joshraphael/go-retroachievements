@@ -3,6 +3,7 @@ package client
 
 import (
 	"fmt"
+	"io"
 	"net/http"
 
 	raHttp "github.com/joshraphael/go-retroachievements/http"
@@ -24,7 +25,7 @@ func New(host string, secret string) *Client {
 	}
 }
 
-func (c *Client) do(details ...raHttp.RequestDetail) (*http.Response, error) {
+func (c *Client) do(details ...raHttp.RequestDetail) (*raHttp.Response, error) {
 	r := raHttp.NewRequest(c.host, details...)
 
 	url := r.Host
@@ -48,5 +49,13 @@ func (c *Client) do(details ...raHttp.RequestDetail) (*http.Response, error) {
 	if err != nil {
 		return nil, err
 	}
-	return resp, nil
+	defer resp.Body.Close()
+	data, err := io.ReadAll(resp.Body)
+	if err != nil {
+		return nil, err
+	}
+	return &raHttp.Response{
+		StatusCode: resp.StatusCode,
+		Data:       data,
+	}, nil
 }
