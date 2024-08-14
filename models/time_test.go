@@ -53,6 +53,14 @@ func TestDateTimeUnmarshalJSON(tt *testing.T) {
 	}
 }
 
+func TestDateTimeString(tt *testing.T) {
+	expectedString := "2024-03-02 17:27:03"
+	t, err := time.Parse(time.DateTime, expectedString)
+	require.NoError(tt, err)
+	d := &models.DateTime{t}
+	require.Equal(tt, `"`+expectedString+`"`, d.String())
+}
+
 func TestLongMonthDateUnmarshalJSON(tt *testing.T) {
 	tests := []struct {
 		name   string
@@ -96,4 +104,12 @@ func TestLongMonthDateUnmarshalJSON(tt *testing.T) {
 			test.assert(t, d, err)
 		})
 	}
+}
+
+func TestLongMonthDateString(tt *testing.T) {
+	expectedString := "March 02, 2024"
+	t, err := time.Parse(models.LongMonthDateFormat, expectedString)
+	require.NoError(tt, err)
+	d := &models.LongMonthDate{t}
+	require.Equal(tt, `"`+expectedString+`"`, d.String())
 }
