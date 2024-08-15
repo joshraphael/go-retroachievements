@@ -1,4 +1,4 @@
-package client_test
+package retroachievements_test
 
 import (
 	"encoding/json"
@@ -7,7 +7,7 @@ import (
 	"testing"
 	"time"
 
-	"github.com/joshraphael/go-retroachievements/client"
+	"github.com/joshraphael/go-retroachievements"
 	"github.com/joshraphael/go-retroachievements/models"
 	"github.com/stretchr/testify/require"
 )
@@ -146,7 +146,7 @@ func TestGetUserProfile(tt *testing.T) {
 			}))
 			defer server.Close()
 
-			client := client.New(test.modifyURL(server.URL), "some_secret")
+			client := retroachievements.New(test.modifyURL(server.URL), "some_secret")
 			profile, err := client.GetUserProfile(test.username)
 			test.assert(t, profile, err)
 		})
@@ -296,7 +296,7 @@ func TestGetUserRecentAchievements(tt *testing.T) {
 			}))
 			defer server.Close()
 
-			client := client.New(test.modifyURL(server.URL), "some_secret")
+			client := retroachievements.New(test.modifyURL(server.URL), "some_secret")
 			achievements, err := client.GetUserRecentAchievements(test.username, test.lookbackMinutes)
 			test.assert(t, achievements, err)
 		})
@@ -451,7 +451,7 @@ func TestGetAchievementsEarnedBetween(tt *testing.T) {
 			}))
 			defer server.Close()
 
-			client := client.New(test.modifyURL(server.URL), "some_secret")
+			client := retroachievements.New(test.modifyURL(server.URL), "some_secret")
 			achievements, err := client.GetAchievementsEarnedBetween(test.username, test.fromTime, test.toTime)
 			test.assert(t, achievements, err)
 		})
@@ -601,7 +601,7 @@ func TestGetAchievementsEarnedOnDay(tt *testing.T) {
 			}))
 			defer server.Close()
 
-			client := client.New(test.modifyURL(server.URL), "some_secret")
+			client := retroachievements.New(test.modifyURL(server.URL), "some_secret")
 			achievements, err := client.GetAchievementsEarnedOnDay(test.username, test.date)
 			test.assert(t, achievements, err)
 		})

@@ -5,7 +5,7 @@ import (
 	"fmt"
 	"os"
 
-	"github.com/joshraphael/go-retroachievements/client"
+	"github.com/joshraphael/go-retroachievements"
 )
 
 /*
@@ -14,9 +14,9 @@ Test script for getting user profile. Add RA_API_KEY to your env and use `go run
 func main() {
 	secret := os.Getenv("RA_API_KEY")
 
-	raClient := client.DefaultClient(secret)
+	client := retroachievements.NewClient(secret)
 
-	resp, err := raClient.GetUserRecentAchievements("jamiras", 1000)
+	resp, err := client.GetUserRecentAchievements("jamiras", 1000)
 	if err != nil {
 		panic(err)
 	}

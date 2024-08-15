@@ -1,4 +1,4 @@
-package client_test
+package retroachievements_test
 
 import (
 	"encoding/json"
@@ -7,7 +7,7 @@ import (
 	"testing"
 	"time"
 
-	"github.com/joshraphael/go-retroachievements/client"
+	"github.com/joshraphael/go-retroachievements"
 	"github.com/joshraphael/go-retroachievements/models"
 	"github.com/stretchr/testify/require"
 )
@@ -33,24 +33,26 @@ func TestGetGame(tt *testing.T) {
 			},
 			responseCode: http.StatusOK,
 			responseGame: models.Game{
-				Title:        "Twisted Metal: Black",
-				GameTitle:    "Twisted Metal: Black",
-				ConsoleID:    21,
-				ConsoleName:  "Playstation 2",
-				Console:      "Playstation 2",
-				ForumTopicID: 16654,
-				Flags:        0,
-				GameIcon:     "/Images/057992.png",
-				ImageIcon:    "/Images/057992.png",
-				ImageTitle:   "/Images/056152.png",
-				ImageIngame:  "/Images/056151.png",
-				ImageBoxArt:  "/Images/050832.png",
-				Publisher:    "Sony Computer Entertainment",
-				Developer:    "Incognito Entertainment",
-				Genre:        "Vehicular Combat",
-				Released: models.LongMonthDate{
-					Time: released,
+				CommonGame: models.CommonGame{
+					Title:        "Twisted Metal: Black",
+					ConsoleID:    21,
+					ForumTopicID: 16654,
+					Flags:        0,
+					ImageIcon:    "/Images/057992.png",
+					ImageTitle:   "/Images/056152.png",
+					ImageIngame:  "/Images/056151.png",
+					ImageBoxArt:  "/Images/050832.png",
+					Publisher:    "Sony Computer Entertainment",
+					Developer:    "Incognito Entertainment",
+					Genre:        "Vehicular Combat",
+					Released: models.LongMonthDate{
+						Time: released,
+					},
 				},
+				GameTitle:   "Twisted Metal: Black",
+				ConsoleName: "Playstation 2",
+				Console:     "Playstation 2",
+				GameIcon:    "/Images/057992.png",
 			},
 			response: func(gameBytes []byte, errorBytes []byte) []byte {
 				return gameBytes
@@ -93,24 +95,26 @@ func TestGetGame(tt *testing.T) {
 			},
 			responseCode: http.StatusOK,
 			responseGame: models.Game{
-				Title:        "Twisted Metal: Black",
-				GameTitle:    "Twisted Metal: Black",
-				ConsoleID:    21,
-				ConsoleName:  "Playstation 2",
-				Console:      "Playstation 2",
-				ForumTopicID: 16654,
-				Flags:        0,
-				GameIcon:     "/Images/057992.png",
-				ImageIcon:    "/Images/057992.png",
-				ImageTitle:   "/Images/056152.png",
-				ImageIngame:  "/Images/056151.png",
-				ImageBoxArt:  "/Images/050832.png",
-				Publisher:    "Sony Computer Entertainment",
-				Developer:    "Incognito Entertainment",
-				Genre:        "Vehicular Combat",
-				Released: models.LongMonthDate{
-					Time: released,
+				CommonGame: models.CommonGame{
+					Title:        "Twisted Metal: Black",
+					ConsoleID:    21,
+					ForumTopicID: 16654,
+					Flags:        0,
+					ImageIcon:    "/Images/057992.png",
+					ImageTitle:   "/Images/056152.png",
+					ImageIngame:  "/Images/056151.png",
+					ImageBoxArt:  "/Images/050832.png",
+					Publisher:    "Sony Computer Entertainment",
+					Developer:    "Incognito Entertainment",
+					Genre:        "Vehicular Combat",
+					Released: models.LongMonthDate{
+						Time: released,
+					},
 				},
+				GameTitle:   "Twisted Metal: Black",
+				ConsoleName: "Playstation 2",
+				Console:     "Playstation 2",
+				GameIcon:    "/Images/057992.png",
 			},
 			response: func(gameBytes []byte, errorBytes []byte) []byte {
 				return gameBytes
@@ -156,9 +160,12 @@ func TestGetGame(tt *testing.T) {
 			}))
 			defer server.Close()
 
-			client := client.New(test.modifyURL(server.URL), "some_secret")
+			client := retroachievements.New(test.modifyURL(server.URL), "some_secret")
 			game, err := client.GetGame(test.id)
 			test.assert(t, game, err)
 		})
 	}
+}
+
+func TestGetGameExtended(tt *testing.T) {
 }

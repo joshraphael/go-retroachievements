@@ -50,3 +50,20 @@ type Achievement struct {
 	// URL resource to the game page
 	GameURL string `json:"GameURL"`
 }
+
+type GameAchievement struct {
+	ID                 int      `json:"ID"`
+	NumAwarded         int      `json:"NumAwarded"`
+	NumAwardedHardcore int      `json:"NumAwardedHardcore"`
+	Title              string   `json:"Title"`
+	Description        string   `json:"Description"`
+	Points             int      `json:"Points"`
+	TrueRatio          int      `json:"TrueRatio"`
+	Author             string   `json:"Author"`
+	DateModified       DateTime `json:"DateModified"`
+	DateCreated        DateTime `json:"DateCreated"`
+	BadgeName          string   `json:"BadgeName"`
+	DisplayOrder       int      `json:"DisplayOrder"`
+	MemAddr            string   `json:"MemAddr"`
+	Type               string   `json:"type"`
+}

@@ -1,4 +1,4 @@
-// Package getgame provides an example for getting a games info
+// Package getgameextended provides an example for getting a games info
 package main
 
 import (
@@ -9,14 +9,14 @@ import (
 )
 
 /*
-Test script for getting user profile. Add RA_API_KEY to your env and use `go run getgame.go`
+Test script for getting user profile. Add RA_API_KEY to your env and use `go run getgameextended.go`
 */
 func main() {
 	secret := os.Getenv("RA_API_KEY")
 
 	client := retroachievements.NewClient(secret)
 
-	resp, err := client.GetGame(293)
+	resp, err := client.GetGameExtended(293)
 	if err != nil {
 		panic(err)
 	}

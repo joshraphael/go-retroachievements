@@ -1,5 +1,5 @@
 // Package client contains all call handlers to retro achievements
-package client
+package retroachievements
 
 import (
 	"fmt"
@@ -19,8 +19,8 @@ type Client struct {
 	HttpClient *http.Client
 }
 
-// DefaultClient makes a new client using the default retroachievement host
-func DefaultClient(secret string) *Client {
+// NewClient makes a new client using the default retroachievement host
+func NewClient(secret string) *Client {
 	return New(RetroAchievementHost, secret)
 }
 

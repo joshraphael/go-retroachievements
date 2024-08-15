@@ -28,5 +28,5 @@ import "github.com/joshraphael/go-retroachievements"
 Construct a new Retro Achievement client using your personal web API key
 
 ```go
-raClient := client.DefaultClient("<your web API key>")
+client := retroachievements.NewClient("<your web API key>")
 ```

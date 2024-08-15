@@ -1,4 +1,4 @@
-package client
+package retroachievements
 
 import (
 	"fmt"
