@@ -14,7 +14,7 @@ func (c *Client) GetUserProfile(username string) (*models.Profile, error) {
 	resp, err := c.do(
 		raHttp.Method(http.MethodGet),
 		raHttp.Path("/API/API_GetUserProfile.php"),
-		raHttp.APIToken(c.secret),
+		raHttp.APIToken(c.Secret),
 		raHttp.Username(username),
 	)
 	if err != nil {
@@ -32,7 +32,7 @@ func (c *Client) GetUserRecentAchievements(username string, lookbackMinutes int)
 	resp, err := c.do(
 		raHttp.Method(http.MethodGet),
 		raHttp.Path("/API/API_GetUserRecentAchievements.php"),
-		raHttp.APIToken(c.secret),
+		raHttp.APIToken(c.Secret),
 		raHttp.Username(username),
 		raHttp.LookbackMinutes(lookbackMinutes),
 	)
@@ -51,7 +51,7 @@ func (c *Client) GetAchievementsEarnedBetween(username string, from time.Time, t
 	resp, err := c.do(
 		raHttp.Method(http.MethodGet),
 		raHttp.Path("/API/API_GetAchievementsEarnedBetween.php"),
-		raHttp.APIToken(c.secret),
+		raHttp.APIToken(c.Secret),
 		raHttp.Username(username),
 		raHttp.FromTime(from),
 		raHttp.ToTime(to),
@@ -71,7 +71,7 @@ func (c *Client) GetAchievementsEarnedOnDay(username string, date time.Time) ([]
 	resp, err := c.do(
 		raHttp.Method(http.MethodGet),
 		raHttp.Path("/API/API_GetAchievementsEarnedOnDay.php"),
-		raHttp.APIToken(c.secret),
+		raHttp.APIToken(c.Secret),
 		raHttp.Username(username),
 		raHttp.Date(date),
 	)

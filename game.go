@@ -13,7 +13,7 @@ func (c *Client) GetGame(id int) (*models.GameInfo, error) {
 	resp, err := c.do(
 		raHttp.Method(http.MethodGet),
 		raHttp.Path("/API/API_GetGame.php"),
-		raHttp.APIToken(c.secret),
+		raHttp.APIToken(c.Secret),
 		raHttp.ID(id),
 	)
 	if err != nil {
@@ -31,7 +31,7 @@ func (c *Client) GetGameExtended(id int) (*models.ExtentedGameInfo, error) {
 	resp, err := c.do(
 		raHttp.Method(http.MethodGet),
 		raHttp.Path("/API/API_GetGameExtended.php"),
-		raHttp.APIToken(c.secret),
+		raHttp.APIToken(c.Secret),
 		raHttp.ID(id),
 	)
 	if err != nil {

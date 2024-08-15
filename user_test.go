@@ -157,15 +157,15 @@ func TestGetUserRecentAchievements(tt *testing.T) {
 	now, err := time.Parse(time.DateTime, "2024-03-02 17:27:03")
 	require.NoError(tt, err)
 	tests := []struct {
-		name                 string
-		username             string
-		lookbackMinutes      int
-		modifyURL            func(url string) string
-		responseCode         int
-		responseAchievements []models.UnlockedAchievement
-		responseError        models.ErrorResponse
-		response             func(achievementsBytes []byte, errorBytes []byte) []byte
-		assert               func(t *testing.T, achievements []models.UnlockedAchievement, err error)
+		name                         string
+		username                     string
+		lookbackMinutes              int
+		modifyURL                    func(url string) string
+		responseCode                 int
+		responseUnlockedAchievements []models.UnlockedAchievement
+		responseError                models.ErrorResponse
+		response                     func(achievementsBytes []byte, errorBytes []byte) []byte
+		assert                       func(t *testing.T, achievements []models.UnlockedAchievement, err error)
 	}{
 		{
 			name:            "fail to call endpoint",
@@ -227,7 +227,7 @@ func TestGetUserRecentAchievements(tt *testing.T) {
 				return url
 			},
 			responseCode: http.StatusOK,
-			responseAchievements: []models.UnlockedAchievement{
+			responseUnlockedAchievements: []models.UnlockedAchievement{
 				{
 					Achievement: models.Achievement{
 						Title:       "Beat Level 1",
@@ -287,7 +287,7 @@ func TestGetUserRecentAchievements(tt *testing.T) {
 					t.Errorf("Expected to request '%s', got: %s", expectedPath, r.URL.Path)
 				}
 				w.WriteHeader(test.responseCode)
-				achievementsBytes, err := json.Marshal(test.responseAchievements)
+				achievementsBytes, err := json.Marshal(test.responseUnlockedAchievements)
 				require.NoError(t, err)
 				errBytes, err := json.Marshal(test.responseError)
 				require.NoError(t, err)
@@ -310,16 +310,16 @@ func TestGetAchievementsEarnedBetween(tt *testing.T) {
 	require.NoError(tt, err)
 	later := now.Add(10 * time.Minute)
 	tests := []struct {
-		name                 string
-		username             string
-		fromTime             time.Time
-		toTime               time.Time
-		modifyURL            func(url string) string
-		responseCode         int
-		responseAchievements []models.UnlockedAchievement
-		responseError        models.ErrorResponse
-		response             func(achievementsBytes []byte, errorBytes []byte) []byte
-		assert               func(t *testing.T, achievements []models.UnlockedAchievement, err error)
+		name                         string
+		username                     string
+		fromTime                     time.Time
+		toTime                       time.Time
+		modifyURL                    func(url string) string
+		responseCode                 int
+		responseUnlockedAchievements []models.UnlockedAchievement
+		responseError                models.ErrorResponse
+		response                     func(achievementsBytes []byte, errorBytes []byte) []byte
+		assert                       func(t *testing.T, achievements []models.UnlockedAchievement, err error)
 	}{
 		{
 			name:     "fail to call endpoint",
@@ -384,7 +384,7 @@ func TestGetAchievementsEarnedBetween(tt *testing.T) {
 				return url
 			},
 			responseCode: http.StatusOK,
-			responseAchievements: []models.UnlockedAchievement{
+			responseUnlockedAchievements: []models.UnlockedAchievement{
 				{
 					Achievement: models.Achievement{
 						Title:       "Beat Level 1",
@@ -444,7 +444,7 @@ func TestGetAchievementsEarnedBetween(tt *testing.T) {
 					t.Errorf("Expected to request '%s', got: %s", expectedPath, r.URL.Path)
 				}
 				w.WriteHeader(test.responseCode)
-				achievementsBytes, err := json.Marshal(test.responseAchievements)
+				achievementsBytes, err := json.Marshal(test.responseUnlockedAchievements)
 				require.NoError(t, err)
 				errBytes, err := json.Marshal(test.responseError)
 				require.NoError(t, err)
@@ -466,15 +466,15 @@ func TestGetAchievementsEarnedOnDay(tt *testing.T) {
 	now, err := time.Parse(time.DateTime, "2024-03-02 17:27:03")
 	require.NoError(tt, err)
 	tests := []struct {
-		name                 string
-		username             string
-		date                 time.Time
-		modifyURL            func(url string) string
-		responseCode         int
-		responseAchievements []models.UnlockedAchievement
-		responseError        models.ErrorResponse
-		response             func(achievementsBytes []byte, errorBytes []byte) []byte
-		assert               func(t *testing.T, achievements []models.UnlockedAchievement, err error)
+		name                         string
+		username                     string
+		date                         time.Time
+		modifyURL                    func(url string) string
+		responseCode                 int
+		responseUnlockedAchievements []models.UnlockedAchievement
+		responseError                models.ErrorResponse
+		response                     func(achievementsBytes []byte, errorBytes []byte) []byte
+		assert                       func(t *testing.T, achievements []models.UnlockedAchievement, err error)
 	}{
 		{
 			name:     "fail to call endpoint",
@@ -536,7 +536,7 @@ func TestGetAchievementsEarnedOnDay(tt *testing.T) {
 				return url
 			},
 			responseCode: http.StatusOK,
-			responseAchievements: []models.UnlockedAchievement{
+			responseUnlockedAchievements: []models.UnlockedAchievement{
 				{
 					Achievement: models.Achievement{
 						Title:       "Beat Level 1",
@@ -596,7 +596,7 @@ func TestGetAchievementsEarnedOnDay(tt *testing.T) {
 					t.Errorf("Expected to request '%s', got: %s", expectedPath, r.URL.Path)
 				}
 				w.WriteHeader(test.responseCode)
-				achievementsBytes, err := json.Marshal(test.responseAchievements)
+				achievementsBytes, err := json.Marshal(test.responseUnlockedAchievements)
 				require.NoError(t, err)
 				errBytes, err := json.Marshal(test.responseError)
 				require.NoError(t, err)

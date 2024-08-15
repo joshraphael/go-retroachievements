@@ -14,9 +14,32 @@ const (
 )
 
 type Client struct {
-	host       string
-	secret     string
+	Host       string
+	Secret     string
 	HttpClient *http.Client
+}
+
+type ClientDetail interface {
+	detail(c *Client)
+}
+
+type clientDetailInstance struct {
+	fn func(c *Client)
+}
+
+func (cdi *clientDetailInstance) detail(c *Client) {
+	cdi.fn(c)
+}
+
+func clientDetailFn(fn func(c *Client)) ClientDetail {
+	return &clientDetailInstance{fn: fn}
+}
+
+// HttpClient overrides the default http client used
+func HttpClient(httpClient *http.Client) ClientDetail {
+	return clientDetailFn(func(c *Client) {
+		c.HttpClient = httpClient
+	})
 }
 
 // NewClient makes a new client using the default retroachievement host
@@ -25,18 +48,22 @@ func NewClient(secret string) *Client {
 }
 
 // New creates a new client for a given hostname
-func New(host string, secret string) *Client {
-	return &Client{
-		host:   host,
-		secret: secret,
+func New(host string, secret string, details ...ClientDetail) *Client {
+	client := &Client{
+		Host:   host,
+		Secret: secret,
 		HttpClient: &http.Client{
 			Transport: http.DefaultTransport,
 		},
 	}
+	for _, detail := range details {
+		detail.detail(client)
+	}
+	return client
 }
 
 func (c *Client) do(details ...raHttp.RequestDetail) (*raHttp.Response, error) {
-	r := raHttp.NewRequest(c.host, details...)
+	r := raHttp.NewRequest(c.Host, details...)
 
 	url := r.Host
 	if r.Path != "" {
