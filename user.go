@@ -28,7 +28,7 @@ func (c *Client) GetUserProfile(username string) (*models.Profile, error) {
 }
 
 // GetUserRecentAchievements gets all achievements within the last specified amount of minutes for a given username
-func (c *Client) GetUserRecentAchievements(username string, lookbackMinutes int) ([]models.Achievement, error) {
+func (c *Client) GetUserRecentAchievements(username string, lookbackMinutes int) ([]models.UnlockedAchievement, error) {
 	resp, err := c.do(
 		raHttp.Method(http.MethodGet),
 		raHttp.Path("/API/API_GetUserRecentAchievements.php"),
@@ -39,7 +39,7 @@ func (c *Client) GetUserRecentAchievements(username string, lookbackMinutes int)
 	if err != nil {
 		return nil, fmt.Errorf("calling endpoint: %w", err)
 	}
-	achievements, err := raHttp.ResponseList[models.Achievement](resp)
+	achievements, err := raHttp.ResponseList[models.UnlockedAchievement](resp)
 	if err != nil {
 		return nil, fmt.Errorf("parsing response list: %w", err)
 	}
@@ -47,7 +47,7 @@ func (c *Client) GetUserRecentAchievements(username string, lookbackMinutes int)
 }
 
 // GetAchievementsEarnedBetween gets all achievements earned within a time frame for a given username
-func (c *Client) GetAchievementsEarnedBetween(username string, from time.Time, to time.Time) ([]models.Achievement, error) {
+func (c *Client) GetAchievementsEarnedBetween(username string, from time.Time, to time.Time) ([]models.UnlockedAchievement, error) {
 	resp, err := c.do(
 		raHttp.Method(http.MethodGet),
 		raHttp.Path("/API/API_GetAchievementsEarnedBetween.php"),
@@ -59,7 +59,7 @@ func (c *Client) GetAchievementsEarnedBetween(username string, from time.Time, t
 	if err != nil {
 		return nil, fmt.Errorf("calling endpoint: %w", err)
 	}
-	achievements, err := raHttp.ResponseList[models.Achievement](resp)
+	achievements, err := raHttp.ResponseList[models.UnlockedAchievement](resp)
 	if err != nil {
 		return nil, fmt.Errorf("parsing response list: %w", err)
 	}
@@ -67,7 +67,7 @@ func (c *Client) GetAchievementsEarnedBetween(username string, from time.Time, t
 }
 
 // GetAchievementsEarnedOnDay gets all achievements earned on a specific day for a given username
-func (c *Client) GetAchievementsEarnedOnDay(username string, date time.Time) ([]models.Achievement, error) {
+func (c *Client) GetAchievementsEarnedOnDay(username string, date time.Time) ([]models.UnlockedAchievement, error) {
 	resp, err := c.do(
 		raHttp.Method(http.MethodGet),
 		raHttp.Path("/API/API_GetAchievementsEarnedOnDay.php"),
@@ -78,7 +78,7 @@ func (c *Client) GetAchievementsEarnedOnDay(username string, date time.Time) ([]
 	if err != nil {
 		return nil, fmt.Errorf("calling endpoint: %w", err)
 	}
-	achievements, err := raHttp.ResponseList[models.Achievement](resp)
+	achievements, err := raHttp.ResponseList[models.UnlockedAchievement](resp)
 	if err != nil {
 		return nil, fmt.Errorf("parsing response list: %w", err)
 	}

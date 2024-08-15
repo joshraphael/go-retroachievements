@@ -162,10 +162,10 @@ func TestGetUserRecentAchievements(tt *testing.T) {
 		lookbackMinutes      int
 		modifyURL            func(url string) string
 		responseCode         int
-		responseAchievements []models.Achievement
+		responseAchievements []models.UnlockedAchievement
 		responseError        models.ErrorResponse
 		response             func(achievementsBytes []byte, errorBytes []byte) []byte
-		assert               func(t *testing.T, achievements []models.Achievement, err error)
+		assert               func(t *testing.T, achievements []models.UnlockedAchievement, err error)
 	}{
 		{
 			name:            "fail to call endpoint",
@@ -188,7 +188,7 @@ func TestGetUserRecentAchievements(tt *testing.T) {
 			response: func(achievementsBytes []byte, errorBytes []byte) []byte {
 				return errorBytes
 			},
-			assert: func(t *testing.T, achievements []models.Achievement, err error) {
+			assert: func(t *testing.T, achievements []models.UnlockedAchievement, err error) {
 				require.Nil(t, achievements)
 				require.EqualError(t, err, "calling endpoint: Get \"/API/API_GetUserRecentAchievements.php?m=60&u=Test&y=some_secret\": unsupported protocol scheme \"\"")
 			},
@@ -214,7 +214,7 @@ func TestGetUserRecentAchievements(tt *testing.T) {
 			response: func(achievementsBytes []byte, errorBytes []byte) []byte {
 				return errorBytes
 			},
-			assert: func(t *testing.T, achievements []models.Achievement, err error) {
+			assert: func(t *testing.T, achievements []models.UnlockedAchievement, err error) {
 				require.Nil(t, achievements)
 				require.EqualError(t, err, "parsing response list: error responses: [401] Not Authorized")
 			},
@@ -227,20 +227,22 @@ func TestGetUserRecentAchievements(tt *testing.T) {
 				return url
 			},
 			responseCode: http.StatusOK,
-			responseAchievements: []models.Achievement{
+			responseAchievements: []models.UnlockedAchievement{
 				{
+					Achievement: models.Achievement{
+						Title:       "Beat Level 1",
+						Description: "Finish level 1",
+						Points:      10,
+						TrueRatio:   234,
+						Author:      "jamiras",
+					},
 					Date: models.DateTime{
 						Time: now,
 					},
 					HardcoreMode:  1,
 					AchievementID: 34425,
-					Title:         "Beat Level 1",
-					Description:   "Finish level 1",
 					BadgeName:     "840124",
-					Points:        10,
-					TrueRatio:     234,
 					Type:          "win_condition",
-					Author:        "jamiras",
 					GameTitle:     "Final Fantasy XXXXIIII",
 					GameIcon:      "/Images/056340.png",
 					GameID:        34897,
@@ -252,7 +254,7 @@ func TestGetUserRecentAchievements(tt *testing.T) {
 			response: func(achievementsBytes []byte, errorBytes []byte) []byte {
 				return achievementsBytes
 			},
-			assert: func(t *testing.T, achievements []models.Achievement, err error) {
+			assert: func(t *testing.T, achievements []models.UnlockedAchievement, err error) {
 				require.NotNil(t, achievements)
 				require.Len(t, achievements, 1)
 				require.Equal(t, models.DateTime{
@@ -314,10 +316,10 @@ func TestGetAchievementsEarnedBetween(tt *testing.T) {
 		toTime               time.Time
 		modifyURL            func(url string) string
 		responseCode         int
-		responseAchievements []models.Achievement
+		responseAchievements []models.UnlockedAchievement
 		responseError        models.ErrorResponse
 		response             func(achievementsBytes []byte, errorBytes []byte) []byte
-		assert               func(t *testing.T, achievements []models.Achievement, err error)
+		assert               func(t *testing.T, achievements []models.UnlockedAchievement, err error)
 	}{
 		{
 			name:     "fail to call endpoint",
@@ -341,7 +343,7 @@ func TestGetAchievementsEarnedBetween(tt *testing.T) {
 			response: func(achievementsBytes []byte, errorBytes []byte) []byte {
 				return errorBytes
 			},
-			assert: func(t *testing.T, achievements []models.Achievement, err error) {
+			assert: func(t *testing.T, achievements []models.UnlockedAchievement, err error) {
 				require.Nil(t, achievements)
 				require.EqualError(t, err, "calling endpoint: Get \"/API/API_GetAchievementsEarnedBetween.php?f=1709400423&t=1709401023&u=Test&y=some_secret\": unsupported protocol scheme \"\"")
 			},
@@ -368,7 +370,7 @@ func TestGetAchievementsEarnedBetween(tt *testing.T) {
 			response: func(achievementsBytes []byte, errorBytes []byte) []byte {
 				return errorBytes
 			},
-			assert: func(t *testing.T, achievements []models.Achievement, err error) {
+			assert: func(t *testing.T, achievements []models.UnlockedAchievement, err error) {
 				require.Nil(t, achievements)
 				require.EqualError(t, err, "parsing response list: error responses: [401] Not Authorized")
 			},
@@ -382,20 +384,22 @@ func TestGetAchievementsEarnedBetween(tt *testing.T) {
 				return url
 			},
 			responseCode: http.StatusOK,
-			responseAchievements: []models.Achievement{
+			responseAchievements: []models.UnlockedAchievement{
 				{
+					Achievement: models.Achievement{
+						Title:       "Beat Level 1",
+						Description: "Finish level 1",
+						Points:      10,
+						TrueRatio:   234,
+						Author:      "jamiras",
+					},
 					Date: models.DateTime{
 						Time: now,
 					},
 					HardcoreMode:  1,
 					AchievementID: 34425,
-					Title:         "Beat Level 1",
-					Description:   "Finish level 1",
 					BadgeName:     "840124",
-					Points:        10,
-					TrueRatio:     234,
 					Type:          "win_condition",
-					Author:        "jamiras",
 					GameTitle:     "Final Fantasy XXXXIIII",
 					GameIcon:      "/Images/056340.png",
 					GameID:        34897,
@@ -407,7 +411,7 @@ func TestGetAchievementsEarnedBetween(tt *testing.T) {
 			response: func(achievementsBytes []byte, errorBytes []byte) []byte {
 				return achievementsBytes
 			},
-			assert: func(t *testing.T, achievements []models.Achievement, err error) {
+			assert: func(t *testing.T, achievements []models.UnlockedAchievement, err error) {
 				require.NotNil(t, achievements)
 				require.Len(t, achievements, 1)
 				require.Equal(t, models.DateTime{
@@ -467,10 +471,10 @@ func TestGetAchievementsEarnedOnDay(tt *testing.T) {
 		date                 time.Time
 		modifyURL            func(url string) string
 		responseCode         int
-		responseAchievements []models.Achievement
+		responseAchievements []models.UnlockedAchievement
 		responseError        models.ErrorResponse
 		response             func(achievementsBytes []byte, errorBytes []byte) []byte
-		assert               func(t *testing.T, achievements []models.Achievement, err error)
+		assert               func(t *testing.T, achievements []models.UnlockedAchievement, err error)
 	}{
 		{
 			name:     "fail to call endpoint",
@@ -493,7 +497,7 @@ func TestGetAchievementsEarnedOnDay(tt *testing.T) {
 			response: func(achievementsBytes []byte, errorBytes []byte) []byte {
 				return errorBytes
 			},
-			assert: func(t *testing.T, achievements []models.Achievement, err error) {
+			assert: func(t *testing.T, achievements []models.UnlockedAchievement, err error) {
 				require.Nil(t, achievements)
 				require.EqualError(t, err, "calling endpoint: Get \"/API/API_GetAchievementsEarnedOnDay.php?d=2024-03-02&u=Test&y=some_secret\": unsupported protocol scheme \"\"")
 			},
@@ -519,7 +523,7 @@ func TestGetAchievementsEarnedOnDay(tt *testing.T) {
 			response: func(achievementsBytes []byte, errorBytes []byte) []byte {
 				return errorBytes
 			},
-			assert: func(t *testing.T, achievements []models.Achievement, err error) {
+			assert: func(t *testing.T, achievements []models.UnlockedAchievement, err error) {
 				require.Nil(t, achievements)
 				require.EqualError(t, err, "parsing response list: error responses: [401] Not Authorized")
 			},
@@ -532,20 +536,22 @@ func TestGetAchievementsEarnedOnDay(tt *testing.T) {
 				return url
 			},
 			responseCode: http.StatusOK,
-			responseAchievements: []models.Achievement{
+			responseAchievements: []models.UnlockedAchievement{
 				{
+					Achievement: models.Achievement{
+						Title:       "Beat Level 1",
+						Description: "Finish level 1",
+						Points:      10,
+						TrueRatio:   234,
+						Author:      "jamiras",
+					},
 					Date: models.DateTime{
 						Time: now,
 					},
 					HardcoreMode:  1,
 					AchievementID: 34425,
-					Title:         "Beat Level 1",
-					Description:   "Finish level 1",
 					BadgeName:     "840124",
-					Points:        10,
-					TrueRatio:     234,
 					Type:          "win_condition",
-					Author:        "jamiras",
 					GameTitle:     "Final Fantasy XXXXIIII",
 					GameIcon:      "/Images/056340.png",
 					GameID:        34897,
@@ -557,7 +563,7 @@ func TestGetAchievementsEarnedOnDay(tt *testing.T) {
 			response: func(achievementsBytes []byte, errorBytes []byte) []byte {
 				return achievementsBytes
 			},
-			assert: func(t *testing.T, achievements []models.Achievement, err error) {
+			assert: func(t *testing.T, achievements []models.UnlockedAchievement, err error) {
 				require.NotNil(t, achievements)
 				require.Len(t, achievements, 1)
 				require.Equal(t, models.DateTime{

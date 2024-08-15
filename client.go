@@ -1,4 +1,4 @@
-// Package client contains all call handlers to retro achievements
+// Package retroachievements contains all call handlers to the retro achievements API
 package retroachievements
 
 import (

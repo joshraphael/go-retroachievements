@@ -9,7 +9,7 @@ import (
 )
 
 // GetGame gets info of a game
-func (c *Client) GetGame(id int) (*models.Game, error) {
+func (c *Client) GetGame(id int) (*models.GameInfo, error) {
 	resp, err := c.do(
 		raHttp.Method(http.MethodGet),
 		raHttp.Path("/API/API_GetGame.php"),
@@ -19,15 +19,15 @@ func (c *Client) GetGame(id int) (*models.Game, error) {
 	if err != nil {
 		return nil, fmt.Errorf("calling endpoint: %w", err)
 	}
-	game, err := raHttp.ResponseObject[models.Game](resp)
+	game, err := raHttp.ResponseObject[models.GameInfo](resp)
 	if err != nil {
 		return nil, fmt.Errorf("parsing response object: %w", err)
 	}
 	return game, nil
 }
 
-// GetGame gets extended info of a game
-func (c *Client) GetGameExtended(id int) (*models.ExtentedGame, error) {
+// GetGameExtended gets extended info of a game
+func (c *Client) GetGameExtended(id int) (*models.ExtentedGameInfo, error) {
 	resp, err := c.do(
 		raHttp.Method(http.MethodGet),
 		raHttp.Path("/API/API_GetGameExtended.php"),
@@ -37,7 +37,7 @@ func (c *Client) GetGameExtended(id int) (*models.ExtentedGame, error) {
 	if err != nil {
 		return nil, fmt.Errorf("calling endpoint: %w", err)
 	}
-	game, err := raHttp.ResponseObject[models.ExtentedGame](resp)
+	game, err := raHttp.ResponseObject[models.ExtentedGameInfo](resp)
 	if err != nil {
 		return nil, fmt.Errorf("parsing response object: %w", err)
 	}

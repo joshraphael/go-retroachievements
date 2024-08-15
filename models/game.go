@@ -2,7 +2,7 @@ package models
 
 import "time"
 
-type CommonGame struct {
+type Game struct {
 	Title        string        `json:"Title"`
 	ConsoleID    int           `json:"ConsoleID"`
 	ForumTopicID int           `json:"ForumTopicID"`
@@ -17,16 +17,16 @@ type CommonGame struct {
 	Released     LongMonthDate `json:"Released"`
 }
 
-type Game struct {
-	CommonGame
+type GameInfo struct {
+	Game
 	GameTitle   string `json:"GameTitle"`
 	ConsoleName string `json:"ConsoleName"`
 	Console     string `json:"Console"`
 	GameIcon    string `json:"GameIcon"`
 }
 
-type ExtentedGame struct {
-	CommonGame
+type ExtentedGameInfo struct {
+	Game
 	ID                         int                     `json:"ID"`
 	IsFinal                    int                     `json:"IsFinal"`
 	RichPresencePatch          string                  `json:"RichPresencePatch"`

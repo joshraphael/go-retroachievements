@@ -20,10 +20,10 @@ func TestGetGame(tt *testing.T) {
 		id            int
 		modifyURL     func(url string) string
 		responseCode  int
-		responseGame  models.Game
+		responseGame  models.GameInfo
 		responseError models.ErrorResponse
 		response      func(gameBytes []byte, errorBytes []byte) []byte
-		assert        func(t *testing.T, game *models.Game, err error)
+		assert        func(t *testing.T, game *models.GameInfo, err error)
 	}{
 		{
 			name: "fail to call endpoint",
@@ -32,8 +32,8 @@ func TestGetGame(tt *testing.T) {
 				return ""
 			},
 			responseCode: http.StatusOK,
-			responseGame: models.Game{
-				CommonGame: models.CommonGame{
+			responseGame: models.GameInfo{
+				Game: models.Game{
 					Title:        "Twisted Metal: Black",
 					ConsoleID:    21,
 					ForumTopicID: 16654,
@@ -57,7 +57,7 @@ func TestGetGame(tt *testing.T) {
 			response: func(gameBytes []byte, errorBytes []byte) []byte {
 				return gameBytes
 			},
-			assert: func(t *testing.T, game *models.Game, err error) {
+			assert: func(t *testing.T, game *models.GameInfo, err error) {
 				require.Nil(t, game)
 				require.EqualError(t, err, "calling endpoint: Get \"/API/API_GetGame.php?i=2991&y=some_secret\": unsupported protocol scheme \"\"")
 			},
@@ -82,7 +82,7 @@ func TestGetGame(tt *testing.T) {
 			response: func(gameBytes []byte, errorBytes []byte) []byte {
 				return errorBytes
 			},
-			assert: func(t *testing.T, game *models.Game, err error) {
+			assert: func(t *testing.T, game *models.GameInfo, err error) {
 				require.Nil(t, game)
 				require.EqualError(t, err, "parsing response object: error responses: [401] Not Authorized")
 			},
@@ -94,8 +94,8 @@ func TestGetGame(tt *testing.T) {
 				return url
 			},
 			responseCode: http.StatusOK,
-			responseGame: models.Game{
-				CommonGame: models.CommonGame{
+			responseGame: models.GameInfo{
+				Game: models.Game{
 					Title:        "Twisted Metal: Black",
 					ConsoleID:    21,
 					ForumTopicID: 16654,
@@ -119,7 +119,7 @@ func TestGetGame(tt *testing.T) {
 			response: func(gameBytes []byte, errorBytes []byte) []byte {
 				return gameBytes
 			},
-			assert: func(t *testing.T, game *models.Game, err error) {
+			assert: func(t *testing.T, game *models.GameInfo, err error) {
 				require.NotNil(t, game)
 				require.Equal(t, game.Title, "Twisted Metal: Black")
 				require.Equal(t, game.GameTitle, "Twisted Metal: Black")

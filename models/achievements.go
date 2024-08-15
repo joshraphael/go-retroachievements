@@ -1,7 +1,8 @@
 package models
 
-// Achievement is a representation of achievements unlocked by a user
-type Achievement struct {
+// UnlockedAchievement is a representation of achievements unlocked by a user
+type UnlockedAchievement struct {
+	Achievement
 	// The date the achievement was unlocked
 	Date DateTime `json:"Date"`
 
@@ -11,26 +12,11 @@ type Achievement struct {
 	// The ID of the achievement
 	AchievementID int `json:"AchievementID"`
 
-	// Title of the achievement
-	Title string `json:"Title"`
-
-	// Description of the achievement
-	Description string `json:"Description"`
-
 	// Name of the padge resource
 	BadgeName string `json:"BadgeName"`
 
-	// Points awarded
-	Points int `json:"Points"`
-
-	// Ratio of points the achievemnet is worth
-	TrueRatio int `json:"TrueRatio"`
-
 	// Type of achievement (standard, missable, progression, win_condition)
 	Type string `json:"Type"`
-
-	// Username of the author of the achievement
-	Author string `json:"Author"`
 
 	// Title of the game
 	GameTitle string `json:"GameTitle"`
@@ -51,19 +37,33 @@ type Achievement struct {
 	GameURL string `json:"GameURL"`
 }
 
+// GameAchievement is a representation of an achievement in a game
 type GameAchievement struct {
+	Achievement
 	ID                 int      `json:"ID"`
 	NumAwarded         int      `json:"NumAwarded"`
 	NumAwardedHardcore int      `json:"NumAwardedHardcore"`
-	Title              string   `json:"Title"`
-	Description        string   `json:"Description"`
-	Points             int      `json:"Points"`
-	TrueRatio          int      `json:"TrueRatio"`
-	Author             string   `json:"Author"`
 	DateModified       DateTime `json:"DateModified"`
 	DateCreated        DateTime `json:"DateCreated"`
 	BadgeName          string   `json:"BadgeName"`
 	DisplayOrder       int      `json:"DisplayOrder"`
 	MemAddr            string   `json:"MemAddr"`
 	Type               string   `json:"type"`
+}
+
+// Achievement is a common representation of an achievement
+type Achievement struct {
+	// Title of the achievement
+	Title string `json:"Title"`
+
+	// Description of the achievement
+	Description string `json:"Description"`
+	// Points awarded
+	Points int `json:"Points"`
+
+	// Ratio of points the achievemnet is worth
+	TrueRatio int `json:"TrueRatio"`
+
+	// Username of the author of the achievement
+	Author string `json:"Author"`
 }
