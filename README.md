@@ -40,16 +40,16 @@ profile, err := client.GetUserProfile("jamiras")
 Check out the [examples](examples/) directory for how to call each endpoint, as well as our GoDocs (TBD)
 
 ## API
-Click a link to open their complete docs on the docs site or example code.
+For convenience, the API docs and examples can be found in the tables below
 
 <h3>User</h3>
 
 |Function|Description|Links|
 |-|-|-|
 |`GetUserProfile(string)`|Get a user's basic profile information.|[docs](https://api-docs.retroachievements.org/v1/get-user-profile.html) \| [example](examples/user/getuserprofile/getuserprofile.go)|
-|`GetUserRecentAchievements(string, int)`|Get a list of achievements recently earned by the user.|[docs](https://api-docs.retroachievements.org/v1/get-user-recent-achievements.html) \| [example](examples/user/getuserrecentachievements/getuserrecentachievements.go)|
-|`GetAchievementsEarnedBetween(string, time.Time, time.Time)`|Get a list of achievements earned by a user between two dates.|[docs](https://api-docs.retroachievements.org/v1/get-achievements-earned-between.html) \| [example](examples/user/getachievementsearnedbetween/getachievementsearnedbetween.go)|
-|`GetAchievementsEarnedOnDay(string, time.Time)`|Get a list of achievements earned by a user on a given date.|[docs](https://api-docs.retroachievements.org/v1/get-achievements-earned-on-day.html) \| [example](examples/user/getachievementsearnedonday/getachievementsearnedonday.go)|
+|`GetUserRecentAchievements(string,int)`|Get a list of achievements recently earned by the user.|[docs](https://api-docs.retroachievements.org/v1/get-user-recent-achievements.html) \| [example](examples/user/getuserrecentachievements/getuserrecentachievements.go)|
+|`GetAchievementsEarnedBetween(string,Time,Time)`|Get a list of achievements earned by a user between two dates.|[docs](https://api-docs.retroachievements.org/v1/get-achievements-earned-between.html) \| [example](examples/user/getachievementsearnedbetween/getachievementsearnedbetween.go)|
+|`GetAchievementsEarnedOnDay(string,Time)`|Get a list of achievements earned by a user on a given date.|[docs](https://api-docs.retroachievements.org/v1/get-achievements-earned-on-day.html) \| [example](examples/user/getachievementsearnedonday/getachievementsearnedonday.go)|
 
 <h3>Game</h3>
 
