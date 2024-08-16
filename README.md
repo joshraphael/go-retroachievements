@@ -40,16 +40,20 @@ profile, err := client.GetUserProfile("jamiras")
 Check out the [examples](examples/) directory for how to call each endpoint, as well as our GoDocs (TBD)
 
 ## API
-Click the function names to open their complete docs on the docs site.
+Click a link to open their complete docs on the docs site or example code.
 
 <h3>User</h3>
 
-* [`GetUserProfile()`](https://api-docs.retroachievements.org/v1/get-user-profile.html) - Get a user's basic profile information.
-* [`GetUserRecentAchievements()`](https://api-docs.retroachievements.org/v1/get-user-recent-achievements.html) - Get a list of achievements recently earned by the user.
-* [`GetAchievementsEarnedBetween()`](https://api-docs.retroachievements.org/v1/get-achievements-earned-between.html) - Get a list of achievements earned by a user between two dates.
-* [`GetAchievementsEarnedOnDay()`](https://api-docs.retroachievements.org/v1/get-achievements-earned-on-day.html) - Get a list of achievements earned by a user on a given date.
+|Function|Description|Links|
+|-|-|-|
+|`GetUserProfile(string)`|Get a user's basic profile information.|[docs](https://api-docs.retroachievements.org/v1/get-user-profile.html) \| [example](examples/user/getuserprofile/getuserprofile.go)|
+|`GetUserRecentAchievements(string, int)`|Get a list of achievements recently earned by the user.|[docs](https://api-docs.retroachievements.org/v1/get-user-recent-achievements.html) \| [example](examples/user/getuserrecentachievements/getuserrecentachievements.go)|
+|`GetAchievementsEarnedBetween(string, time.Time, time.Time)`|Get a list of achievements earned by a user between two dates.|[docs](https://api-docs.retroachievements.org/v1/get-achievements-earned-between.html) \| [example](examples/user/getachievementsearnedbetween/getachievementsearnedbetween.go)|
+|`GetAchievementsEarnedOnDay(string, time.Time)`|Get a list of achievements earned by a user on a given date.|[docs](https://api-docs.retroachievements.org/v1/get-achievements-earned-on-day.html) \| [example](examples/user/getachievementsearnedonday/getachievementsearnedonday.go)|
 
 <h3>Game</h3>
 
-* [`GetGame()`](https://api-docs.retroachievements.org/v1/get-game.html) - Get basic metadata about a game.
-* [`GetGameExtended()`](https://api-docs.retroachievements.org/v1/get-game-extended.html) - Get extended metadata about a game.
+|Function|Description|Links|
+|-|-|-|
+|`GetGame(int)`|Get basic metadata about a game.|[docs](https://api-docs.retroachievements.org/v1/get-game.html) \| [example](examples/game/getgame/getgame.go)|
+|`GetGameExtended(int)`|Get extended metadata about a game.|[docs](https://api-docs.retroachievements.org/v1/get-game-extended.html) \| [example](examples/game/getgameextended/getgameextended.go)|
