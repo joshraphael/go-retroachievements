@@ -16,7 +16,7 @@ func main() {
 
 	client := retroachievements.NewClient(secret)
 
-	resp, err := client.GetGameExtended(293)
+	resp, err := client.GetGameExtended(18166)
 	if err != nil {
 		panic(err)
 	}

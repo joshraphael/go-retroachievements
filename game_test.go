@@ -13,11 +13,13 @@ import (
 )
 
 func makGame(released time.Time) models.Game {
+	forumTopicId := 16654
+	flags := 0
 	return models.Game{
 		Title:        "Twisted Metal: Black",
 		ConsoleID:    21,
-		ForumTopicID: 16654,
-		Flags:        0,
+		ForumTopicID: &forumTopicId,
+		Flags:        &flags,
 		ImageIcon:    "/Images/057992.png",
 		ImageTitle:   "/Images/056152.png",
 		ImageIngame:  "/Images/056151.png",
@@ -111,21 +113,21 @@ func TestGetGame(tt *testing.T) {
 			assert: func(t *testing.T, gameInfo *models.GameInfo, err error) {
 				require.NotNil(t, gameInfo)
 				require.Equal(t, gameInfo.Title, "Twisted Metal: Black")
-				require.Equal(t, gameInfo.GameTitle, "Twisted Metal: Black")
-				require.Equal(t, gameInfo.ConsoleID, 21)
-				require.Equal(t, gameInfo.ConsoleName, "Playstation 2")
-				require.Equal(t, gameInfo.Console, "Playstation 2")
-				require.Equal(t, gameInfo.ForumTopicID, 16654)
-				require.Equal(t, gameInfo.Flags, 0)
-				require.Equal(t, gameInfo.GameIcon, "/Images/057992.png")
-				require.Equal(t, gameInfo.ImageIcon, "/Images/057992.png")
-				require.Equal(t, gameInfo.ImageTitle, "/Images/056152.png")
-				require.Equal(t, gameInfo.ImageIngame, "/Images/056151.png")
-				require.Equal(t, gameInfo.ImageBoxArt, "/Images/050832.png")
-				require.Equal(t, gameInfo.Publisher, "Sony Computer Entertainment")
-				require.Equal(t, gameInfo.Developer, "Incognito Entertainment")
-				require.Equal(t, gameInfo.Genre, "Vehicular Combat")
-				require.Equal(t, gameInfo.Released.Time, released)
+				require.Equal(t, "Twisted Metal: Black", gameInfo.GameTitle)
+				require.Equal(t, 21, gameInfo.ConsoleID)
+				require.Equal(t, "Playstation 2", gameInfo.ConsoleName)
+				require.Equal(t, "Playstation 2", gameInfo.Console)
+				require.Equal(t, 16654, *gameInfo.ForumTopicID)
+				require.Equal(t, 0, *gameInfo.Flags)
+				require.Equal(t, "/Images/057992.png", gameInfo.GameIcon)
+				require.Equal(t, "/Images/057992.png", gameInfo.ImageIcon)
+				require.Equal(t, "/Images/056152.png", gameInfo.ImageTitle)
+				require.Equal(t, "/Images/056151.png", gameInfo.ImageIngame)
+				require.Equal(t, "/Images/050832.png", gameInfo.ImageBoxArt)
+				require.Equal(t, "Sony Computer Entertainment", gameInfo.Publisher)
+				require.Equal(t, "Incognito Entertainment", gameInfo.Developer)
+				require.Equal(t, "Vehicular Combat", gameInfo.Genre)
+				require.Equal(t, released, gameInfo.Released.Time)
 				require.NoError(t, err)
 			},
 		},
@@ -187,10 +189,8 @@ func TestGetGameExtended(tt *testing.T) {
 				ID:                 2991,
 				IsFinal:            0,
 				RichPresencePatch:  "e7a5e12072a6c976a1146756726fdd8c",
-				GuideURL:           "",
 				Updated:            updated,
 				ConsoleName:        "PlayStation 2",
-				ParentGameID:       "",
 				NumDistinctPlayers: 1287,
 				NumAchievements:    93,
 				Achievements: map[int]models.GameAchievement{
@@ -263,10 +263,8 @@ func TestGetGameExtended(tt *testing.T) {
 				ID:                 2991,
 				IsFinal:            0,
 				RichPresencePatch:  "e7a5e12072a6c976a1146756726fdd8c",
-				GuideURL:           "",
 				Updated:            updated,
 				ConsoleName:        "PlayStation 2",
-				ParentGameID:       "",
 				NumDistinctPlayers: 1287,
 				NumAchievements:    93,
 				Achievements: map[int]models.GameAchievement{
@@ -299,19 +297,19 @@ func TestGetGameExtended(tt *testing.T) {
 			},
 			assert: func(t *testing.T, extendedGameInfo *models.ExtentedGameInfo, err error) {
 				require.NotNil(t, extendedGameInfo)
-				require.Equal(t, extendedGameInfo.Title, "Twisted Metal: Black")
-				require.Equal(t, extendedGameInfo.ConsoleID, 21)
-				require.Equal(t, extendedGameInfo.ConsoleName, "PlayStation 2")
-				require.Equal(t, extendedGameInfo.ForumTopicID, 16654)
-				require.Equal(t, extendedGameInfo.Flags, 0)
-				require.Equal(t, extendedGameInfo.ImageIcon, "/Images/057992.png")
-				require.Equal(t, extendedGameInfo.ImageTitle, "/Images/056152.png")
-				require.Equal(t, extendedGameInfo.ImageIngame, "/Images/056151.png")
-				require.Equal(t, extendedGameInfo.ImageBoxArt, "/Images/050832.png")
-				require.Equal(t, extendedGameInfo.Publisher, "Sony Computer Entertainment")
-				require.Equal(t, extendedGameInfo.Developer, "Incognito Entertainment")
-				require.Equal(t, extendedGameInfo.Genre, "Vehicular Combat")
-				require.Equal(t, extendedGameInfo.Released.Time, released)
+				require.Equal(t, "Twisted Metal: Black", extendedGameInfo.Title)
+				require.Equal(t, 21, extendedGameInfo.ConsoleID)
+				require.Equal(t, "PlayStation 2", extendedGameInfo.ConsoleName)
+				require.Equal(t, 16654, *extendedGameInfo.ForumTopicID)
+				require.Equal(t, 0, *extendedGameInfo.Flags)
+				require.Equal(t, "/Images/057992.png", extendedGameInfo.ImageIcon)
+				require.Equal(t, "/Images/056152.png", extendedGameInfo.ImageTitle)
+				require.Equal(t, "/Images/056151.png", extendedGameInfo.ImageIngame)
+				require.Equal(t, "/Images/050832.png", extendedGameInfo.ImageBoxArt)
+				require.Equal(t, "Sony Computer Entertainment", extendedGameInfo.Publisher)
+				require.Equal(t, "Incognito Entertainment", extendedGameInfo.Developer)
+				require.Equal(t, "Vehicular Combat", extendedGameInfo.Genre)
+				require.Equal(t, released, extendedGameInfo.Released.Time)
 				require.NoError(t, err)
 			},
 		},

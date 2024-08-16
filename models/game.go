@@ -5,8 +5,8 @@ import "time"
 type Game struct {
 	Title        string        `json:"Title"`
 	ConsoleID    int           `json:"ConsoleID"`
-	ForumTopicID int           `json:"ForumTopicID"`
-	Flags        int           `json:"Flags"`
+	ForumTopicID *int          `json:"ForumTopicID"`
+	Flags        *int          `json:"Flags"`
 	ImageIcon    string        `json:"ImageIcon"`
 	ImageTitle   string        `json:"ImageTitle"`
 	ImageIngame  string        `json:"ImageIngame"`
@@ -30,10 +30,10 @@ type ExtentedGameInfo struct {
 	ID                         int                     `json:"ID"`
 	IsFinal                    int                     `json:"IsFinal"`
 	RichPresencePatch          string                  `json:"RichPresencePatch"`
-	GuideURL                   string                  `json:"GuideURL"`
+	GuideURL                   *string                 `json:"GuideURL"`
 	Updated                    time.Time               `json:"Updated"`
 	ConsoleName                string                  `json:"ConsoleName"`
-	ParentGameID               string                  `json:"ParentGameID"`
+	ParentGameID               *int                    `json:"ParentGameID"`
 	NumDistinctPlayers         int                     `json:"NumDistinctPlayers"`
 	NumAchievements            int                     `json:"NumAchievements"`
 	Achievements               map[int]GameAchievement `json:"Achievements"`

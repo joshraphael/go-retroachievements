@@ -16,7 +16,7 @@ func TestDateTimeUnmarshalJSON(tt *testing.T) {
 	}{
 		{
 			name:  "empty string default",
-			input: "",
+			input: "\"\"",
 			assert: func(t *testing.T, date *models.DateTime, err error) {
 				require.NotNil(t, date)
 				require.True(t, date.Time.IsZero())
@@ -25,7 +25,7 @@ func TestDateTimeUnmarshalJSON(tt *testing.T) {
 		},
 		{
 			name:  "unknown bytes",
-			input: "?>?>>L:",
+			input: "\"?>?>>L:\"",
 			assert: func(t *testing.T, date *models.DateTime, err error) {
 				require.NotNil(t, date)
 				require.True(t, date.Time.IsZero())
@@ -34,7 +34,7 @@ func TestDateTimeUnmarshalJSON(tt *testing.T) {
 		},
 		{
 			name:  "successfully unmarshal",
-			input: "2024-03-02 17:27:03",
+			input: "\"2024-03-02 17:27:03\"",
 			assert: func(t *testing.T, date *models.DateTime, err error) {
 				ts, tErr := time.Parse(time.DateTime, "2024-03-02 17:27:03")
 				require.NoError(t, tErr)
@@ -69,7 +69,7 @@ func TestLongMonthDateUnmarshalJSON(tt *testing.T) {
 	}{
 		{
 			name:  "empty string default",
-			input: "",
+			input: "\"\"",
 			assert: func(t *testing.T, date *models.LongMonthDate, err error) {
 				require.NotNil(t, date)
 				require.True(t, date.Time.IsZero())
@@ -78,18 +78,18 @@ func TestLongMonthDateUnmarshalJSON(tt *testing.T) {
 		},
 		{
 			name:  "unknown bytes",
-			input: "?>?>>L:",
+			input: "\"?>?>>L:\"",
 			assert: func(t *testing.T, date *models.LongMonthDate, err error) {
 				require.NotNil(t, date)
 				require.True(t, date.Time.IsZero())
-				require.EqualError(t, err, "parsing time \"?>?>>L:\" as \"January 02, 2006\": cannot parse \"?>?>>L:\" as \"January\"")
+				require.EqualError(t, err, "parsing time \"?>?>>L:\" as \"January 2, 2006\": cannot parse \"?>?>>L:\" as \"January\"")
 			},
 		},
 		{
 			name:  "successfully unmarshal",
-			input: "March 02, 2024",
+			input: "\"March 02, 2024\"",
 			assert: func(t *testing.T, date *models.LongMonthDate, err error) {
-				ts, tErr := time.Parse(models.LongMonthDateFormat, "March 02, 2024")
+				ts, tErr := time.Parse(models.LongMonthDateFormat, "March 2, 2024")
 				require.NoError(t, tErr)
 				require.NotNil(t, date)
 				require.Equal(t, ts, date.Time)
@@ -107,7 +107,7 @@ func TestLongMonthDateUnmarshalJSON(tt *testing.T) {
 }
 
 func TestLongMonthDateString(tt *testing.T) {
-	expectedString := "March 02, 2024"
+	expectedString := "March 2, 2024"
 	t, err := time.Parse(models.LongMonthDateFormat, expectedString)
 	require.NoError(tt, err)
 	d := &models.LongMonthDate{t}

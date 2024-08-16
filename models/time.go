@@ -12,11 +12,11 @@ type DateTime struct {
 }
 
 func (dt *DateTime) UnmarshalJSON(b []byte) (err error) {
-	if string(b) == "" {
+	s := strings.Trim(string(b), `"`)
+	if s == "" {
 		*dt = DateTime{time.Time{}}
 		return nil
 	}
-	s := strings.Trim(string(b), `"`)
 	nt, err := time.Parse(time.DateTime, s)
 	if err != nil {
 		return err
@@ -39,15 +39,15 @@ type LongMonthDate struct {
 }
 
 const (
-	LongMonthDateFormat = "January 02, 2006"
+	LongMonthDateFormat = "January 2, 2006"
 )
 
 func (lmd *LongMonthDate) UnmarshalJSON(b []byte) (err error) {
-	if string(b) == "" {
+	s := strings.Trim(string(b), `"`)
+	if s == "" {
 		*lmd = LongMonthDate{time.Time{}}
 		return nil
 	}
-	s := strings.Trim(string(b), `"`)
 	nt, err := time.Parse(LongMonthDateFormat, s)
 	if err != nil {
 		return err
