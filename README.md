@@ -1,7 +1,7 @@
 # <p align="center">![ra_gopher](assets/ra_gopher_small.png "Retro Achievements Gopher")<br>go-retroachievements</p>
 
 <p align="center">
-    <i>A Golang library that lets you get achievement, user, and game data from RetroAchievements.</i>
+    <i>A Golang library that lets you get achievement, user, game data and more from RetroAchievements.</i>
 </p>
 
 <p align="center">
@@ -30,3 +30,11 @@ Construct a new Retro Achievement client using your personal web API key
 ```go
 client := retroachievements.NewClient("<your web API key>")
 ```
+
+you can now use the client to call any of the available endpoints, for example:
+
+```go
+profile, err := client.GetUserProfile("jamiras")
+```
+
+Check out the [examples](examples/) directory for how to call each endpoint, as well as our GoDocs (TBD)
