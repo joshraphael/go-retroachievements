@@ -8,7 +8,7 @@ import (
 	"github.com/joshraphael/go-retroachievements/models"
 )
 
-// GetGame gets info of a game
+// GetGame get basic metadata about a game.
 func (c *Client) GetGame(id int) (*models.GameInfo, error) {
 	resp, err := c.do(
 		raHttp.Method(http.MethodGet),
@@ -26,7 +26,7 @@ func (c *Client) GetGame(id int) (*models.GameInfo, error) {
 	return game, nil
 }
 
-// GetGameExtended gets extended info of a game
+// GetGameExtended get extended metadata about a game.
 func (c *Client) GetGameExtended(id int) (*models.ExtentedGameInfo, error) {
 	resp, err := c.do(
 		raHttp.Method(http.MethodGet),

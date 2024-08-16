@@ -9,7 +9,7 @@ import (
 	"github.com/joshraphael/go-retroachievements/models"
 )
 
-// GetUserProfile gets the profile of a given username
+// GetUserProfile get a user's basic profile information.
 func (c *Client) GetUserProfile(username string) (*models.Profile, error) {
 	resp, err := c.do(
 		raHttp.Method(http.MethodGet),
@@ -27,7 +27,7 @@ func (c *Client) GetUserProfile(username string) (*models.Profile, error) {
 	return profile, nil
 }
 
-// GetUserRecentAchievements gets all achievements within the last specified amount of minutes for a given username
+// GetUserRecentAchievements get a list of achievements recently earned by the user.
 func (c *Client) GetUserRecentAchievements(username string, lookbackMinutes int) ([]models.UnlockedAchievement, error) {
 	resp, err := c.do(
 		raHttp.Method(http.MethodGet),
@@ -46,7 +46,7 @@ func (c *Client) GetUserRecentAchievements(username string, lookbackMinutes int)
 	return achievements, nil
 }
 
-// GetAchievementsEarnedBetween gets all achievements earned within a time frame for a given username
+// GetAchievementsEarnedBetween get a list of achievements earned by a user between two dates.
 func (c *Client) GetAchievementsEarnedBetween(username string, from time.Time, to time.Time) ([]models.UnlockedAchievement, error) {
 	resp, err := c.do(
 		raHttp.Method(http.MethodGet),
@@ -66,7 +66,7 @@ func (c *Client) GetAchievementsEarnedBetween(username string, from time.Time, t
 	return achievements, nil
 }
 
-// GetAchievementsEarnedOnDay gets all achievements earned on a specific day for a given username
+// GetAchievementsEarnedOnDay get a list of achievements earned by a user on a given date.
 func (c *Client) GetAchievementsEarnedOnDay(username string, date time.Time) ([]models.UnlockedAchievement, error) {
 	resp, err := c.do(
 		raHttp.Method(http.MethodGet),
