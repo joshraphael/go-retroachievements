@@ -94,6 +94,24 @@ func ID(id int) RequestDetail {
 	})
 }
 
+// GameID adds a target game id to the query parameters
+func GameID(gameId int) RequestDetail {
+	return requestDetailFn(func(r *Request) {
+		r.Params["g"] = strconv.Itoa(gameId)
+	})
+}
+
+// AwardMetadata adds a target game id to the query parameters
+func AwardMetadata(awardMetadata bool) RequestDetail {
+	return requestDetailFn(func(r *Request) {
+		a := "0"
+		if awardMetadata {
+			a = "1"
+		}
+		r.Params["a"] = a
+	})
+}
+
 // Path adds a URL path to the host
 func Path(path string) RequestDetail {
 	return requestDetailFn(func(r *Request) {

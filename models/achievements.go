@@ -40,15 +40,17 @@ type UnlockedAchievement struct {
 // GameAchievement is a representation of an achievement in a game
 type GameAchievement struct {
 	Achievement
-	ID                 int      `json:"ID"`
-	NumAwarded         int      `json:"NumAwarded"`
-	NumAwardedHardcore int      `json:"NumAwardedHardcore"`
-	DateModified       DateTime `json:"DateModified"`
-	DateCreated        DateTime `json:"DateCreated"`
-	BadgeName          string   `json:"BadgeName"`
-	DisplayOrder       int      `json:"DisplayOrder"`
-	MemAddr            string   `json:"MemAddr"`
-	Type               string   `json:"type"`
+	ID                 int       `json:"ID"`
+	NumAwarded         int       `json:"NumAwarded"`
+	NumAwardedHardcore int       `json:"NumAwardedHardcore"`
+	DateModified       DateTime  `json:"DateModified"`
+	DateCreated        DateTime  `json:"DateCreated"`
+	BadgeName          string    `json:"BadgeName"`
+	DisplayOrder       int       `json:"DisplayOrder"`
+	MemAddr            string    `json:"MemAddr"`
+	Type               string    `json:"type"`
+	DateEarnedHardcore *DateTime `json:"DateEarnedHardcore"`
+	DateEarned         *DateTime `json:"DateEarned"`
 }
 
 // Achievement is a common representation of an achievement

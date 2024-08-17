@@ -84,3 +84,23 @@ func (c *Client) GetAchievementsEarnedOnDay(username string, date time.Time) ([]
 	}
 	return achievements, nil
 }
+
+// GetGameInfoAndUserProgress get metadata about a game as well as a user's progress on that game.
+func (c *Client) GetGameInfoAndUserProgress(username string, game int, includeAwardMetadata bool) (*models.UserGameProgress, error) {
+	resp, err := c.do(
+		raHttp.Method(http.MethodGet),
+		raHttp.Path("/API/API_GetGameInfoAndUserProgress.php"),
+		raHttp.APIToken(c.Secret),
+		raHttp.Username(username),
+		raHttp.GameID(game),
+		raHttp.AwardMetadata(includeAwardMetadata),
+	)
+	if err != nil {
+		return nil, fmt.Errorf("calling endpoint: %w", err)
+	}
+	gameProgress, err := raHttp.ResponseObject[models.UserGameProgress](resp)
+	if err != nil {
+		return nil, fmt.Errorf("parsing response object: %w", err)
+	}
+	return gameProgress, nil
+}

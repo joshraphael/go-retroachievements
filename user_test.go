@@ -220,7 +220,7 @@ func TestGetUserRecentAchievements(tt *testing.T) {
 			},
 		},
 		{
-			name:            "error response",
+			name:            "success",
 			username:        "Test",
 			lookbackMinutes: 60,
 			modifyURL: func(url string) string {
@@ -376,7 +376,7 @@ func TestGetAchievementsEarnedBetween(tt *testing.T) {
 			},
 		},
 		{
-			name:     "error response",
+			name:     "success",
 			username: "Test",
 			fromTime: now,
 			toTime:   later,
@@ -529,7 +529,7 @@ func TestGetAchievementsEarnedOnDay(tt *testing.T) {
 			},
 		},
 		{
-			name:     "error response",
+			name:     "success",
 			username: "Test",
 			date:     now,
 			modifyURL: func(url string) string {
@@ -610,6 +610,226 @@ func TestGetAchievementsEarnedOnDay(tt *testing.T) {
 			client := retroachievements.New(test.modifyURL(server.URL), "some_secret")
 			achievements, err := client.GetAchievementsEarnedOnDay(test.username, test.date)
 			test.assert(t, achievements, err)
+		})
+	}
+}
+
+func TestGetGameInfoAndUserProgress(tt *testing.T) {
+	released, err := time.Parse(models.LongMonthDateFormat, "June 18, 2001")
+	require.NoError(tt, err)
+	updated, err := time.Parse(time.RFC3339Nano, "2024-08-15T11:46:06.000000Z")
+	require.NoError(tt, err)
+	modified, err := time.Parse(time.DateTime, "2022-10-25 17:00:49")
+	require.NoError(tt, err)
+	created, err := time.Parse(time.DateTime, "2022-09-28 00:36:26")
+	require.NoError(tt, err)
+	granularity := "day"
+	highestAwardKind := "mastered"
+	awarded, err := time.Parse(models.RFC3339NumColonTZFormat, "2024-05-07T08:48:54+00:00")
+	require.NoError(tt, err)
+	tests := []struct {
+		name                     string
+		username                 string
+		gameId                   int
+		incluideAwardMetadata    bool
+		modifyURL                func(url string) string
+		responseCode             int
+		responseUserGameProgress models.UserGameProgress
+		responseError            models.ErrorResponse
+		response                 func(gameProgressBytes []byte, errorBytes []byte) []byte
+		assert                   func(t *testing.T, gameProgress *models.UserGameProgress, err error)
+	}{
+		{
+			name:                  "fail to call endpoint",
+			username:              "Test",
+			gameId:                2991,
+			incluideAwardMetadata: true,
+			modifyURL: func(url string) string {
+				return ""
+			},
+			responseCode: http.StatusUnauthorized,
+			responseError: models.ErrorResponse{
+				Message: "test",
+				Errors: []models.ErrorDetail{
+					{
+						Status: http.StatusUnauthorized,
+						Code:   "unauthorized",
+						Title:  "Not Authorized",
+					},
+				},
+			},
+			response: func(gameProgressBytes []byte, errorBytes []byte) []byte {
+				return errorBytes
+			},
+			assert: func(t *testing.T, gameProgress *models.UserGameProgress, err error) {
+				require.Nil(t, gameProgress)
+				require.EqualError(t, err, "calling endpoint: Get \"/API/API_GetGameInfoAndUserProgress.php?a=1&g=2991&u=Test&y=some_secret\": unsupported protocol scheme \"\"")
+			},
+		},
+		{
+			name:                  "error response",
+			username:              "Test",
+			gameId:                2991,
+			incluideAwardMetadata: true,
+			modifyURL: func(url string) string {
+				return url
+			},
+			responseCode: http.StatusUnauthorized,
+			responseError: models.ErrorResponse{
+				Message: "test",
+				Errors: []models.ErrorDetail{
+					{
+						Status: http.StatusUnauthorized,
+						Code:   "unauthorized",
+						Title:  "Not Authorized",
+					},
+				},
+			},
+			response: func(gameProgressBytes []byte, errorBytes []byte) []byte {
+				return errorBytes
+			},
+			assert: func(t *testing.T, gameProgress *models.UserGameProgress, err error) {
+				require.Nil(t, gameProgress)
+				require.EqualError(t, err, "parsing response object: error responses: [401] Not Authorized")
+			},
+		},
+		{
+			name:                  "success",
+			username:              "Test",
+			gameId:                2991,
+			incluideAwardMetadata: true,
+			modifyURL: func(url string) string {
+				return url
+			},
+			responseCode: http.StatusOK,
+			responseUserGameProgress: models.UserGameProgress{
+				ExtentedGameInfo: models.ExtentedGameInfo{
+					Game:               makGame(released),
+					ID:                 2991,
+					IsFinal:            0,
+					RichPresencePatch:  "e7a5e12072a6c976a1146756726fdd8c",
+					Updated:            &updated,
+					ConsoleName:        "PlayStation 2",
+					NumDistinctPlayers: 1287,
+					NumAchievements:    93,
+					Achievements: map[int]models.GameAchievement{
+						252117: {
+							Achievement: models.Achievement{
+								Title:       "Zorko Bros. Scrap & Salvage",
+								Description: "Destroy all enemies in Junkyard in Story Mode",
+								Points:      5,
+								TrueRatio:   5,
+								Author:      "TheJediSonic",
+							},
+							ID:                 252117,
+							NumAwarded:         819,
+							NumAwardedHardcore: 327,
+							DateModified: models.DateTime{
+								Time: modified,
+							},
+							DateCreated: models.DateTime{
+								Time: created,
+							},
+							BadgeName:    "279805",
+							DisplayOrder: 0,
+							MemAddr:      "3cf81e50c3ff8387e5034b79478d9a04",
+							Type:         "progression",
+						},
+					},
+				},
+				ReleasedAt:               &released,
+				ReleasedAtGranularity:    &granularity,
+				PlayersTotal:             1230,
+				AchievementsPublished:    61,
+				PointsTotal:              743,
+				NumAwardedToUser:         1244,
+				NumAwardedToUserHardcore: 1234,
+				UserCompletion:           "100.00%",
+				UserCompletionHardcore:   "95.00%",
+				HighestAwardKind:         &highestAwardKind,
+				HighestAwardDate: &models.RFC3339NumColonTZ{
+					Time: awarded,
+				},
+			},
+			response: func(gameProgressBytes []byte, errorBytes []byte) []byte {
+				return gameProgressBytes
+			},
+			assert: func(t *testing.T, gameProgress *models.UserGameProgress, err error) {
+				require.NotNil(t, gameProgress)
+				require.Equal(t, "Twisted Metal: Black", gameProgress.Title)
+				require.Equal(t, 21, gameProgress.ConsoleID)
+				require.Equal(t, "PlayStation 2", gameProgress.ConsoleName)
+				require.Equal(t, 16654, *gameProgress.ForumTopicID)
+				require.Equal(t, 0, *gameProgress.Flags)
+				require.Equal(t, "/Images/057992.png", gameProgress.ImageIcon)
+				require.Equal(t, "/Images/056152.png", gameProgress.ImageTitle)
+				require.Equal(t, "/Images/056151.png", gameProgress.ImageIngame)
+				require.Equal(t, "/Images/050832.png", gameProgress.ImageBoxArt)
+				require.Equal(t, "Sony Computer Entertainment", gameProgress.Publisher)
+				require.Equal(t, "Incognito Entertainment", gameProgress.Developer)
+				require.Equal(t, "Vehicular Combat", gameProgress.Genre)
+				require.Equal(t, released, gameProgress.Released.Time)
+				require.Equal(t, 2991, gameProgress.ID)
+				require.Equal(t, 0, gameProgress.IsFinal)
+				require.Equal(t, "e7a5e12072a6c976a1146756726fdd8c", gameProgress.RichPresencePatch)
+				require.Equal(t, updated, *gameProgress.Updated)
+				require.Equal(t, "PlayStation 2", gameProgress.ConsoleName)
+				require.Equal(t, 1287, gameProgress.NumDistinctPlayers)
+				require.Equal(t, 93, gameProgress.NumAchievements)
+				require.Len(t, gameProgress.Achievements, 1)
+				achievement, ok := gameProgress.Achievements[252117]
+				require.True(t, ok)
+				require.NotNil(t, achievement)
+				require.Equal(t, "Zorko Bros. Scrap & Salvage", achievement.Title)
+				require.Equal(t, "Destroy all enemies in Junkyard in Story Mode", achievement.Description)
+				require.Equal(t, 5, achievement.Points)
+				require.Equal(t, 5, achievement.TrueRatio)
+				require.Equal(t, "TheJediSonic", achievement.Author)
+				require.Equal(t, 252117, achievement.ID)
+				require.Equal(t, 819, achievement.NumAwarded)
+				require.Equal(t, 327, achievement.NumAwardedHardcore)
+				require.Equal(t, modified, achievement.DateModified.Time)
+				require.Equal(t, created, achievement.DateCreated.Time)
+				require.Equal(t, "279805", achievement.BadgeName)
+				require.Equal(t, 0, achievement.DisplayOrder)
+				require.Equal(t, "3cf81e50c3ff8387e5034b79478d9a04", achievement.MemAddr)
+				require.Equal(t, "progression", achievement.Type)
+				require.Equal(t, released, *gameProgress.ReleasedAt)
+				require.Equal(t, "day", *gameProgress.ReleasedAtGranularity)
+				require.Equal(t, 1230, gameProgress.PlayersTotal)
+				require.Equal(t, 61, gameProgress.AchievementsPublished)
+				require.Equal(t, 743, gameProgress.PointsTotal)
+				require.Equal(t, 1244, gameProgress.NumAwardedToUser)
+				require.Equal(t, 1234, gameProgress.NumAwardedToUserHardcore)
+				require.Equal(t, "100.00%", gameProgress.UserCompletion)
+				require.Equal(t, "95.00%", gameProgress.UserCompletionHardcore)
+				require.Equal(t, awarded, gameProgress.HighestAwardDate.Time)
+				require.NoError(t, err)
+			},
+		},
+	}
+	for _, test := range tests {
+		tt.Run(test.name, func(t *testing.T) {
+			server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+				expectedPath := "/API/API_GetGameInfoAndUserProgress.php"
+				if r.URL.Path != expectedPath {
+					t.Errorf("Expected to request '%s', got: %s", expectedPath, r.URL.Path)
+				}
+				w.WriteHeader(test.responseCode)
+				gameProgressBytes, err := json.Marshal(test.responseUserGameProgress)
+				require.NoError(t, err)
+				errBytes, err := json.Marshal(test.responseError)
+				require.NoError(t, err)
+				resp := test.response(gameProgressBytes, errBytes)
+				num, err := w.Write(resp)
+				require.NoError(t, err)
+				require.Equal(t, num, len(resp))
+			}))
+			defer server.Close()
+
+			client := retroachievements.New(test.modifyURL(server.URL), "some_secret")
+			gameProgress, err := client.GetGameInfoAndUserProgress(test.username, test.gameId, test.incluideAwardMetadata)
+			test.assert(t, gameProgress, err)
 		})
 	}
 }

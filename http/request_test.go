@@ -25,6 +25,8 @@ func TestNewRequest(t *testing.T) {
 		raHttp.ToTime(later),
 		raHttp.Date(now),
 		raHttp.ID(2837),
+		raHttp.GameID(345),
+		raHttp.AwardMetadata(true),
 	)
 
 	expected := &raHttp.Request{
@@ -42,6 +44,8 @@ func TestNewRequest(t *testing.T) {
 			"t": "1709401023",
 			"d": "2024-03-02",
 			"i": "2837",
+			"g": "345",
+			"a": "1",
 		},
 	}
 

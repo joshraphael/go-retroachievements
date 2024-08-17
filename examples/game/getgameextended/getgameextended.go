@@ -9,7 +9,7 @@ import (
 )
 
 /*
-Test script for getting user profile. Add RA_API_KEY to your env and use `go run getgameextended.go`
+Test script, add RA_API_KEY to your env and use `go run getgameextended.go`
 */
 func main() {
 	secret := os.Getenv("RA_API_KEY")

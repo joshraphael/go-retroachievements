@@ -9,7 +9,7 @@ import (
 )
 
 /*
-Test script for getting user profile. Add RA_API_KEY to your env and use `go run getuserrecentachievements.go`
+Test script, add RA_API_KEY to your env and use `go run getuserrecentachievements.go`
 */
 func main() {
 	secret := os.Getenv("RA_API_KEY")

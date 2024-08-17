@@ -189,7 +189,7 @@ func TestGetGameExtended(tt *testing.T) {
 				ID:                 2991,
 				IsFinal:            0,
 				RichPresencePatch:  "e7a5e12072a6c976a1146756726fdd8c",
-				Updated:            updated,
+				Updated:            &updated,
 				ConsoleName:        "PlayStation 2",
 				NumDistinctPlayers: 1287,
 				NumAchievements:    93,
@@ -263,7 +263,7 @@ func TestGetGameExtended(tt *testing.T) {
 				ID:                 2991,
 				IsFinal:            0,
 				RichPresencePatch:  "e7a5e12072a6c976a1146756726fdd8c",
-				Updated:            updated,
+				Updated:            &updated,
 				ConsoleName:        "PlayStation 2",
 				NumDistinctPlayers: 1287,
 				NumAchievements:    93,
@@ -313,7 +313,7 @@ func TestGetGameExtended(tt *testing.T) {
 				require.Equal(t, 2991, extendedGameInfo.ID)
 				require.Equal(t, 0, extendedGameInfo.IsFinal)
 				require.Equal(t, "e7a5e12072a6c976a1146756726fdd8c", extendedGameInfo.RichPresencePatch)
-				require.Equal(t, updated, extendedGameInfo.Updated)
+				require.Equal(t, updated, *extendedGameInfo.Updated)
 				require.Equal(t, "PlayStation 2", extendedGameInfo.ConsoleName)
 				require.Equal(t, 1287, extendedGameInfo.NumDistinctPlayers)
 				require.Equal(t, 93, extendedGameInfo.NumAchievements)
