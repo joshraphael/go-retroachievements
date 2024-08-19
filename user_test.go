@@ -976,3 +976,158 @@ func TestGetUserCompletionProgress(tt *testing.T) {
 		})
 	}
 }
+
+func TestGetUserAwards(tt *testing.T) {
+	awardedAt, err := time.Parse(models.RFC3339NumColonTZFormat, "2024-05-03T23:24:11+00:00")
+	require.NoError(tt, err)
+	title := "Pokemon FireRed Version"
+	consoleID := 5
+	consoleName := "Game Boy Advance"
+	flags := 1
+	imageIcons := "/Images/074224.png"
+	tests := []struct {
+		name               string
+		username           string
+		modifyURL          func(url string) string
+		responseCode       int
+		responseUserAwards models.UserAwards
+		responseError      models.ErrorResponse
+		response           func(userAwardsBytes []byte, errorBytes []byte) []byte
+		assert             func(t *testing.T, userAwards *models.UserAwards, err error)
+	}{
+		{
+			name:     "fail to call endpoint",
+			username: "Test",
+			modifyURL: func(url string) string {
+				return ""
+			},
+			responseCode: http.StatusUnauthorized,
+			responseError: models.ErrorResponse{
+				Message: "test",
+				Errors: []models.ErrorDetail{
+					{
+						Status: http.StatusUnauthorized,
+						Code:   "unauthorized",
+						Title:  "Not Authorized",
+					},
+				},
+			},
+			response: func(userCompletionProgressBytes []byte, errorBytes []byte) []byte {
+				return errorBytes
+			},
+			assert: func(t *testing.T, userAwards *models.UserAwards, err error) {
+				require.Nil(t, userAwards)
+				require.EqualError(t, err, "calling endpoint: Get \"/API/API_GetUserAwards.php?u=Test&y=some_secret\": unsupported protocol scheme \"\"")
+			},
+		},
+		{
+			name:     "error response",
+			username: "Test",
+			modifyURL: func(url string) string {
+				return url
+			},
+			responseCode: http.StatusUnauthorized,
+			responseError: models.ErrorResponse{
+				Message: "test",
+				Errors: []models.ErrorDetail{
+					{
+						Status: http.StatusUnauthorized,
+						Code:   "unauthorized",
+						Title:  "Not Authorized",
+					},
+				},
+			},
+			response: func(userCompletionProgressBytes []byte, errorBytes []byte) []byte {
+				return errorBytes
+			},
+			assert: func(t *testing.T, userAwards *models.UserAwards, err error) {
+				require.Nil(t, userAwards)
+				require.EqualError(t, err, "parsing response object: error responses: [401] Not Authorized")
+			},
+		},
+		{
+			name:     "success",
+			username: "Test",
+			modifyURL: func(url string) string {
+				return url
+			},
+			responseCode: http.StatusOK,
+			responseUserAwards: models.UserAwards{
+				TotalAwardsCount:          9,
+				HiddenAwardsCount:         0,
+				MasteryAwardsCount:        4,
+				CompletionAwardsCount:     0,
+				BeatenHardcoreAwardsCount: 4,
+				BeatenSoftcoreAwardsCount: 0,
+				EventAwardsCount:          0,
+				SiteAwardsCount:           1,
+				VisibleUserAwards: []models.Award{
+					{
+						AwardedAt: models.RFC3339NumColonTZ{
+							Time: awardedAt,
+						},
+						AwardType:      "Game Beaten",
+						AwardData:      515,
+						AwardDataExtra: 1,
+						DisplayOrder:   0,
+						Title:          &title,
+						ConsoleID:      &consoleID,
+						ConsoleName:    &consoleName,
+						Flags:          &flags,
+						ImageIcon:      &imageIcons,
+					},
+				},
+			},
+			response: func(userCompletionProgressBytes []byte, errorBytes []byte) []byte {
+				return userCompletionProgressBytes
+			},
+			assert: func(t *testing.T, userAwards *models.UserAwards, err error) {
+				require.NotNil(t, userAwards)
+				require.Equal(t, 9, userAwards.TotalAwardsCount)
+				require.Equal(t, 0, userAwards.HiddenAwardsCount)
+				require.Equal(t, 4, userAwards.MasteryAwardsCount)
+				require.Equal(t, 0, userAwards.CompletionAwardsCount)
+				require.Equal(t, 4, userAwards.BeatenHardcoreAwardsCount)
+				require.Equal(t, 0, userAwards.BeatenSoftcoreAwardsCount)
+				require.Equal(t, 0, userAwards.EventAwardsCount)
+				require.Equal(t, 1, userAwards.SiteAwardsCount)
+				require.Len(t, userAwards.VisibleUserAwards, 1)
+				require.Equal(t, awardedAt, userAwards.VisibleUserAwards[0].AwardedAt.Time)
+				require.Equal(t, "Game Beaten", userAwards.VisibleUserAwards[0].AwardType)
+				require.Equal(t, 515, userAwards.VisibleUserAwards[0].AwardData)
+				require.Equal(t, 1, userAwards.VisibleUserAwards[0].AwardDataExtra)
+				require.Equal(t, 0, userAwards.VisibleUserAwards[0].DisplayOrder)
+				require.Equal(t, title, *userAwards.VisibleUserAwards[0].Title)
+				require.Equal(t, consoleID, *userAwards.VisibleUserAwards[0].ConsoleID)
+				require.Equal(t, consoleName, *userAwards.VisibleUserAwards[0].ConsoleName)
+				require.Equal(t, flags, *userAwards.VisibleUserAwards[0].Flags)
+				require.Equal(t, imageIcons, *userAwards.VisibleUserAwards[0].ImageIcon)
+				require.NoError(t, err)
+			},
+		},
+	}
+	for _, test := range tests {
+		tt.Run(test.name, func(t *testing.T) {
+			server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+				expectedPath := "/API/API_GetUserAwards.php"
+				if r.URL.Path != expectedPath {
+					t.Errorf("Expected to request '%s', got: %s", expectedPath, r.URL.Path)
+				}
+				w.WriteHeader(test.responseCode)
+				userAwardsBytes, err := json.Marshal(test.responseUserAwards)
+				require.NoError(t, err)
+				errBytes, err := json.Marshal(test.responseError)
+				require.NoError(t, err)
+				resp := test.response(userAwardsBytes, errBytes)
+				num, err := w.Write(resp)
+				require.NoError(t, err)
+				require.Equal(t, num, len(resp))
+			}))
+			defer server.Close()
+
+			client := retroachievements.New(test.modifyURL(server.URL), "some_secret")
+			userAwards, err := client.GetUserAwards(test.username)
+			test.assert(t, userAwards, err)
+		})
+	}
+}

@@ -1,4 +1,4 @@
-// Package getusercompletionprogress provides an example for getting a users completion progress
+// Package getuserawards provides an example for getting a users awards
 package main
 
 import (
@@ -9,14 +9,14 @@ import (
 )
 
 /*
-Test script, add RA_API_KEY to your env and use `go run getusercompletionprogress.go`
+Test script, add RA_API_KEY to your env and use `go run getuserawards.go`
 */
 func main() {
 	secret := os.Getenv("RA_API_KEY")
 
 	client := retroachievements.NewClient(secret)
 
-	resp, err := client.GetUserCompletionProgress("jamiras")
+	resp, err := client.GetUserAwards("jamiras")
 	if err != nil {
 		panic(err)
 	}

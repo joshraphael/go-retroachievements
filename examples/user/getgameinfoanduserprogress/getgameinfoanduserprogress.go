@@ -1,4 +1,4 @@
-// Package getgameinfoanduserprogress provides an example for a users achievements in the last X minutes
+// Package getgameinfoanduserprogress provides an example for a users game info progress
 package main
 
 import (
@@ -16,7 +16,7 @@ func main() {
 
 	client := retroachievements.NewClient(secret)
 
-	resp, err := client.GetGameInfoAndUserProgress("joshraphael", 515, true)
+	resp, err := client.GetGameInfoAndUserProgress("jamiras", 515, true)
 	if err != nil {
 		panic(err)
 	}
