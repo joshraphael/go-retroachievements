@@ -56,3 +56,23 @@ type UserGameProgress struct {
 	HighestAwardKind         *string            `json:"HighestAwardKind"`
 	HighestAwardDate         *RFC3339NumColonTZ `json:"HighestAwardDate"`
 }
+
+type UserCompletionProgress struct {
+	Count   int                  `json:"Count"`
+	Total   int                  `json:"Total"`
+	Results []CompletionProgress `json:"Results"`
+}
+
+type CompletionProgress struct {
+	GameID                int                `json:"GameID"`
+	Title                 string             `json:"Title"`
+	ImageIcon             string             `json:"ImageIcon"`
+	ConsoleID             int                `json:"ConsoleID"`
+	ConsoleName           string             `json:"ConsoleName"`
+	MaxPossible           int                `json:"MaxPossible"`
+	NumAwarded            int                `json:"NumAwarded"`
+	NumAwardedHardcore    int                `json:"NumAwardedHardcore"`
+	MostRecentAwardedDate RFC3339NumColonTZ  `json:"MostRecentAwardedDate"`
+	HighestAwardKind      *string            `json:"HighestAwardKind"`
+	HighestAwardDate      *RFC3339NumColonTZ `json:"HighestAwardDate"`
+}

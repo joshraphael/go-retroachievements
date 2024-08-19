@@ -104,3 +104,21 @@ func (c *Client) GetGameInfoAndUserProgress(username string, game int, includeAw
 	}
 	return gameProgress, nil
 }
+
+// GetUserCompletionProgress get metadata about all the user's played games and any awards associated with them.
+func (c *Client) GetUserCompletionProgress(username string) (*models.UserCompletionProgress, error) {
+	resp, err := c.do(
+		raHttp.Method(http.MethodGet),
+		raHttp.Path("/API/API_GetUserCompletionProgress.php"),
+		raHttp.APIToken(c.Secret),
+		raHttp.Username(username),
+	)
+	if err != nil {
+		return nil, fmt.Errorf("calling endpoint: %w", err)
+	}
+	completionProgress, err := raHttp.ResponseObject[models.UserCompletionProgress](resp)
+	if err != nil {
+		return nil, fmt.Errorf("parsing response object: %w", err)
+	}
+	return completionProgress, nil
+}

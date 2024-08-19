@@ -833,3 +833,146 @@ func TestGetGameInfoAndUserProgress(tt *testing.T) {
 		})
 	}
 }
+
+func TestGetUserCompletionProgress(tt *testing.T) {
+	highestAwardKind := "mastered"
+	awarded, err := time.Parse(models.RFC3339NumColonTZFormat, "2024-05-07T08:48:54+00:00")
+	require.NoError(tt, err)
+	tests := []struct {
+		name                           string
+		username                       string
+		modifyURL                      func(url string) string
+		responseCode                   int
+		responseUserCompletionProgress models.UserCompletionProgress
+		responseError                  models.ErrorResponse
+		response                       func(userCompletionProgressBytes []byte, errorBytes []byte) []byte
+		assert                         func(t *testing.T, completionProgress *models.UserCompletionProgress, err error)
+	}{
+		{
+			name:     "fail to call endpoint",
+			username: "Test",
+			modifyURL: func(url string) string {
+				return ""
+			},
+			responseCode: http.StatusUnauthorized,
+			responseError: models.ErrorResponse{
+				Message: "test",
+				Errors: []models.ErrorDetail{
+					{
+						Status: http.StatusUnauthorized,
+						Code:   "unauthorized",
+						Title:  "Not Authorized",
+					},
+				},
+			},
+			response: func(userCompletionProgressBytes []byte, errorBytes []byte) []byte {
+				return errorBytes
+			},
+			assert: func(t *testing.T, completionProgress *models.UserCompletionProgress, err error) {
+				require.Nil(t, completionProgress)
+				require.EqualError(t, err, "calling endpoint: Get \"/API/API_GetUserCompletionProgress.php?u=Test&y=some_secret\": unsupported protocol scheme \"\"")
+			},
+		},
+		{
+			name:     "error response",
+			username: "Test",
+			modifyURL: func(url string) string {
+				return url
+			},
+			responseCode: http.StatusUnauthorized,
+			responseError: models.ErrorResponse{
+				Message: "test",
+				Errors: []models.ErrorDetail{
+					{
+						Status: http.StatusUnauthorized,
+						Code:   "unauthorized",
+						Title:  "Not Authorized",
+					},
+				},
+			},
+			response: func(userCompletionProgressBytes []byte, errorBytes []byte) []byte {
+				return errorBytes
+			},
+			assert: func(t *testing.T, completionProgress *models.UserCompletionProgress, err error) {
+				require.Nil(t, completionProgress)
+				require.EqualError(t, err, "parsing response object: error responses: [401] Not Authorized")
+			},
+		},
+		{
+			name:     "success",
+			username: "Test",
+			modifyURL: func(url string) string {
+				return url
+			},
+			responseCode: http.StatusOK,
+			responseUserCompletionProgress: models.UserCompletionProgress{
+				Count: 19,
+				Total: 18,
+				Results: []models.CompletionProgress{
+					{
+						GameID:             14068,
+						Title:              "Donkey Kong",
+						ImageIcon:          "/Images/044908.png",
+						ConsoleID:          44,
+						ConsoleName:        "ColecoVision",
+						MaxPossible:        19,
+						NumAwarded:         13,
+						NumAwardedHardcore: 13,
+						MostRecentAwardedDate: models.RFC3339NumColonTZ{
+							Time: awarded,
+						},
+						HighestAwardKind: &highestAwardKind,
+						HighestAwardDate: &models.RFC3339NumColonTZ{
+							Time: awarded,
+						},
+					},
+				},
+			},
+			response: func(userCompletionProgressBytes []byte, errorBytes []byte) []byte {
+				return userCompletionProgressBytes
+			},
+			assert: func(t *testing.T, completionProgress *models.UserCompletionProgress, err error) {
+				require.NotNil(t, completionProgress)
+				require.Equal(t, 19, completionProgress.Count)
+				require.Equal(t, 18, completionProgress.Total)
+				require.Len(t, completionProgress.Results, 1)
+				require.Equal(t, 14068, completionProgress.Results[0].GameID)
+				require.Equal(t, "Donkey Kong", completionProgress.Results[0].Title)
+				require.Equal(t, "/Images/044908.png", completionProgress.Results[0].ImageIcon)
+				require.Equal(t, 44, completionProgress.Results[0].ConsoleID)
+				require.Equal(t, "ColecoVision", completionProgress.Results[0].ConsoleName)
+				require.Equal(t, 19, completionProgress.Results[0].MaxPossible)
+				require.Equal(t, 13, completionProgress.Results[0].NumAwarded)
+				require.Equal(t, 13, completionProgress.Results[0].NumAwardedHardcore)
+				require.Equal(t, awarded, completionProgress.Results[0].MostRecentAwardedDate.Time)
+				require.Equal(t, highestAwardKind, *completionProgress.Results[0].HighestAwardKind)
+				require.Equal(t, awarded, completionProgress.Results[0].HighestAwardDate.Time)
+				require.NoError(t, err)
+			},
+		},
+	}
+	for _, test := range tests {
+		tt.Run(test.name, func(t *testing.T) {
+			server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+				expectedPath := "/API/API_GetUserCompletionProgress.php"
+				if r.URL.Path != expectedPath {
+					t.Errorf("Expected to request '%s', got: %s", expectedPath, r.URL.Path)
+				}
+				w.WriteHeader(test.responseCode)
+				gameProgressBytes, err := json.Marshal(test.responseUserCompletionProgress)
+				require.NoError(t, err)
+				errBytes, err := json.Marshal(test.responseError)
+				require.NoError(t, err)
+				resp := test.response(gameProgressBytes, errBytes)
+				num, err := w.Write(resp)
+				require.NoError(t, err)
+				require.Equal(t, num, len(resp))
+			}))
+			defer server.Close()
+
+			client := retroachievements.New(test.modifyURL(server.URL), "some_secret")
+			userCompletionProgress, err := client.GetUserCompletionProgress(test.username)
+			test.assert(t, userCompletionProgress, err)
+		})
+	}
+}
