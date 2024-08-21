@@ -1131,3 +1131,138 @@ func TestGetUserAwards(tt *testing.T) {
 		})
 	}
 }
+
+func TestGetUserClaims(tt *testing.T) {
+	created, err := time.Parse(time.DateTime, "2024-07-21 05:24:58")
+	require.NoError(tt, err)
+	done, err := time.Parse(time.DateTime, "2024-10-21 05:24:58")
+	require.NoError(tt, err)
+	tests := []struct {
+		name               string
+		username           string
+		modifyURL          func(url string) string
+		responseCode       int
+		responseUserClaims []models.UserClaims
+		responseError      models.ErrorResponse
+		response           func(userClaimsBytes []byte, errorBytes []byte) []byte
+		assert             func(t *testing.T, userClaims []models.UserClaims, err error)
+	}{
+		{
+			name:     "fail to call endpoint",
+			username: "Test",
+			modifyURL: func(url string) string {
+				return ""
+			},
+			responseCode: http.StatusUnauthorized,
+			responseError: models.ErrorResponse{
+				Message: "test",
+				Errors: []models.ErrorDetail{
+					{
+						Status: http.StatusUnauthorized,
+						Code:   "unauthorized",
+						Title:  "Not Authorized",
+					},
+				},
+			},
+			response: func(userClaimsBytes []byte, errorBytes []byte) []byte {
+				return errorBytes
+			},
+			assert: func(t *testing.T, userClaims []models.UserClaims, err error) {
+				require.Nil(t, userClaims)
+				require.EqualError(t, err, "calling endpoint: Get \"/API/API_GetUserClaims.php?u=Test&y=some_secret\": unsupported protocol scheme \"\"")
+			},
+		},
+		{
+			name:     "error response",
+			username: "Test",
+			modifyURL: func(url string) string {
+				return url
+			},
+			responseCode: http.StatusUnauthorized,
+			responseError: models.ErrorResponse{
+				Message: "test",
+				Errors: []models.ErrorDetail{
+					{
+						Status: http.StatusUnauthorized,
+						Code:   "unauthorized",
+						Title:  "Not Authorized",
+					},
+				},
+			},
+			response: func(userCompletionProgressBytes []byte, errorBytes []byte) []byte {
+				return errorBytes
+			},
+			assert: func(t *testing.T, userClaims []models.UserClaims, err error) {
+				require.Nil(t, userClaims)
+				require.EqualError(t, err, "parsing response list: error responses: [401] Not Authorized")
+			},
+		},
+		{
+			name:     "success",
+			username: "Test",
+			modifyURL: func(url string) string {
+				return url
+			},
+			responseCode: http.StatusOK,
+			responseUserClaims: []models.UserClaims{
+				{
+					ID:          13657,
+					User:        "joshraphael",
+					GameID:      4111,
+					GameTitle:   "Monster Max",
+					GameIcon:    "/Images/059373.png",
+					ConsoleID:   4,
+					ConsoleName: "Game Boy",
+					ClaimType:   0,
+					SetType:     0,
+					Status:      0,
+					Extension:   0,
+					Special:     0,
+					Created: models.DateTime{
+						Time: created,
+					},
+					DoneTime: models.DateTime{
+						Time: done,
+					},
+					Updated: models.DateTime{
+						Time: created,
+					},
+					UserIsJrDev: 1,
+					MinutesLeft: 87089,
+				},
+			},
+			response: func(userCompletionProgressBytes []byte, errorBytes []byte) []byte {
+				return userCompletionProgressBytes
+			},
+			assert: func(t *testing.T, userClaims []models.UserClaims, err error) {
+				require.NotNil(t, userClaims)
+				require.Len(t, userClaims, 1)
+				require.NoError(t, err)
+			},
+		},
+	}
+	for _, test := range tests {
+		tt.Run(test.name, func(t *testing.T) {
+			server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+				expectedPath := "/API/API_GetUserClaims.php"
+				if r.URL.Path != expectedPath {
+					t.Errorf("Expected to request '%s', got: %s", expectedPath, r.URL.Path)
+				}
+				w.WriteHeader(test.responseCode)
+				userClaimsBytes, err := json.Marshal(test.responseUserClaims)
+				require.NoError(t, err)
+				errBytes, err := json.Marshal(test.responseError)
+				require.NoError(t, err)
+				resp := test.response(userClaimsBytes, errBytes)
+				num, err := w.Write(resp)
+				require.NoError(t, err)
+				require.Equal(t, num, len(resp))
+			}))
+			defer server.Close()
+
+			client := retroachievements.New(test.modifyURL(server.URL), "some_secret")
+			userClaims, err := client.GetUserClaims(test.username)
+			test.assert(t, userClaims, err)
+		})
+	}
+}

@@ -140,3 +140,21 @@ func (c *Client) GetUserAwards(username string) (*models.UserAwards, error) {
 	}
 	return awards, nil
 }
+
+// GetUserClaims get a list of set development claims made over the lifetime of a user.
+func (c *Client) GetUserClaims(username string) ([]models.UserClaims, error) {
+	resp, err := c.do(
+		raHttp.Method(http.MethodGet),
+		raHttp.Path("/API/API_GetUserClaims.php"),
+		raHttp.APIToken(c.Secret),
+		raHttp.Username(username),
+	)
+	if err != nil {
+		return nil, fmt.Errorf("calling endpoint: %w", err)
+	}
+	awards, err := raHttp.ResponseList[models.UserClaims](resp)
+	if err != nil {
+		return nil, fmt.Errorf("parsing response list: %w", err)
+	}
+	return awards, nil
+}
