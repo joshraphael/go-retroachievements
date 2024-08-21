@@ -20,9 +20,9 @@ func TestGetUserProfile(tt *testing.T) {
 		username        string
 		modifyURL       func(url string) string
 		responseCode    int
-		responseProfile models.Profile
+		responseMessage models.Profile
 		responseError   models.ErrorResponse
-		response        func(profileBytes []byte, errorBytes []byte) []byte
+		response        func(messageBytes []byte, errorBytes []byte) []byte
 		assert          func(t *testing.T, profile *models.Profile, err error)
 	}{
 		{
@@ -42,7 +42,7 @@ func TestGetUserProfile(tt *testing.T) {
 					},
 				},
 			},
-			response: func(profileBytes []byte, errorBytes []byte) []byte {
+			response: func(messageBytes []byte, errorBytes []byte) []byte {
 				return errorBytes
 			},
 			assert: func(t *testing.T, profile *models.Profile, err error) {
@@ -67,7 +67,7 @@ func TestGetUserProfile(tt *testing.T) {
 					},
 				},
 			},
-			response: func(profileBytes []byte, errorBytes []byte) []byte {
+			response: func(messageBytes []byte, errorBytes []byte) []byte {
 				return errorBytes
 			},
 			assert: func(t *testing.T, profile *models.Profile, err error) {
@@ -82,7 +82,7 @@ func TestGetUserProfile(tt *testing.T) {
 				return url
 			},
 			responseCode: http.StatusOK,
-			responseProfile: models.Profile{
+			responseMessage: models.Profile{
 				User:    "xXxSnip3rxXx",
 				UserPic: "/some/resource.png",
 				MemberSince: models.DateTime{
@@ -101,8 +101,8 @@ func TestGetUserProfile(tt *testing.T) {
 				UserWallActive:      true,
 				Motto:               "Playing games",
 			},
-			response: func(profileBytes []byte, errorBytes []byte) []byte {
-				return profileBytes
+			response: func(messageBytes []byte, errorBytes []byte) []byte {
+				return messageBytes
 			},
 			assert: func(t *testing.T, profile *models.Profile, err error) {
 				require.NoError(t, err)
@@ -135,11 +135,11 @@ func TestGetUserProfile(tt *testing.T) {
 					t.Errorf("Expected to request '%s', got: %s", expectedPath, r.URL.Path)
 				}
 				w.WriteHeader(test.responseCode)
-				profileBytes, err := json.Marshal(test.responseProfile)
+				messageBytes, err := json.Marshal(test.responseMessage)
 				require.NoError(t, err)
 				errBytes, err := json.Marshal(test.responseError)
 				require.NoError(t, err)
-				resp := test.response(profileBytes, errBytes)
+				resp := test.response(messageBytes, errBytes)
 				num, err := w.Write(resp)
 				require.NoError(t, err)
 				require.Equal(t, num, len(resp))
@@ -157,15 +157,15 @@ func TestGetUserRecentAchievements(tt *testing.T) {
 	now, err := time.Parse(time.DateTime, "2024-03-02 17:27:03")
 	require.NoError(tt, err)
 	tests := []struct {
-		name                         string
-		username                     string
-		lookbackMinutes              int
-		modifyURL                    func(url string) string
-		responseCode                 int
-		responseUnlockedAchievements []models.UnlockedAchievement
-		responseError                models.ErrorResponse
-		response                     func(achievementsBytes []byte, errorBytes []byte) []byte
-		assert                       func(t *testing.T, achievements []models.UnlockedAchievement, err error)
+		name            string
+		username        string
+		lookbackMinutes int
+		modifyURL       func(url string) string
+		responseCode    int
+		responseMessage []models.UnlockedAchievement
+		responseError   models.ErrorResponse
+		response        func(messageBytes []byte, errorBytes []byte) []byte
+		assert          func(t *testing.T, achievements []models.UnlockedAchievement, err error)
 	}{
 		{
 			name:            "fail to call endpoint",
@@ -185,7 +185,7 @@ func TestGetUserRecentAchievements(tt *testing.T) {
 					},
 				},
 			},
-			response: func(achievementsBytes []byte, errorBytes []byte) []byte {
+			response: func(messageBytes []byte, errorBytes []byte) []byte {
 				return errorBytes
 			},
 			assert: func(t *testing.T, achievements []models.UnlockedAchievement, err error) {
@@ -211,7 +211,7 @@ func TestGetUserRecentAchievements(tt *testing.T) {
 					},
 				},
 			},
-			response: func(achievementsBytes []byte, errorBytes []byte) []byte {
+			response: func(messageBytes []byte, errorBytes []byte) []byte {
 				return errorBytes
 			},
 			assert: func(t *testing.T, achievements []models.UnlockedAchievement, err error) {
@@ -227,7 +227,7 @@ func TestGetUserRecentAchievements(tt *testing.T) {
 				return url
 			},
 			responseCode: http.StatusOK,
-			responseUnlockedAchievements: []models.UnlockedAchievement{
+			responseMessage: []models.UnlockedAchievement{
 				{
 					Achievement: models.Achievement{
 						Title:       "Beat Level 1",
@@ -251,8 +251,8 @@ func TestGetUserRecentAchievements(tt *testing.T) {
 					GameURL:       "/game/34897",
 				},
 			},
-			response: func(achievementsBytes []byte, errorBytes []byte) []byte {
-				return achievementsBytes
+			response: func(messageBytes []byte, errorBytes []byte) []byte {
+				return messageBytes
 			},
 			assert: func(t *testing.T, achievements []models.UnlockedAchievement, err error) {
 				require.NotNil(t, achievements)
@@ -287,11 +287,11 @@ func TestGetUserRecentAchievements(tt *testing.T) {
 					t.Errorf("Expected to request '%s', got: %s", expectedPath, r.URL.Path)
 				}
 				w.WriteHeader(test.responseCode)
-				achievementsBytes, err := json.Marshal(test.responseUnlockedAchievements)
+				messageBytes, err := json.Marshal(test.responseMessage)
 				require.NoError(t, err)
 				errBytes, err := json.Marshal(test.responseError)
 				require.NoError(t, err)
-				resp := test.response(achievementsBytes, errBytes)
+				resp := test.response(messageBytes, errBytes)
 				num, err := w.Write(resp)
 				require.NoError(t, err)
 				require.Equal(t, num, len(resp))
@@ -310,16 +310,16 @@ func TestGetAchievementsEarnedBetween(tt *testing.T) {
 	require.NoError(tt, err)
 	later := now.Add(10 * time.Minute)
 	tests := []struct {
-		name                         string
-		username                     string
-		fromTime                     time.Time
-		toTime                       time.Time
-		modifyURL                    func(url string) string
-		responseCode                 int
-		responseUnlockedAchievements []models.UnlockedAchievement
-		responseError                models.ErrorResponse
-		response                     func(achievementsBytes []byte, errorBytes []byte) []byte
-		assert                       func(t *testing.T, achievements []models.UnlockedAchievement, err error)
+		name            string
+		username        string
+		fromTime        time.Time
+		toTime          time.Time
+		modifyURL       func(url string) string
+		responseCode    int
+		responseMessage []models.UnlockedAchievement
+		responseError   models.ErrorResponse
+		response        func(messageBytes []byte, errorBytes []byte) []byte
+		assert          func(t *testing.T, achievements []models.UnlockedAchievement, err error)
 	}{
 		{
 			name:     "fail to call endpoint",
@@ -340,7 +340,7 @@ func TestGetAchievementsEarnedBetween(tt *testing.T) {
 					},
 				},
 			},
-			response: func(achievementsBytes []byte, errorBytes []byte) []byte {
+			response: func(messageBytes []byte, errorBytes []byte) []byte {
 				return errorBytes
 			},
 			assert: func(t *testing.T, achievements []models.UnlockedAchievement, err error) {
@@ -367,7 +367,7 @@ func TestGetAchievementsEarnedBetween(tt *testing.T) {
 					},
 				},
 			},
-			response: func(achievementsBytes []byte, errorBytes []byte) []byte {
+			response: func(messageBytes []byte, errorBytes []byte) []byte {
 				return errorBytes
 			},
 			assert: func(t *testing.T, achievements []models.UnlockedAchievement, err error) {
@@ -384,7 +384,7 @@ func TestGetAchievementsEarnedBetween(tt *testing.T) {
 				return url
 			},
 			responseCode: http.StatusOK,
-			responseUnlockedAchievements: []models.UnlockedAchievement{
+			responseMessage: []models.UnlockedAchievement{
 				{
 					Achievement: models.Achievement{
 						Title:       "Beat Level 1",
@@ -408,8 +408,8 @@ func TestGetAchievementsEarnedBetween(tt *testing.T) {
 					GameURL:       "/game/34897",
 				},
 			},
-			response: func(achievementsBytes []byte, errorBytes []byte) []byte {
-				return achievementsBytes
+			response: func(messageBytes []byte, errorBytes []byte) []byte {
+				return messageBytes
 			},
 			assert: func(t *testing.T, achievements []models.UnlockedAchievement, err error) {
 				require.NotNil(t, achievements)
@@ -444,11 +444,11 @@ func TestGetAchievementsEarnedBetween(tt *testing.T) {
 					t.Errorf("Expected to request '%s', got: %s", expectedPath, r.URL.Path)
 				}
 				w.WriteHeader(test.responseCode)
-				achievementsBytes, err := json.Marshal(test.responseUnlockedAchievements)
+				messageBytes, err := json.Marshal(test.responseMessage)
 				require.NoError(t, err)
 				errBytes, err := json.Marshal(test.responseError)
 				require.NoError(t, err)
-				resp := test.response(achievementsBytes, errBytes)
+				resp := test.response(messageBytes, errBytes)
 				num, err := w.Write(resp)
 				require.NoError(t, err)
 				require.Equal(t, num, len(resp))
@@ -466,15 +466,15 @@ func TestGetAchievementsEarnedOnDay(tt *testing.T) {
 	now, err := time.Parse(time.DateTime, "2024-03-02 17:27:03")
 	require.NoError(tt, err)
 	tests := []struct {
-		name                         string
-		username                     string
-		date                         time.Time
-		modifyURL                    func(url string) string
-		responseCode                 int
-		responseUnlockedAchievements []models.UnlockedAchievement
-		responseError                models.ErrorResponse
-		response                     func(achievementsBytes []byte, errorBytes []byte) []byte
-		assert                       func(t *testing.T, achievements []models.UnlockedAchievement, err error)
+		name            string
+		username        string
+		date            time.Time
+		modifyURL       func(url string) string
+		responseCode    int
+		responseMessage []models.UnlockedAchievement
+		responseError   models.ErrorResponse
+		response        func(messageBytes []byte, errorBytes []byte) []byte
+		assert          func(t *testing.T, achievements []models.UnlockedAchievement, err error)
 	}{
 		{
 			name:     "fail to call endpoint",
@@ -494,7 +494,7 @@ func TestGetAchievementsEarnedOnDay(tt *testing.T) {
 					},
 				},
 			},
-			response: func(achievementsBytes []byte, errorBytes []byte) []byte {
+			response: func(messageBytes []byte, errorBytes []byte) []byte {
 				return errorBytes
 			},
 			assert: func(t *testing.T, achievements []models.UnlockedAchievement, err error) {
@@ -520,7 +520,7 @@ func TestGetAchievementsEarnedOnDay(tt *testing.T) {
 					},
 				},
 			},
-			response: func(achievementsBytes []byte, errorBytes []byte) []byte {
+			response: func(messageBytes []byte, errorBytes []byte) []byte {
 				return errorBytes
 			},
 			assert: func(t *testing.T, achievements []models.UnlockedAchievement, err error) {
@@ -536,7 +536,7 @@ func TestGetAchievementsEarnedOnDay(tt *testing.T) {
 				return url
 			},
 			responseCode: http.StatusOK,
-			responseUnlockedAchievements: []models.UnlockedAchievement{
+			responseMessage: []models.UnlockedAchievement{
 				{
 					Achievement: models.Achievement{
 						Title:       "Beat Level 1",
@@ -560,8 +560,8 @@ func TestGetAchievementsEarnedOnDay(tt *testing.T) {
 					GameURL:       "/game/34897",
 				},
 			},
-			response: func(achievementsBytes []byte, errorBytes []byte) []byte {
-				return achievementsBytes
+			response: func(messageBytes []byte, errorBytes []byte) []byte {
+				return messageBytes
 			},
 			assert: func(t *testing.T, achievements []models.UnlockedAchievement, err error) {
 				require.NotNil(t, achievements)
@@ -596,11 +596,11 @@ func TestGetAchievementsEarnedOnDay(tt *testing.T) {
 					t.Errorf("Expected to request '%s', got: %s", expectedPath, r.URL.Path)
 				}
 				w.WriteHeader(test.responseCode)
-				achievementsBytes, err := json.Marshal(test.responseUnlockedAchievements)
+				messageBytes, err := json.Marshal(test.responseMessage)
 				require.NoError(t, err)
 				errBytes, err := json.Marshal(test.responseError)
 				require.NoError(t, err)
-				resp := test.response(achievementsBytes, errBytes)
+				resp := test.response(messageBytes, errBytes)
 				num, err := w.Write(resp)
 				require.NoError(t, err)
 				require.Equal(t, num, len(resp))
@@ -628,16 +628,16 @@ func TestGetGameInfoAndUserProgress(tt *testing.T) {
 	awarded, err := time.Parse(models.RFC3339NumColonTZFormat, "2024-05-07T08:48:54+00:00")
 	require.NoError(tt, err)
 	tests := []struct {
-		name                     string
-		username                 string
-		gameId                   int
-		incluideAwardMetadata    bool
-		modifyURL                func(url string) string
-		responseCode             int
-		responseUserGameProgress models.UserGameProgress
-		responseError            models.ErrorResponse
-		response                 func(gameProgressBytes []byte, errorBytes []byte) []byte
-		assert                   func(t *testing.T, gameProgress *models.UserGameProgress, err error)
+		name                  string
+		username              string
+		gameId                int
+		incluideAwardMetadata bool
+		modifyURL             func(url string) string
+		responseCode          int
+		responseMessage       models.UserGameProgress
+		responseError         models.ErrorResponse
+		response              func(messageBytes []byte, errorBytes []byte) []byte
+		assert                func(t *testing.T, gameProgress *models.UserGameProgress, err error)
 	}{
 		{
 			name:                  "fail to call endpoint",
@@ -658,7 +658,7 @@ func TestGetGameInfoAndUserProgress(tt *testing.T) {
 					},
 				},
 			},
-			response: func(gameProgressBytes []byte, errorBytes []byte) []byte {
+			response: func(messageBytes []byte, errorBytes []byte) []byte {
 				return errorBytes
 			},
 			assert: func(t *testing.T, gameProgress *models.UserGameProgress, err error) {
@@ -685,7 +685,7 @@ func TestGetGameInfoAndUserProgress(tt *testing.T) {
 					},
 				},
 			},
-			response: func(gameProgressBytes []byte, errorBytes []byte) []byte {
+			response: func(messageBytes []byte, errorBytes []byte) []byte {
 				return errorBytes
 			},
 			assert: func(t *testing.T, gameProgress *models.UserGameProgress, err error) {
@@ -702,7 +702,7 @@ func TestGetGameInfoAndUserProgress(tt *testing.T) {
 				return url
 			},
 			responseCode: http.StatusOK,
-			responseUserGameProgress: models.UserGameProgress{
+			responseMessage: models.UserGameProgress{
 				ExtentedGameInfo: models.ExtentedGameInfo{
 					Game:               makGame(released),
 					ID:                 2991,
@@ -751,8 +751,8 @@ func TestGetGameInfoAndUserProgress(tt *testing.T) {
 					Time: awarded,
 				},
 			},
-			response: func(gameProgressBytes []byte, errorBytes []byte) []byte {
-				return gameProgressBytes
+			response: func(messageBytes []byte, errorBytes []byte) []byte {
+				return messageBytes
 			},
 			assert: func(t *testing.T, gameProgress *models.UserGameProgress, err error) {
 				require.NotNil(t, gameProgress)
@@ -816,11 +816,11 @@ func TestGetGameInfoAndUserProgress(tt *testing.T) {
 					t.Errorf("Expected to request '%s', got: %s", expectedPath, r.URL.Path)
 				}
 				w.WriteHeader(test.responseCode)
-				gameProgressBytes, err := json.Marshal(test.responseUserGameProgress)
+				messageBytes, err := json.Marshal(test.responseMessage)
 				require.NoError(t, err)
 				errBytes, err := json.Marshal(test.responseError)
 				require.NoError(t, err)
-				resp := test.response(gameProgressBytes, errBytes)
+				resp := test.response(messageBytes, errBytes)
 				num, err := w.Write(resp)
 				require.NoError(t, err)
 				require.Equal(t, num, len(resp))
@@ -839,14 +839,14 @@ func TestGetUserCompletionProgress(tt *testing.T) {
 	awarded, err := time.Parse(models.RFC3339NumColonTZFormat, "2024-05-07T08:48:54+00:00")
 	require.NoError(tt, err)
 	tests := []struct {
-		name                           string
-		username                       string
-		modifyURL                      func(url string) string
-		responseCode                   int
-		responseUserCompletionProgress models.UserCompletionProgress
-		responseError                  models.ErrorResponse
-		response                       func(userCompletionProgressBytes []byte, errorBytes []byte) []byte
-		assert                         func(t *testing.T, completionProgress *models.UserCompletionProgress, err error)
+		name            string
+		username        string
+		modifyURL       func(url string) string
+		responseCode    int
+		responseMessage models.UserCompletionProgress
+		responseError   models.ErrorResponse
+		response        func(messageBytes []byte, errorBytes []byte) []byte
+		assert          func(t *testing.T, completionProgress *models.UserCompletionProgress, err error)
 	}{
 		{
 			name:     "fail to call endpoint",
@@ -865,7 +865,7 @@ func TestGetUserCompletionProgress(tt *testing.T) {
 					},
 				},
 			},
-			response: func(userCompletionProgressBytes []byte, errorBytes []byte) []byte {
+			response: func(messageBytes []byte, errorBytes []byte) []byte {
 				return errorBytes
 			},
 			assert: func(t *testing.T, completionProgress *models.UserCompletionProgress, err error) {
@@ -890,7 +890,7 @@ func TestGetUserCompletionProgress(tt *testing.T) {
 					},
 				},
 			},
-			response: func(userCompletionProgressBytes []byte, errorBytes []byte) []byte {
+			response: func(messageBytes []byte, errorBytes []byte) []byte {
 				return errorBytes
 			},
 			assert: func(t *testing.T, completionProgress *models.UserCompletionProgress, err error) {
@@ -905,7 +905,7 @@ func TestGetUserCompletionProgress(tt *testing.T) {
 				return url
 			},
 			responseCode: http.StatusOK,
-			responseUserCompletionProgress: models.UserCompletionProgress{
+			responseMessage: models.UserCompletionProgress{
 				Count: 19,
 				Total: 18,
 				Results: []models.CompletionProgress{
@@ -928,8 +928,8 @@ func TestGetUserCompletionProgress(tt *testing.T) {
 					},
 				},
 			},
-			response: func(userCompletionProgressBytes []byte, errorBytes []byte) []byte {
-				return userCompletionProgressBytes
+			response: func(messageBytes []byte, errorBytes []byte) []byte {
+				return messageBytes
 			},
 			assert: func(t *testing.T, completionProgress *models.UserCompletionProgress, err error) {
 				require.NotNil(t, completionProgress)
@@ -959,11 +959,11 @@ func TestGetUserCompletionProgress(tt *testing.T) {
 					t.Errorf("Expected to request '%s', got: %s", expectedPath, r.URL.Path)
 				}
 				w.WriteHeader(test.responseCode)
-				gameProgressBytes, err := json.Marshal(test.responseUserCompletionProgress)
+				messageBytes, err := json.Marshal(test.responseMessage)
 				require.NoError(t, err)
 				errBytes, err := json.Marshal(test.responseError)
 				require.NoError(t, err)
-				resp := test.response(gameProgressBytes, errBytes)
+				resp := test.response(messageBytes, errBytes)
 				num, err := w.Write(resp)
 				require.NoError(t, err)
 				require.Equal(t, num, len(resp))
@@ -986,14 +986,14 @@ func TestGetUserAwards(tt *testing.T) {
 	flags := 1
 	imageIcons := "/Images/074224.png"
 	tests := []struct {
-		name               string
-		username           string
-		modifyURL          func(url string) string
-		responseCode       int
-		responseUserAwards models.UserAwards
-		responseError      models.ErrorResponse
-		response           func(userAwardsBytes []byte, errorBytes []byte) []byte
-		assert             func(t *testing.T, userAwards *models.UserAwards, err error)
+		name            string
+		username        string
+		modifyURL       func(url string) string
+		responseCode    int
+		responseMessage models.UserAwards
+		responseError   models.ErrorResponse
+		response        func(messageBytes []byte, errorBytes []byte) []byte
+		assert          func(t *testing.T, userAwards *models.UserAwards, err error)
 	}{
 		{
 			name:     "fail to call endpoint",
@@ -1012,7 +1012,7 @@ func TestGetUserAwards(tt *testing.T) {
 					},
 				},
 			},
-			response: func(userCompletionProgressBytes []byte, errorBytes []byte) []byte {
+			response: func(messageBytes []byte, errorBytes []byte) []byte {
 				return errorBytes
 			},
 			assert: func(t *testing.T, userAwards *models.UserAwards, err error) {
@@ -1037,7 +1037,7 @@ func TestGetUserAwards(tt *testing.T) {
 					},
 				},
 			},
-			response: func(userCompletionProgressBytes []byte, errorBytes []byte) []byte {
+			response: func(messageBytes []byte, errorBytes []byte) []byte {
 				return errorBytes
 			},
 			assert: func(t *testing.T, userAwards *models.UserAwards, err error) {
@@ -1052,7 +1052,7 @@ func TestGetUserAwards(tt *testing.T) {
 				return url
 			},
 			responseCode: http.StatusOK,
-			responseUserAwards: models.UserAwards{
+			responseMessage: models.UserAwards{
 				TotalAwardsCount:          9,
 				HiddenAwardsCount:         0,
 				MasteryAwardsCount:        4,
@@ -1078,8 +1078,8 @@ func TestGetUserAwards(tt *testing.T) {
 					},
 				},
 			},
-			response: func(userCompletionProgressBytes []byte, errorBytes []byte) []byte {
-				return userCompletionProgressBytes
+			response: func(messageBytes []byte, errorBytes []byte) []byte {
+				return messageBytes
 			},
 			assert: func(t *testing.T, userAwards *models.UserAwards, err error) {
 				require.NotNil(t, userAwards)
@@ -1114,11 +1114,11 @@ func TestGetUserAwards(tt *testing.T) {
 					t.Errorf("Expected to request '%s', got: %s", expectedPath, r.URL.Path)
 				}
 				w.WriteHeader(test.responseCode)
-				userAwardsBytes, err := json.Marshal(test.responseUserAwards)
+				messageBytes, err := json.Marshal(test.responseMessage)
 				require.NoError(t, err)
 				errBytes, err := json.Marshal(test.responseError)
 				require.NoError(t, err)
-				resp := test.response(userAwardsBytes, errBytes)
+				resp := test.response(messageBytes, errBytes)
 				num, err := w.Write(resp)
 				require.NoError(t, err)
 				require.Equal(t, num, len(resp))
@@ -1138,14 +1138,14 @@ func TestGetUserClaims(tt *testing.T) {
 	done, err := time.Parse(time.DateTime, "2024-10-21 05:24:58")
 	require.NoError(tt, err)
 	tests := []struct {
-		name               string
-		username           string
-		modifyURL          func(url string) string
-		responseCode       int
-		responseUserClaims []models.UserClaims
-		responseError      models.ErrorResponse
-		response           func(userClaimsBytes []byte, errorBytes []byte) []byte
-		assert             func(t *testing.T, userClaims []models.UserClaims, err error)
+		name            string
+		username        string
+		modifyURL       func(url string) string
+		responseCode    int
+		responseMessage []models.UserClaims
+		responseError   models.ErrorResponse
+		response        func(messageBytes []byte, errorBytes []byte) []byte
+		assert          func(t *testing.T, userClaims []models.UserClaims, err error)
 	}{
 		{
 			name:     "fail to call endpoint",
@@ -1164,7 +1164,7 @@ func TestGetUserClaims(tt *testing.T) {
 					},
 				},
 			},
-			response: func(userClaimsBytes []byte, errorBytes []byte) []byte {
+			response: func(messageBytes []byte, errorBytes []byte) []byte {
 				return errorBytes
 			},
 			assert: func(t *testing.T, userClaims []models.UserClaims, err error) {
@@ -1189,7 +1189,7 @@ func TestGetUserClaims(tt *testing.T) {
 					},
 				},
 			},
-			response: func(userCompletionProgressBytes []byte, errorBytes []byte) []byte {
+			response: func(messageBytes []byte, errorBytes []byte) []byte {
 				return errorBytes
 			},
 			assert: func(t *testing.T, userClaims []models.UserClaims, err error) {
@@ -1204,7 +1204,7 @@ func TestGetUserClaims(tt *testing.T) {
 				return url
 			},
 			responseCode: http.StatusOK,
-			responseUserClaims: []models.UserClaims{
+			responseMessage: []models.UserClaims{
 				{
 					ID:          13657,
 					User:        "joshraphael",
@@ -1231,8 +1231,8 @@ func TestGetUserClaims(tt *testing.T) {
 					MinutesLeft: 87089,
 				},
 			},
-			response: func(userCompletionProgressBytes []byte, errorBytes []byte) []byte {
-				return userCompletionProgressBytes
+			response: func(messageBytes []byte, errorBytes []byte) []byte {
+				return messageBytes
 			},
 			assert: func(t *testing.T, userClaims []models.UserClaims, err error) {
 				require.NotNil(t, userClaims)
@@ -1249,11 +1249,11 @@ func TestGetUserClaims(tt *testing.T) {
 					t.Errorf("Expected to request '%s', got: %s", expectedPath, r.URL.Path)
 				}
 				w.WriteHeader(test.responseCode)
-				userClaimsBytes, err := json.Marshal(test.responseUserClaims)
+				responseMessage, err := json.Marshal(test.responseMessage)
 				require.NoError(t, err)
 				errBytes, err := json.Marshal(test.responseError)
 				require.NoError(t, err)
-				resp := test.response(userClaimsBytes, errBytes)
+				resp := test.response(responseMessage, errBytes)
 				num, err := w.Write(resp)
 				require.NoError(t, err)
 				require.Equal(t, num, len(resp))
@@ -1263,6 +1263,127 @@ func TestGetUserClaims(tt *testing.T) {
 			client := retroachievements.New(test.modifyURL(server.URL), "some_secret")
 			userClaims, err := client.GetUserClaims(test.username)
 			test.assert(t, userClaims, err)
+		})
+	}
+}
+
+func TestGetUserGameRankAndScore(tt *testing.T) {
+	lastAward, err := time.Parse(time.DateTime, "2024-05-07 08:48:54")
+	require.NoError(tt, err)
+	tests := []struct {
+		name            string
+		username        string
+		gameId          int
+		modifyURL       func(url string) string
+		responseCode    int
+		responseMessage []models.UserGameRankScore
+		responseError   models.ErrorResponse
+		response        func(messageBytes []byte, errorBytes []byte) []byte
+		assert          func(t *testing.T, userGameRankScore []models.UserGameRankScore, err error)
+	}{
+		{
+			name:     "fail to call endpoint",
+			username: "Test",
+			modifyURL: func(url string) string {
+				return ""
+			},
+			responseCode: http.StatusUnauthorized,
+			responseError: models.ErrorResponse{
+				Message: "test",
+				Errors: []models.ErrorDetail{
+					{
+						Status: http.StatusUnauthorized,
+						Code:   "unauthorized",
+						Title:  "Not Authorized",
+					},
+				},
+			},
+			response: func(messageBytes []byte, errorBytes []byte) []byte {
+				return errorBytes
+			},
+			assert: func(t *testing.T, userGameRankScore []models.UserGameRankScore, err error) {
+				require.Nil(t, userGameRankScore)
+				require.EqualError(t, err, "calling endpoint: Get \"/API/API_GetUserGameRankAndScore.php?g=0&u=Test&y=some_secret\": unsupported protocol scheme \"\"")
+			},
+		},
+		{
+			name:     "error response",
+			username: "Test",
+			modifyURL: func(url string) string {
+				return url
+			},
+			responseCode: http.StatusUnauthorized,
+			responseError: models.ErrorResponse{
+				Message: "test",
+				Errors: []models.ErrorDetail{
+					{
+						Status: http.StatusUnauthorized,
+						Code:   "unauthorized",
+						Title:  "Not Authorized",
+					},
+				},
+			},
+			response: func(messageBytes []byte, errorBytes []byte) []byte {
+				return errorBytes
+			},
+			assert: func(t *testing.T, userGameRankScore []models.UserGameRankScore, err error) {
+				require.Nil(t, userGameRankScore)
+				require.EqualError(t, err, "parsing response list: error responses: [401] Not Authorized")
+			},
+		},
+		{
+			name:     "success",
+			username: "Test",
+			modifyURL: func(url string) string {
+				return url
+			},
+			responseCode: http.StatusOK,
+			responseMessage: []models.UserGameRankScore{
+				{
+					User:       "joshraphael",
+					UserRank:   699,
+					TotalScore: 453,
+					LastAward: &models.DateTime{
+						Time: lastAward,
+					},
+				},
+			},
+			response: func(messageBytes []byte, errorBytes []byte) []byte {
+				return messageBytes
+			},
+			assert: func(t *testing.T, userGameRankScore []models.UserGameRankScore, err error) {
+				require.NotNil(t, userGameRankScore)
+				require.Len(t, userGameRankScore, 1)
+				require.Equal(t, "joshraphael", userGameRankScore[0].User)
+				require.Equal(t, 699, userGameRankScore[0].UserRank)
+				require.Equal(t, 453, userGameRankScore[0].TotalScore)
+				require.Equal(t, lastAward, userGameRankScore[0].LastAward.Time)
+				require.NoError(t, err)
+			},
+		},
+	}
+	for _, test := range tests {
+		tt.Run(test.name, func(t *testing.T) {
+			server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+				expectedPath := "/API/API_GetUserGameRankAndScore.php"
+				if r.URL.Path != expectedPath {
+					t.Errorf("Expected to request '%s', got: %s", expectedPath, r.URL.Path)
+				}
+				w.WriteHeader(test.responseCode)
+				responseMessage, err := json.Marshal(test.responseMessage)
+				require.NoError(t, err)
+				errBytes, err := json.Marshal(test.responseError)
+				require.NoError(t, err)
+				resp := test.response(responseMessage, errBytes)
+				num, err := w.Write(resp)
+				require.NoError(t, err)
+				require.Equal(t, num, len(resp))
+			}))
+			defer server.Close()
+
+			client := retroachievements.New(test.modifyURL(server.URL), "some_secret")
+			userGameRankScore, err := client.GetUserGameRankAndScore(test.username, test.gameId)
+			test.assert(t, userGameRankScore, err)
 		})
 	}
 }
