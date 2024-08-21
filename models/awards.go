@@ -24,3 +24,8 @@ type Award struct {
 	Flags          *int              `json:"Flags"`
 	ImageIcon      *string           `json:"ImageIcon"`
 }
+
+type Points struct {
+	Points         int `json:"Points"`
+	SoftcorePoints int `json:"SoftcorePoints"`
+}

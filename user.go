@@ -86,13 +86,13 @@ func (c *Client) GetAchievementsEarnedOnDay(username string, date time.Time) ([]
 }
 
 // GetGameInfoAndUserProgress get metadata about a game as well as a user's progress on that game.
-func (c *Client) GetGameInfoAndUserProgress(username string, game int, includeAwardMetadata bool) (*models.UserGameProgress, error) {
+func (c *Client) GetGameInfoAndUserProgress(username string, gameId int, includeAwardMetadata bool) (*models.UserGameProgress, error) {
 	resp, err := c.do(
 		raHttp.Method(http.MethodGet),
 		raHttp.Path("/API/API_GetGameInfoAndUserProgress.php"),
 		raHttp.APIToken(c.Secret),
 		raHttp.Username(username),
-		raHttp.GameID(game),
+		raHttp.GameID(gameId),
 		raHttp.AwardMetadata(includeAwardMetadata),
 	)
 	if err != nil {
@@ -176,4 +176,22 @@ func (c *Client) GetUserGameRankAndScore(username string, gameId int) ([]models.
 		return nil, fmt.Errorf("parsing response list: %w", err)
 	}
 	return userGameRankScore, nil
+}
+
+// GetUserPoints get a user's total hardcore and softcore points.
+func (c *Client) GetUserPoints(username string) (*models.Points, error) {
+	resp, err := c.do(
+		raHttp.Method(http.MethodGet),
+		raHttp.Path("/API/API_GetUserPoints.php"),
+		raHttp.APIToken(c.Secret),
+		raHttp.Username(username),
+	)
+	if err != nil {
+		return nil, fmt.Errorf("calling endpoint: %w", err)
+	}
+	points, err := raHttp.ResponseObject[models.Points](resp)
+	if err != nil {
+		return nil, fmt.Errorf("parsing response object: %w", err)
+	}
+	return points, nil
 }

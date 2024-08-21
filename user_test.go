@@ -1237,6 +1237,23 @@ func TestGetUserClaims(tt *testing.T) {
 			assert: func(t *testing.T, userClaims []models.UserClaims, err error) {
 				require.NotNil(t, userClaims)
 				require.Len(t, userClaims, 1)
+				require.Equal(t, 13657, userClaims[0].ID)
+				require.Equal(t, "joshraphael", userClaims[0].User)
+				require.Equal(t, 4111, userClaims[0].GameID)
+				require.Equal(t, "Monster Max", userClaims[0].GameTitle)
+				require.Equal(t, "/Images/059373.png", userClaims[0].GameIcon)
+				require.Equal(t, 4, userClaims[0].ConsoleID)
+				require.Equal(t, "Game Boy", userClaims[0].ConsoleName)
+				require.Equal(t, 0, userClaims[0].ClaimType)
+				require.Equal(t, 0, userClaims[0].SetType)
+				require.Equal(t, 0, userClaims[0].Status)
+				require.Equal(t, 0, userClaims[0].Extension)
+				require.Equal(t, 0, userClaims[0].Special)
+				require.Equal(t, created, userClaims[0].Created.Time)
+				require.Equal(t, done, userClaims[0].DoneTime.Time)
+				require.Equal(t, created, userClaims[0].Updated.Time)
+				require.Equal(t, 1, userClaims[0].UserIsJrDev)
+				require.Equal(t, 87089, userClaims[0].MinutesLeft)
 				require.NoError(t, err)
 			},
 		},
@@ -1384,6 +1401,115 @@ func TestGetUserGameRankAndScore(tt *testing.T) {
 			client := retroachievements.New(test.modifyURL(server.URL), "some_secret")
 			userGameRankScore, err := client.GetUserGameRankAndScore(test.username, test.gameId)
 			test.assert(t, userGameRankScore, err)
+		})
+	}
+}
+
+func TestGetUserPoints(tt *testing.T) {
+	tests := []struct {
+		name            string
+		username        string
+		modifyURL       func(url string) string
+		responseCode    int
+		responseMessage models.Points
+		responseError   models.ErrorResponse
+		response        func(messageBytes []byte, errorBytes []byte) []byte
+		assert          func(t *testing.T, points *models.Points, err error)
+	}{
+		{
+			name:     "fail to call endpoint",
+			username: "Test",
+			modifyURL: func(url string) string {
+				return ""
+			},
+			responseCode: http.StatusUnauthorized,
+			responseError: models.ErrorResponse{
+				Message: "test",
+				Errors: []models.ErrorDetail{
+					{
+						Status: http.StatusUnauthorized,
+						Code:   "unauthorized",
+						Title:  "Not Authorized",
+					},
+				},
+			},
+			response: func(messageBytes []byte, errorBytes []byte) []byte {
+				return errorBytes
+			},
+			assert: func(t *testing.T, points *models.Points, err error) {
+				require.Nil(t, points)
+				require.EqualError(t, err, "calling endpoint: Get \"/API/API_GetUserPoints.php?u=Test&y=some_secret\": unsupported protocol scheme \"\"")
+			},
+		},
+		{
+			name:     "error response",
+			username: "Test",
+			modifyURL: func(url string) string {
+				return url
+			},
+			responseCode: http.StatusUnauthorized,
+			responseError: models.ErrorResponse{
+				Message: "test",
+				Errors: []models.ErrorDetail{
+					{
+						Status: http.StatusUnauthorized,
+						Code:   "unauthorized",
+						Title:  "Not Authorized",
+					},
+				},
+			},
+			response: func(messageBytes []byte, errorBytes []byte) []byte {
+				return errorBytes
+			},
+			assert: func(t *testing.T, points *models.Points, err error) {
+				require.Nil(t, points)
+				require.EqualError(t, err, "parsing response object: error responses: [401] Not Authorized")
+			},
+		},
+		{
+			name:     "success",
+			username: "Test",
+			modifyURL: func(url string) string {
+				return url
+			},
+			responseCode: http.StatusOK,
+			responseMessage: models.Points{
+				Points:         230,
+				SoftcorePoints: 342,
+			},
+			response: func(messageBytes []byte, errorBytes []byte) []byte {
+				return messageBytes
+			},
+			assert: func(t *testing.T, points *models.Points, err error) {
+				require.NotNil(t, points)
+				require.Equal(t, 230, points.Points)
+				require.Equal(t, 342, points.SoftcorePoints)
+				require.NoError(t, err)
+			},
+		},
+	}
+	for _, test := range tests {
+		tt.Run(test.name, func(t *testing.T) {
+			server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+				expectedPath := "/API/API_GetUserPoints.php"
+				if r.URL.Path != expectedPath {
+					t.Errorf("Expected to request '%s', got: %s", expectedPath, r.URL.Path)
+				}
+				w.WriteHeader(test.responseCode)
+				responseMessage, err := json.Marshal(test.responseMessage)
+				require.NoError(t, err)
+				errBytes, err := json.Marshal(test.responseError)
+				require.NoError(t, err)
+				resp := test.response(responseMessage, errBytes)
+				num, err := w.Write(resp)
+				require.NoError(t, err)
+				require.Equal(t, num, len(resp))
+			}))
+			defer server.Close()
+
+			client := retroachievements.New(test.modifyURL(server.URL), "some_secret")
+			points, err := client.GetUserPoints(test.username)
+			test.assert(t, points, err)
 		})
 	}
 }
