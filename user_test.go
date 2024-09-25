@@ -1513,3 +1513,164 @@ func TestGetUserPoints(tt *testing.T) {
 		})
 	}
 }
+
+func TestGetUserProgress(tt *testing.T) {
+	tests := []struct {
+		name            string
+		username        string
+		gameIDs         []int
+		modifyURL       func(url string) string
+		responseCode    int
+		responseMessage map[string]models.Progress
+		responseError   models.ErrorResponse
+		response        func(messageBytes []byte, errorBytes []byte) []byte
+		assert          func(t *testing.T, progress map[string]models.Progress, err error)
+	}{
+		{
+			name:     "fail to call endpoint",
+			username: "Test",
+			gameIDs:  []int{1, 2, 5352},
+			modifyURL: func(url string) string {
+				return ""
+			},
+			responseCode: http.StatusUnauthorized,
+			responseError: models.ErrorResponse{
+				Message: "test",
+				Errors: []models.ErrorDetail{
+					{
+						Status: http.StatusUnauthorized,
+						Code:   "unauthorized",
+						Title:  "Not Authorized",
+					},
+				},
+			},
+			response: func(messageBytes []byte, errorBytes []byte) []byte {
+				return errorBytes
+			},
+			assert: func(t *testing.T, progress map[string]models.Progress, err error) {
+				require.Nil(t, progress)
+				require.EqualError(t, err, "calling endpoint: Get \"/API/API_GetUserProgress.php?i=1%2C2%2C5352&u=Test&y=some_secret\": unsupported protocol scheme \"\"")
+			},
+		},
+		{
+			name:     "error response",
+			username: "Test",
+			gameIDs:  []int{1, 2, 5352},
+			modifyURL: func(url string) string {
+				return url
+			},
+			responseCode: http.StatusUnauthorized,
+			responseError: models.ErrorResponse{
+				Message: "test",
+				Errors: []models.ErrorDetail{
+					{
+						Status: http.StatusUnauthorized,
+						Code:   "unauthorized",
+						Title:  "Not Authorized",
+					},
+				},
+			},
+			response: func(messageBytes []byte, errorBytes []byte) []byte {
+				return errorBytes
+			},
+			assert: func(t *testing.T, progress map[string]models.Progress, err error) {
+				require.Nil(t, progress)
+				require.EqualError(t, err, "parsing response object: error responses: [401] Not Authorized")
+			},
+		},
+		{
+			name:     "success",
+			username: "Test",
+			gameIDs:  []int{1, 2, 5352},
+			modifyURL: func(url string) string {
+				return url
+			},
+			responseCode: http.StatusOK,
+			responseMessage: map[string]models.Progress{
+				"1": {
+					NumPossibleAchievements: 36,
+					PossibleScore:           305,
+					NumAchieved:             13,
+					ScoreAchieved:           100,
+					NumAchievedHardcore:     13,
+					ScoreAchievedHardcore:   100,
+				},
+				"2": {
+					NumPossibleAchievements: 56,
+					PossibleScore:           600,
+					NumAchieved:             0,
+					ScoreAchieved:           0,
+					NumAchievedHardcore:     0,
+					ScoreAchievedHardcore:   0,
+				},
+				"5352": {
+					NumPossibleAchievements: 13,
+					PossibleScore:           230,
+					NumAchieved:             10,
+					ScoreAchieved:           200,
+					NumAchievedHardcore:     10,
+					ScoreAchievedHardcore:   200,
+				},
+			},
+			response: func(messageBytes []byte, errorBytes []byte) []byte {
+				return messageBytes
+			},
+			assert: func(t *testing.T, progress map[string]models.Progress, err error) {
+				require.NotNil(t, progress)
+				// first element
+				first, ok := progress["1"]
+				require.True(t, ok)
+				require.Equal(t, 36, first.NumPossibleAchievements)
+				require.Equal(t, 305, first.PossibleScore)
+				require.Equal(t, 13, first.NumAchieved)
+				require.Equal(t, 100, first.ScoreAchieved)
+				require.Equal(t, 13, first.NumAchievedHardcore)
+				require.Equal(t, 100, first.ScoreAchievedHardcore)
+
+				// second element
+				second, ok := progress["2"]
+				require.True(t, ok)
+				require.Equal(t, 56, second.NumPossibleAchievements)
+				require.Equal(t, 600, second.PossibleScore)
+				require.Equal(t, 0, second.NumAchieved)
+				require.Equal(t, 0, second.ScoreAchieved)
+				require.Equal(t, 0, second.NumAchievedHardcore)
+				require.Equal(t, 0, second.ScoreAchievedHardcore)
+
+				// third element
+				third, ok := progress["5352"]
+				require.True(t, ok)
+				require.Equal(t, 13, third.NumPossibleAchievements)
+				require.Equal(t, 230, third.PossibleScore)
+				require.Equal(t, 10, third.NumAchieved)
+				require.Equal(t, 200, third.ScoreAchieved)
+				require.Equal(t, 10, third.NumAchievedHardcore)
+				require.Equal(t, 200, third.ScoreAchievedHardcore)
+				require.NoError(t, err)
+			},
+		},
+	}
+	for _, test := range tests {
+		tt.Run(test.name, func(t *testing.T) {
+			server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+				expectedPath := "/API/API_GetUserProgress.php"
+				if r.URL.Path != expectedPath {
+					t.Errorf("Expected to request '%s', got: %s", expectedPath, r.URL.Path)
+				}
+				w.WriteHeader(test.responseCode)
+				responseMessage, err := json.Marshal(test.responseMessage)
+				require.NoError(t, err)
+				errBytes, err := json.Marshal(test.responseError)
+				require.NoError(t, err)
+				resp := test.response(responseMessage, errBytes)
+				num, err := w.Write(resp)
+				require.NoError(t, err)
+				require.Equal(t, num, len(resp))
+			}))
+			defer server.Close()
+			client := retroachievements.New(test.modifyURL(server.URL), "some_secret")
+			progress, err := client.GetUserProgress(test.username, test.gameIDs)
+			test.assert(t, progress, err)
+		})
+	}
+}

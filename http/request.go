@@ -3,6 +3,7 @@ package http
 import (
 	"fmt"
 	"strconv"
+	"strings"
 	"time"
 )
 
@@ -87,10 +88,14 @@ func Date(t time.Time) RequestDetail {
 	})
 }
 
-// ID adds a target game id to the query parameters
-func ID(id int) RequestDetail {
+// IDs adds the target game ids to the query parameters
+func IDs(ids []int) RequestDetail {
+	var strIDs []string
+	for _, i := range ids {
+		strIDs = append(strIDs, strconv.Itoa(i))
+	}
 	return requestDetailFn(func(r *Request) {
-		r.Params["i"] = strconv.Itoa(id)
+		r.Params["i"] = strings.Join(strIDs, ",")
 	})
 }
 

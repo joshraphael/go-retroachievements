@@ -14,7 +14,7 @@ func (c *Client) GetGame(id int) (*models.GameInfo, error) {
 		raHttp.Method(http.MethodGet),
 		raHttp.Path("/API/API_GetGame.php"),
 		raHttp.APIToken(c.Secret),
-		raHttp.ID(id),
+		raHttp.IDs([]int{id}),
 	)
 	if err != nil {
 		return nil, fmt.Errorf("calling endpoint: %w", err)
@@ -32,7 +32,7 @@ func (c *Client) GetGameExtended(id int) (*models.ExtentedGameInfo, error) {
 		raHttp.Method(http.MethodGet),
 		raHttp.Path("/API/API_GetGameExtended.php"),
 		raHttp.APIToken(c.Secret),
-		raHttp.ID(id),
+		raHttp.IDs([]int{id}),
 	)
 	if err != nil {
 		return nil, fmt.Errorf("calling endpoint: %w", err)

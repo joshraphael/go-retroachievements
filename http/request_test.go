@@ -24,7 +24,7 @@ func TestNewRequest(t *testing.T) {
 		raHttp.FromTime(now),
 		raHttp.ToTime(later),
 		raHttp.Date(now),
-		raHttp.ID(2837),
+		raHttp.IDs([]int{2837, 4535}),
 		raHttp.GameID(345),
 		raHttp.AwardMetadata(true),
 	)
@@ -43,7 +43,7 @@ func TestNewRequest(t *testing.T) {
 			"f": "1709400423",
 			"t": "1709401023",
 			"d": "2024-03-02",
-			"i": "2837",
+			"i": "2837,4535",
 			"g": "345",
 			"a": "1",
 		},

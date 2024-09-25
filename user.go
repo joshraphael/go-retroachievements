@@ -195,3 +195,22 @@ func (c *Client) GetUserPoints(username string) (*models.Points, error) {
 	}
 	return points, nil
 }
+
+// GetUserProgress get a user's progress on a list of specified games.
+func (c *Client) GetUserProgress(username string, gameIDs []int) (map[string]models.Progress, error) {
+	resp, err := c.do(
+		raHttp.Method(http.MethodGet),
+		raHttp.Path("/API/API_GetUserProgress.php"),
+		raHttp.APIToken(c.Secret),
+		raHttp.Username(username),
+		raHttp.IDs(gameIDs),
+	)
+	if err != nil {
+		return nil, fmt.Errorf("calling endpoint: %w", err)
+	}
+	progress, err := raHttp.ResponseObject[map[string]models.Progress](resp)
+	if err != nil {
+		return nil, fmt.Errorf("parsing response object: %w", err)
+	}
+	return *progress, nil
+}
