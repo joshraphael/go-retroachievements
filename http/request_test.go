@@ -27,6 +27,8 @@ func TestNewRequest(t *testing.T) {
 		raHttp.IDs([]int{2837, 4535}),
 		raHttp.GameID(345),
 		raHttp.AwardMetadata(true),
+		raHttp.Count(20),
+		raHttp.Offset(34),
 	)
 
 	expected := &raHttp.Request{
@@ -46,6 +48,8 @@ func TestNewRequest(t *testing.T) {
 			"i": "2837,4535",
 			"g": "345",
 			"a": "1",
+			"c": "20",
+			"o": "34",
 		},
 	}
 

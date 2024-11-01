@@ -106,6 +106,20 @@ func GameID(gameId int) RequestDetail {
 	})
 }
 
+// Count adds a count to the query parameters
+func Count(count int) RequestDetail {
+	return requestDetailFn(func(r *Request) {
+		r.Params["c"] = strconv.Itoa(count)
+	})
+}
+
+// Offset adds a offset to the query parameters
+func Offset(offset int) RequestDetail {
+	return requestDetailFn(func(r *Request) {
+		r.Params["o"] = strconv.Itoa(offset)
+	})
+}
+
 // AwardMetadata adds a target game id to the query parameters
 func AwardMetadata(awardMetadata bool) RequestDetail {
 	return requestDetailFn(func(r *Request) {

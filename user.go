@@ -214,3 +214,34 @@ func (c *Client) GetUserProgress(username string, gameIDs []int) (map[string]mod
 	}
 	return *progress, nil
 }
+
+// GetUserRecentlyPlayedGames get a list of games a user has recently played.
+func (c *Client) GetUserRecentlyPlayedGames(username string, count int, offset int) ([]models.UserRecentlyPlayed, error) {
+	numCount := count
+	if count <= 0 {
+		numCount = 10
+	}
+	if count > 50 {
+		numCount = 50
+	}
+	numOffset := offset
+	if offset < 0 {
+		numOffset = 0
+	}
+	resp, err := c.do(
+		raHttp.Method(http.MethodGet),
+		raHttp.Path("/API/API_GetUserRecentlyPlayedGames.php"),
+		raHttp.APIToken(c.Secret),
+		raHttp.Username(username),
+		raHttp.Count(numCount),
+		raHttp.Offset(numOffset),
+	)
+	if err != nil {
+		return nil, fmt.Errorf("calling endpoint: %w", err)
+	}
+	recentlyPlayed, err := raHttp.ResponseList[models.UserRecentlyPlayed](resp)
+	if err != nil {
+		return nil, fmt.Errorf("parsing response list: %w", err)
+	}
+	return recentlyPlayed, nil
+}
