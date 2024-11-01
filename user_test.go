@@ -20,10 +20,10 @@ func TestGetUserProfile(tt *testing.T) {
 		username        string
 		modifyURL       func(url string) string
 		responseCode    int
-		responseMessage models.Profile
+		responseMessage models.GetUserProfile
 		responseError   models.ErrorResponse
 		response        func(messageBytes []byte, errorBytes []byte) []byte
-		assert          func(t *testing.T, profile *models.Profile, err error)
+		assert          func(t *testing.T, profile *models.GetUserProfile, err error)
 	}{
 		{
 			name:     "fail to call endpoint",
@@ -45,7 +45,7 @@ func TestGetUserProfile(tt *testing.T) {
 			response: func(messageBytes []byte, errorBytes []byte) []byte {
 				return errorBytes
 			},
-			assert: func(t *testing.T, profile *models.Profile, err error) {
+			assert: func(t *testing.T, profile *models.GetUserProfile, err error) {
 				require.Nil(t, profile)
 				require.EqualError(t, err, "calling endpoint: Get \"/API/API_GetUserProfile.php?u=Test&y=some_secret\": unsupported protocol scheme \"\"")
 			},
@@ -70,7 +70,7 @@ func TestGetUserProfile(tt *testing.T) {
 			response: func(messageBytes []byte, errorBytes []byte) []byte {
 				return errorBytes
 			},
-			assert: func(t *testing.T, profile *models.Profile, err error) {
+			assert: func(t *testing.T, profile *models.GetUserProfile, err error) {
 				require.Nil(t, profile)
 				require.EqualError(t, err, "parsing response object: error responses: [401] Not Authorized")
 			},
@@ -82,7 +82,7 @@ func TestGetUserProfile(tt *testing.T) {
 				return url
 			},
 			responseCode: http.StatusOK,
-			responseMessage: models.Profile{
+			responseMessage: models.GetUserProfile{
 				User:    "xXxSnip3rxXx",
 				UserPic: "/some/resource.png",
 				MemberSince: models.DateTime{
@@ -104,7 +104,7 @@ func TestGetUserProfile(tt *testing.T) {
 			response: func(messageBytes []byte, errorBytes []byte) []byte {
 				return messageBytes
 			},
-			assert: func(t *testing.T, profile *models.Profile, err error) {
+			assert: func(t *testing.T, profile *models.GetUserProfile, err error) {
 				require.NoError(t, err)
 				require.NotNil(t, profile)
 				require.Equal(t, "xXxSnip3rxXx", profile.User)
@@ -162,10 +162,10 @@ func TestGetUserRecentAchievements(tt *testing.T) {
 		lookbackMinutes int
 		modifyURL       func(url string) string
 		responseCode    int
-		responseMessage []models.UnlockedAchievement
+		responseMessage []models.GetUserRecentAchievements
 		responseError   models.ErrorResponse
 		response        func(messageBytes []byte, errorBytes []byte) []byte
-		assert          func(t *testing.T, achievements []models.UnlockedAchievement, err error)
+		assert          func(t *testing.T, achievements []models.GetUserRecentAchievements, err error)
 	}{
 		{
 			name:            "fail to call endpoint",
@@ -188,7 +188,7 @@ func TestGetUserRecentAchievements(tt *testing.T) {
 			response: func(messageBytes []byte, errorBytes []byte) []byte {
 				return errorBytes
 			},
-			assert: func(t *testing.T, achievements []models.UnlockedAchievement, err error) {
+			assert: func(t *testing.T, achievements []models.GetUserRecentAchievements, err error) {
 				require.Nil(t, achievements)
 				require.EqualError(t, err, "calling endpoint: Get \"/API/API_GetUserRecentAchievements.php?m=60&u=Test&y=some_secret\": unsupported protocol scheme \"\"")
 			},
@@ -214,7 +214,7 @@ func TestGetUserRecentAchievements(tt *testing.T) {
 			response: func(messageBytes []byte, errorBytes []byte) []byte {
 				return errorBytes
 			},
-			assert: func(t *testing.T, achievements []models.UnlockedAchievement, err error) {
+			assert: func(t *testing.T, achievements []models.GetUserRecentAchievements, err error) {
 				require.Nil(t, achievements)
 				require.EqualError(t, err, "parsing response list: error responses: [401] Not Authorized")
 			},
@@ -227,15 +227,13 @@ func TestGetUserRecentAchievements(tt *testing.T) {
 				return url
 			},
 			responseCode: http.StatusOK,
-			responseMessage: []models.UnlockedAchievement{
+			responseMessage: []models.GetUserRecentAchievements{
 				{
-					Achievement: models.Achievement{
-						Title:       "Beat Level 1",
-						Description: "Finish level 1",
-						Points:      10,
-						TrueRatio:   234,
-						Author:      "jamiras",
-					},
+					Title:       "Beat Level 1",
+					Description: "Finish level 1",
+					Points:      10,
+					TrueRatio:   234,
+					Author:      "jamiras",
 					Date: models.DateTime{
 						Time: now,
 					},
@@ -254,7 +252,7 @@ func TestGetUserRecentAchievements(tt *testing.T) {
 			response: func(messageBytes []byte, errorBytes []byte) []byte {
 				return messageBytes
 			},
-			assert: func(t *testing.T, achievements []models.UnlockedAchievement, err error) {
+			assert: func(t *testing.T, achievements []models.GetUserRecentAchievements, err error) {
 				require.NotNil(t, achievements)
 				require.Len(t, achievements, 1)
 				require.Equal(t, models.DateTime{

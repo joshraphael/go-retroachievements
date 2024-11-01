@@ -1,4 +1,4 @@
-// Package getuserrecentachievements provides an example for a users achievements in the last X minutes
+// Package getuserrecentlyplayedgames provides an example for a users recently played games
 package main
 
 import (
@@ -9,7 +9,7 @@ import (
 )
 
 /*
-Test script, add RA_API_KEY to your env and use `go run getuserrecentachievements.go`
+Test script, add RA_API_KEY to your env and use `go run getuserrecentlyplayedgames.go`
 */
 func main() {
 	secret := os.Getenv("RA_API_KEY")
