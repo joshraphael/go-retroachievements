@@ -319,21 +319,21 @@ func TestGetAchievementsEarnedBetween(tt *testing.T) {
 	later := now.Add(10 * time.Minute)
 	tests := []struct {
 		name            string
-		username        string
-		fromTime        time.Time
-		toTime          time.Time
+		params          models.GetAchievementsEarnedBetweenParameters
 		modifyURL       func(url string) string
 		responseCode    int
-		responseMessage []models.UnlockedAchievement
+		responseMessage []models.GetAchievementsEarnedBetween
 		responseError   models.ErrorResponse
 		response        func(messageBytes []byte, errorBytes []byte) []byte
-		assert          func(t *testing.T, achievements []models.UnlockedAchievement, err error)
+		assert          func(t *testing.T, achievements []models.GetAchievementsEarnedBetween, err error)
 	}{
 		{
-			name:     "fail to call endpoint",
-			username: "Test",
-			fromTime: now,
-			toTime:   later,
+			name: "fail to call endpoint",
+			params: models.GetAchievementsEarnedBetweenParameters{
+				Username: "Test",
+				From:     now,
+				To:       later,
+			},
 			modifyURL: func(url string) string {
 				return ""
 			},
@@ -351,16 +351,18 @@ func TestGetAchievementsEarnedBetween(tt *testing.T) {
 			response: func(messageBytes []byte, errorBytes []byte) []byte {
 				return errorBytes
 			},
-			assert: func(t *testing.T, achievements []models.UnlockedAchievement, err error) {
+			assert: func(t *testing.T, achievements []models.GetAchievementsEarnedBetween, err error) {
 				require.Nil(t, achievements)
 				require.EqualError(t, err, "calling endpoint: Get \"/API/API_GetAchievementsEarnedBetween.php?f=1709400423&t=1709401023&u=Test&y=some_secret\": unsupported protocol scheme \"\"")
 			},
 		},
 		{
-			name:     "error response",
-			username: "Test",
-			fromTime: now,
-			toTime:   later,
+			name: "error response",
+			params: models.GetAchievementsEarnedBetweenParameters{
+				Username: "Test",
+				From:     now,
+				To:       later,
+			},
 			modifyURL: func(url string) string {
 				return url
 			},
@@ -378,29 +380,29 @@ func TestGetAchievementsEarnedBetween(tt *testing.T) {
 			response: func(messageBytes []byte, errorBytes []byte) []byte {
 				return errorBytes
 			},
-			assert: func(t *testing.T, achievements []models.UnlockedAchievement, err error) {
+			assert: func(t *testing.T, achievements []models.GetAchievementsEarnedBetween, err error) {
 				require.Nil(t, achievements)
 				require.EqualError(t, err, "parsing response list: error responses: [401] Not Authorized")
 			},
 		},
 		{
-			name:     "success",
-			username: "Test",
-			fromTime: now,
-			toTime:   later,
+			name: "success",
+			params: models.GetAchievementsEarnedBetweenParameters{
+				Username: "Test",
+				From:     now,
+				To:       later,
+			},
 			modifyURL: func(url string) string {
 				return url
 			},
 			responseCode: http.StatusOK,
-			responseMessage: []models.UnlockedAchievement{
+			responseMessage: []models.GetAchievementsEarnedBetween{
 				{
-					Achievement: models.Achievement{
-						Title:       "Beat Level 1",
-						Description: "Finish level 1",
-						Points:      10,
-						TrueRatio:   234,
-						Author:      "jamiras",
-					},
+					Title:       "Beat Level 1",
+					Description: "Finish level 1",
+					Points:      10,
+					TrueRatio:   234,
+					Author:      "jamiras",
 					Date: models.DateTime{
 						Time: now,
 					},
@@ -419,7 +421,7 @@ func TestGetAchievementsEarnedBetween(tt *testing.T) {
 			response: func(messageBytes []byte, errorBytes []byte) []byte {
 				return messageBytes
 			},
-			assert: func(t *testing.T, achievements []models.UnlockedAchievement, err error) {
+			assert: func(t *testing.T, achievements []models.GetAchievementsEarnedBetween, err error) {
 				require.NotNil(t, achievements)
 				require.Len(t, achievements, 1)
 				require.Equal(t, models.DateTime{
@@ -464,7 +466,7 @@ func TestGetAchievementsEarnedBetween(tt *testing.T) {
 			defer server.Close()
 
 			client := retroachievements.New(test.modifyURL(server.URL), "some_secret")
-			achievements, err := client.GetAchievementsEarnedBetween(test.username, test.fromTime, test.toTime)
+			achievements, err := client.GetAchievementsEarnedBetween(test.params)
 			test.assert(t, achievements, err)
 		})
 	}

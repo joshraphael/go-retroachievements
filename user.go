@@ -50,19 +50,19 @@ func (c *Client) GetUserRecentAchievements(params models.GetUserRecentAchievemen
 }
 
 // GetAchievementsEarnedBetween get a list of achievements earned by a user between two dates.
-func (c *Client) GetAchievementsEarnedBetween(username string, from time.Time, to time.Time) ([]models.UnlockedAchievement, error) {
+func (c *Client) GetAchievementsEarnedBetween(params models.GetAchievementsEarnedBetweenParameters) ([]models.GetAchievementsEarnedBetween, error) {
 	resp, err := c.do(
 		raHttp.Method(http.MethodGet),
 		raHttp.Path("/API/API_GetAchievementsEarnedBetween.php"),
 		raHttp.APIToken(c.Secret),
-		raHttp.Username(username),
-		raHttp.FromTime(from),
-		raHttp.ToTime(to),
+		raHttp.Username(params.Username),
+		raHttp.FromTime(params.From),
+		raHttp.ToTime(params.To),
 	)
 	if err != nil {
 		return nil, fmt.Errorf("calling endpoint: %w", err)
 	}
-	achievements, err := raHttp.ResponseList[models.UnlockedAchievement](resp)
+	achievements, err := raHttp.ResponseList[models.GetAchievementsEarnedBetween](resp)
 	if err != nil {
 		return nil, fmt.Errorf("parsing response list: %w", err)
 	}

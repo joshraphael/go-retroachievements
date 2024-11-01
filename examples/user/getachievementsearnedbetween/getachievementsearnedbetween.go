@@ -7,6 +7,7 @@ import (
 	"time"
 
 	"github.com/joshraphael/go-retroachievements"
+	"github.com/joshraphael/go-retroachievements/models"
 )
 
 /*
@@ -23,7 +24,11 @@ func main() {
 	}
 	later := now.Add(10 * time.Minute)
 
-	resp, err := client.GetAchievementsEarnedBetween("jamiras", now, later)
+	resp, err := client.GetAchievementsEarnedBetween(models.GetAchievementsEarnedBetweenParameters{
+		Username: "jamiras",
+		From:     now,
+		To:       later,
+	})
 	if err != nil {
 		panic(err)
 	}
