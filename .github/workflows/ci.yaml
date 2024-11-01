@@ -16,12 +16,12 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-go@v5
-        with:
-          go-version: '^1.22.6' # 1.23 breaks the linter, use stable when its fixed
+        # with:
+        #   go-version: '^1.22.6' # 1.23 breaks the linter, use stable when its fixed
       - name: golangci-lint
-        uses: golangci/golangci-lint-action@v6
+        uses: golangci/golangci-lint-action@v6.1.1
         with:
-          version: v1.59
+          version: v1.61.0
 
   coverage:
     name: coverage
