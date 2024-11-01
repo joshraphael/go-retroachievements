@@ -3,7 +3,6 @@ package retroachievements
 import (
 	"fmt"
 	"net/http"
-	"time"
 
 	raHttp "github.com/joshraphael/go-retroachievements/http"
 	"github.com/joshraphael/go-retroachievements/models"
@@ -70,18 +69,18 @@ func (c *Client) GetAchievementsEarnedBetween(params models.GetAchievementsEarne
 }
 
 // GetAchievementsEarnedOnDay get a list of achievements earned by a user on a given date.
-func (c *Client) GetAchievementsEarnedOnDay(username string, date time.Time) ([]models.UnlockedAchievement, error) {
+func (c *Client) GetAchievementsEarnedOnDay(params models.GetAchievementsEarnedOnDayParameters) ([]models.GetAchievementsEarnedOnDay, error) {
 	resp, err := c.do(
 		raHttp.Method(http.MethodGet),
 		raHttp.Path("/API/API_GetAchievementsEarnedOnDay.php"),
 		raHttp.APIToken(c.Secret),
-		raHttp.Username(username),
-		raHttp.Date(date),
+		raHttp.Username(params.Username),
+		raHttp.Date(params.Date),
 	)
 	if err != nil {
 		return nil, fmt.Errorf("calling endpoint: %w", err)
 	}
-	achievements, err := raHttp.ResponseList[models.UnlockedAchievement](resp)
+	achievements, err := raHttp.ResponseList[models.GetAchievementsEarnedOnDay](resp)
 	if err != nil {
 		return nil, fmt.Errorf("parsing response list: %w", err)
 	}

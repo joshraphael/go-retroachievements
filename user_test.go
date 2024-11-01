@@ -477,19 +477,20 @@ func TestGetAchievementsEarnedOnDay(tt *testing.T) {
 	require.NoError(tt, err)
 	tests := []struct {
 		name            string
-		username        string
-		date            time.Time
+		params          models.GetAchievementsEarnedOnDayParameters
 		modifyURL       func(url string) string
 		responseCode    int
-		responseMessage []models.UnlockedAchievement
+		responseMessage []models.GetAchievementsEarnedOnDay
 		responseError   models.ErrorResponse
 		response        func(messageBytes []byte, errorBytes []byte) []byte
-		assert          func(t *testing.T, achievements []models.UnlockedAchievement, err error)
+		assert          func(t *testing.T, achievements []models.GetAchievementsEarnedOnDay, err error)
 	}{
 		{
-			name:     "fail to call endpoint",
-			username: "Test",
-			date:     now,
+			name: "fail to call endpoint",
+			params: models.GetAchievementsEarnedOnDayParameters{
+				Username: "Test",
+				Date:     now,
+			},
 			modifyURL: func(url string) string {
 				return ""
 			},
@@ -507,15 +508,17 @@ func TestGetAchievementsEarnedOnDay(tt *testing.T) {
 			response: func(messageBytes []byte, errorBytes []byte) []byte {
 				return errorBytes
 			},
-			assert: func(t *testing.T, achievements []models.UnlockedAchievement, err error) {
+			assert: func(t *testing.T, achievements []models.GetAchievementsEarnedOnDay, err error) {
 				require.Nil(t, achievements)
 				require.EqualError(t, err, "calling endpoint: Get \"/API/API_GetAchievementsEarnedOnDay.php?d=2024-03-02&u=Test&y=some_secret\": unsupported protocol scheme \"\"")
 			},
 		},
 		{
-			name:     "error response",
-			username: "Test",
-			date:     now,
+			name: "error response",
+			params: models.GetAchievementsEarnedOnDayParameters{
+				Username: "Test",
+				Date:     now,
+			},
 			modifyURL: func(url string) string {
 				return url
 			},
@@ -533,28 +536,28 @@ func TestGetAchievementsEarnedOnDay(tt *testing.T) {
 			response: func(messageBytes []byte, errorBytes []byte) []byte {
 				return errorBytes
 			},
-			assert: func(t *testing.T, achievements []models.UnlockedAchievement, err error) {
+			assert: func(t *testing.T, achievements []models.GetAchievementsEarnedOnDay, err error) {
 				require.Nil(t, achievements)
 				require.EqualError(t, err, "parsing response list: error responses: [401] Not Authorized")
 			},
 		},
 		{
-			name:     "success",
-			username: "Test",
-			date:     now,
+			name: "success",
+			params: models.GetAchievementsEarnedOnDayParameters{
+				Username: "Test",
+				Date:     now,
+			},
 			modifyURL: func(url string) string {
 				return url
 			},
 			responseCode: http.StatusOK,
-			responseMessage: []models.UnlockedAchievement{
+			responseMessage: []models.GetAchievementsEarnedOnDay{
 				{
-					Achievement: models.Achievement{
-						Title:       "Beat Level 1",
-						Description: "Finish level 1",
-						Points:      10,
-						TrueRatio:   234,
-						Author:      "jamiras",
-					},
+					Title:       "Beat Level 1",
+					Description: "Finish level 1",
+					Points:      10,
+					TrueRatio:   234,
+					Author:      "jamiras",
 					Date: models.DateTime{
 						Time: now,
 					},
@@ -573,7 +576,7 @@ func TestGetAchievementsEarnedOnDay(tt *testing.T) {
 			response: func(messageBytes []byte, errorBytes []byte) []byte {
 				return messageBytes
 			},
-			assert: func(t *testing.T, achievements []models.UnlockedAchievement, err error) {
+			assert: func(t *testing.T, achievements []models.GetAchievementsEarnedOnDay, err error) {
 				require.NotNil(t, achievements)
 				require.Len(t, achievements, 1)
 				require.Equal(t, models.DateTime{
@@ -618,7 +621,7 @@ func TestGetAchievementsEarnedOnDay(tt *testing.T) {
 			defer server.Close()
 
 			client := retroachievements.New(test.modifyURL(server.URL), "some_secret")
-			achievements, err := client.GetAchievementsEarnedOnDay(test.username, test.date)
+			achievements, err := client.GetAchievementsEarnedOnDay(test.params)
 			test.assert(t, achievements, err)
 		})
 	}

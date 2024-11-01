@@ -7,6 +7,7 @@ import (
 	"time"
 
 	"github.com/joshraphael/go-retroachievements"
+	"github.com/joshraphael/go-retroachievements/models"
 )
 
 /*
@@ -22,7 +23,10 @@ func main() {
 		panic(err)
 	}
 
-	resp, err := client.GetAchievementsEarnedOnDay("jamiras", now)
+	resp, err := client.GetAchievementsEarnedOnDay(models.GetAchievementsEarnedOnDayParameters{
+		Username: "jamiras",
+		Date:     now,
+	})
 	if err != nil {
 		panic(err)
 	}
