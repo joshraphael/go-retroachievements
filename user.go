@@ -10,12 +10,12 @@ import (
 )
 
 // GetUserProfile get a user's basic profile information.
-func (c *Client) GetUserProfile(username string) (*models.GetUserProfile, error) {
+func (c *Client) GetUserProfile(params models.GetUserProfileParameters) (*models.GetUserProfile, error) {
 	resp, err := c.do(
 		raHttp.Method(http.MethodGet),
 		raHttp.Path("/API/API_GetUserProfile.php"),
 		raHttp.APIToken(c.Secret),
-		raHttp.Username(username),
+		raHttp.Username(params.Username),
 	)
 	if err != nil {
 		return nil, fmt.Errorf("calling endpoint: %w", err)
@@ -28,14 +28,17 @@ func (c *Client) GetUserProfile(username string) (*models.GetUserProfile, error)
 }
 
 // GetUserRecentAchievements get a list of achievements recently earned by the user.
-func (c *Client) GetUserRecentAchievements(username string, lookbackMinutes int) ([]models.GetUserRecentAchievements, error) {
-	resp, err := c.do(
+func (c *Client) GetUserRecentAchievements(params models.GetUserRecentAchievementsParameters) ([]models.GetUserRecentAchievements, error) {
+	details := []raHttp.RequestDetail{
 		raHttp.Method(http.MethodGet),
 		raHttp.Path("/API/API_GetUserRecentAchievements.php"),
 		raHttp.APIToken(c.Secret),
-		raHttp.Username(username),
-		raHttp.LookbackMinutes(lookbackMinutes),
-	)
+		raHttp.Username(params.Username),
+	}
+	if params.LookbackMinutes != nil && *params.LookbackMinutes > 0 {
+		details = append(details, raHttp.LookbackMinutes(*params.LookbackMinutes))
+	}
+	resp, err := c.do(details...)
 	if err != nil {
 		return nil, fmt.Errorf("calling endpoint: %w", err)
 	}

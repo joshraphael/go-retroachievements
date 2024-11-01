@@ -1,5 +1,11 @@
 package models
 
+// GetUserProfileParameters contains the parameters needed for getting a users profile
+type GetUserProfileParameters struct {
+	// The username of the profile
+	Username string
+}
+
 // GetUserProfile describes elements of a users profile
 type GetUserProfile struct {
 	// Username of the profile
@@ -48,6 +54,16 @@ type GetUserProfile struct {
 	Motto string `json:"Motto"`
 }
 
+// GetUserRecentAchievementsParameters contains the parameters needed for getting a users recent achievements
+type GetUserRecentAchievementsParameters struct {
+	// The username of the profile
+	Username string
+
+	// [Optional] Minutes to lookback (Default 60)
+	LookbackMinutes *int
+}
+
+// GetUserRecentAchievements describes elements of a users recent achievements
 type GetUserRecentAchievements struct {
 	// Title of the achievement
 	Title string `json:"Title"`

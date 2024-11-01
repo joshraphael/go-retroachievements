@@ -6,6 +6,7 @@ import (
 	"os"
 
 	"github.com/joshraphael/go-retroachievements"
+	"github.com/joshraphael/go-retroachievements/models"
 )
 
 /*
@@ -16,7 +17,11 @@ func main() {
 
 	client := retroachievements.NewClient(secret)
 
-	resp, err := client.GetUserRecentAchievements("jamiras", 1000)
+	lookback := 1000
+	resp, err := client.GetUserRecentAchievements(models.GetUserRecentAchievementsParameters{
+		Username:        "Jamiras",
+		LookbackMinutes: &lookback,
+	})
 	if err != nil {
 		panic(err)
 	}

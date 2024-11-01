@@ -17,7 +17,7 @@ func TestGetUserProfile(tt *testing.T) {
 	require.NoError(tt, err)
 	tests := []struct {
 		name            string
-		username        string
+		params          models.GetUserProfileParameters
 		modifyURL       func(url string) string
 		responseCode    int
 		responseMessage models.GetUserProfile
@@ -26,8 +26,10 @@ func TestGetUserProfile(tt *testing.T) {
 		assert          func(t *testing.T, profile *models.GetUserProfile, err error)
 	}{
 		{
-			name:     "fail to call endpoint",
-			username: "Test",
+			name: "fail to call endpoint",
+			params: models.GetUserProfileParameters{
+				Username: "Test",
+			},
 			modifyURL: func(url string) string {
 				return ""
 			},
@@ -51,8 +53,10 @@ func TestGetUserProfile(tt *testing.T) {
 			},
 		},
 		{
-			name:     "error response",
-			username: "Test",
+			name: "error response",
+			params: models.GetUserProfileParameters{
+				Username: "Test",
+			},
 			modifyURL: func(url string) string {
 				return url
 			},
@@ -76,8 +80,10 @@ func TestGetUserProfile(tt *testing.T) {
 			},
 		},
 		{
-			name:     "success",
-			username: "Test",
+			name: "success",
+			params: models.GetUserProfileParameters{
+				Username: "Test",
+			},
 			modifyURL: func(url string) string {
 				return url
 			},
@@ -147,19 +153,19 @@ func TestGetUserProfile(tt *testing.T) {
 			defer server.Close()
 
 			client := retroachievements.New(test.modifyURL(server.URL), "some_secret")
-			profile, err := client.GetUserProfile(test.username)
+			profile, err := client.GetUserProfile(test.params)
 			test.assert(t, profile, err)
 		})
 	}
 }
 
 func TestGetUserRecentAchievements(tt *testing.T) {
+	lookback := 20
 	now, err := time.Parse(time.DateTime, "2024-03-02 17:27:03")
 	require.NoError(tt, err)
 	tests := []struct {
 		name            string
-		username        string
-		lookbackMinutes int
+		params          models.GetUserRecentAchievementsParameters
 		modifyURL       func(url string) string
 		responseCode    int
 		responseMessage []models.GetUserRecentAchievements
@@ -168,9 +174,11 @@ func TestGetUserRecentAchievements(tt *testing.T) {
 		assert          func(t *testing.T, achievements []models.GetUserRecentAchievements, err error)
 	}{
 		{
-			name:            "fail to call endpoint",
-			username:        "Test",
-			lookbackMinutes: 60,
+			name: "fail to call endpoint",
+			params: models.GetUserRecentAchievementsParameters{
+				Username:        "Test",
+				LookbackMinutes: &lookback,
+			},
 			modifyURL: func(url string) string {
 				return ""
 			},
@@ -190,13 +198,14 @@ func TestGetUserRecentAchievements(tt *testing.T) {
 			},
 			assert: func(t *testing.T, achievements []models.GetUserRecentAchievements, err error) {
 				require.Nil(t, achievements)
-				require.EqualError(t, err, "calling endpoint: Get \"/API/API_GetUserRecentAchievements.php?m=60&u=Test&y=some_secret\": unsupported protocol scheme \"\"")
+				require.EqualError(t, err, "calling endpoint: Get \"/API/API_GetUserRecentAchievements.php?m=20&u=Test&y=some_secret\": unsupported protocol scheme \"\"")
 			},
 		},
 		{
-			name:            "error response",
-			username:        "Test",
-			lookbackMinutes: 60,
+			name: "error response",
+			params: models.GetUserRecentAchievementsParameters{
+				Username: "Test",
+			},
 			modifyURL: func(url string) string {
 				return url
 			},
@@ -220,9 +229,10 @@ func TestGetUserRecentAchievements(tt *testing.T) {
 			},
 		},
 		{
-			name:            "success",
-			username:        "Test",
-			lookbackMinutes: 60,
+			name: "success",
+			params: models.GetUserRecentAchievementsParameters{
+				Username: "Test",
+			},
 			modifyURL: func(url string) string {
 				return url
 			},
@@ -297,7 +307,7 @@ func TestGetUserRecentAchievements(tt *testing.T) {
 			defer server.Close()
 
 			client := retroachievements.New(test.modifyURL(server.URL), "some_secret")
-			achievements, err := client.GetUserRecentAchievements(test.username, test.lookbackMinutes)
+			achievements, err := client.GetUserRecentAchievements(test.params)
 			test.assert(t, achievements, err)
 		})
 	}
