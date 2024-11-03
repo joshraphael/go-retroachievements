@@ -630,7 +630,6 @@ func TestGetAchievementsEarnedOnDay(tt *testing.T) {
 func TestGetGameInfoAndUserProgress(tt *testing.T) {
 	released, err := time.Parse(models.LongMonthDateFormat, "June 18, 2001")
 	require.NoError(tt, err)
-	updated, err := time.Parse(time.RFC3339Nano, "2024-08-15T11:46:06.000000Z")
 	require.NoError(tt, err)
 	modified, err := time.Parse(time.DateTime, "2022-10-25 17:00:49")
 	require.NoError(tt, err)
@@ -640,23 +639,25 @@ func TestGetGameInfoAndUserProgress(tt *testing.T) {
 	highestAwardKind := "mastered"
 	awarded, err := time.Parse(models.RFC3339NumColonTZFormat, "2024-05-07T08:48:54+00:00")
 	require.NoError(tt, err)
+	awardMeta := true
+	forumTopicId := 16654
 	tests := []struct {
-		name                  string
-		username              string
-		gameId                int
-		incluideAwardMetadata bool
-		modifyURL             func(url string) string
-		responseCode          int
-		responseMessage       models.UserGameProgress
-		responseError         models.ErrorResponse
-		response              func(messageBytes []byte, errorBytes []byte) []byte
-		assert                func(t *testing.T, gameProgress *models.UserGameProgress, err error)
+		name            string
+		params          models.GetGameInfoAndUserProgressParameters
+		modifyURL       func(url string) string
+		responseCode    int
+		responseMessage models.GetGameInfoAndUserProgress
+		responseError   models.ErrorResponse
+		response        func(messageBytes []byte, errorBytes []byte) []byte
+		assert          func(t *testing.T, gameProgress *models.GetGameInfoAndUserProgress, err error)
 	}{
 		{
-			name:                  "fail to call endpoint",
-			username:              "Test",
-			gameId:                2991,
-			incluideAwardMetadata: true,
+			name: "fail to call endpoint",
+			params: models.GetGameInfoAndUserProgressParameters{
+				Username:             "Test",
+				GameID:               2991,
+				IncludeAwardMetadata: &awardMeta,
+			},
 			modifyURL: func(url string) string {
 				return ""
 			},
@@ -674,16 +675,18 @@ func TestGetGameInfoAndUserProgress(tt *testing.T) {
 			response: func(messageBytes []byte, errorBytes []byte) []byte {
 				return errorBytes
 			},
-			assert: func(t *testing.T, gameProgress *models.UserGameProgress, err error) {
+			assert: func(t *testing.T, gameProgress *models.GetGameInfoAndUserProgress, err error) {
 				require.Nil(t, gameProgress)
 				require.EqualError(t, err, "calling endpoint: Get \"/API/API_GetGameInfoAndUserProgress.php?a=1&g=2991&u=Test&y=some_secret\": unsupported protocol scheme \"\"")
 			},
 		},
 		{
-			name:                  "error response",
-			username:              "Test",
-			gameId:                2991,
-			incluideAwardMetadata: true,
+			name: "error response",
+			params: models.GetGameInfoAndUserProgressParameters{
+				Username:             "Test",
+				GameID:               2991,
+				IncludeAwardMetadata: &awardMeta,
+			},
 			modifyURL: func(url string) string {
 				return url
 			},
@@ -701,56 +704,66 @@ func TestGetGameInfoAndUserProgress(tt *testing.T) {
 			response: func(messageBytes []byte, errorBytes []byte) []byte {
 				return errorBytes
 			},
-			assert: func(t *testing.T, gameProgress *models.UserGameProgress, err error) {
+			assert: func(t *testing.T, gameProgress *models.GetGameInfoAndUserProgress, err error) {
 				require.Nil(t, gameProgress)
 				require.EqualError(t, err, "parsing response object: error responses: [401] Not Authorized")
 			},
 		},
 		{
-			name:                  "success",
-			username:              "Test",
-			gameId:                2991,
-			incluideAwardMetadata: true,
+			name: "success",
+			params: models.GetGameInfoAndUserProgressParameters{
+				Username:             "Test",
+				GameID:               2991,
+				IncludeAwardMetadata: &awardMeta,
+			},
 			modifyURL: func(url string) string {
 				return url
 			},
 			responseCode: http.StatusOK,
-			responseMessage: models.UserGameProgress{
-				ExtentedGameInfo: models.ExtentedGameInfo{
-					Game:               makGame(released),
-					ID:                 2991,
-					IsFinal:            0,
-					RichPresencePatch:  "e7a5e12072a6c976a1146756726fdd8c",
-					Updated:            &updated,
-					ConsoleName:        "PlayStation 2",
-					NumDistinctPlayers: 1287,
-					NumAchievements:    93,
-					Achievements: map[int]models.GameAchievement{
-						252117: {
-							Achievement: models.Achievement{
-								Title:       "Zorko Bros. Scrap & Salvage",
-								Description: "Destroy all enemies in Junkyard in Story Mode",
-								Points:      5,
-								TrueRatio:   5,
-								Author:      "TheJediSonic",
-							},
-							ID:                 252117,
-							NumAwarded:         819,
-							NumAwardedHardcore: 327,
-							DateModified: models.DateTime{
-								Time: modified,
-							},
-							DateCreated: models.DateTime{
-								Time: created,
-							},
-							BadgeName:    "279805",
-							DisplayOrder: 0,
-							MemAddr:      "3cf81e50c3ff8387e5034b79478d9a04",
-							Type:         "progression",
+			responseMessage: models.GetGameInfoAndUserProgress{
+				Title:              "Twisted Metal: Black",
+				ConsoleID:          21,
+				ForumTopicID:       &forumTopicId,
+				Flags:              0,
+				ImageIcon:          "/Images/057992.png",
+				ImageTitle:         "/Images/056152.png",
+				ImageIngame:        "/Images/056151.png",
+				ImageBoxArt:        "/Images/050832.png",
+				Publisher:          "Sony Computer Entertainment",
+				Developer:          "Incognito Entertainment",
+				Genre:              "Vehicular Combat",
+				ID:                 2991,
+				IsFinal:            0,
+				RichPresencePatch:  "e7a5e12072a6c976a1146756726fdd8c",
+				ConsoleName:        "PlayStation 2",
+				NumDistinctPlayers: 1287,
+				NumAchievements:    93,
+				Achievements: map[int]models.GetGameInfoAndUserProgressAchievement{
+					252117: {
+
+						Title:              "Zorko Bros. Scrap & Salvage",
+						Description:        "Destroy all enemies in Junkyard in Story Mode",
+						Points:             5,
+						TrueRatio:          5,
+						Author:             "TheJediSonic",
+						ID:                 252117,
+						NumAwarded:         819,
+						NumAwardedHardcore: 327,
+						DateModified: models.DateTime{
+							Time: modified,
 						},
+						DateCreated: models.DateTime{
+							Time: created,
+						},
+						BadgeName:    "279805",
+						DisplayOrder: 0,
+						MemAddr:      "3cf81e50c3ff8387e5034b79478d9a04",
+						Type:         "progression",
 					},
 				},
-				ReleasedAt:               &released,
+				Released: &models.DateOnly{
+					Time: released,
+				},
 				ReleasedAtGranularity:    &granularity,
 				PlayersTotal:             1230,
 				AchievementsPublished:    61,
@@ -767,13 +780,13 @@ func TestGetGameInfoAndUserProgress(tt *testing.T) {
 			response: func(messageBytes []byte, errorBytes []byte) []byte {
 				return messageBytes
 			},
-			assert: func(t *testing.T, gameProgress *models.UserGameProgress, err error) {
+			assert: func(t *testing.T, gameProgress *models.GetGameInfoAndUserProgress, err error) {
 				require.NotNil(t, gameProgress)
 				require.Equal(t, "Twisted Metal: Black", gameProgress.Title)
 				require.Equal(t, 21, gameProgress.ConsoleID)
 				require.Equal(t, "PlayStation 2", gameProgress.ConsoleName)
 				require.Equal(t, 16654, *gameProgress.ForumTopicID)
-				require.Equal(t, 0, *gameProgress.Flags)
+				require.Equal(t, 0, gameProgress.Flags)
 				require.Equal(t, "/Images/057992.png", gameProgress.ImageIcon)
 				require.Equal(t, "/Images/056152.png", gameProgress.ImageTitle)
 				require.Equal(t, "/Images/056151.png", gameProgress.ImageIngame)
@@ -785,7 +798,6 @@ func TestGetGameInfoAndUserProgress(tt *testing.T) {
 				require.Equal(t, 2991, gameProgress.ID)
 				require.Equal(t, 0, gameProgress.IsFinal)
 				require.Equal(t, "e7a5e12072a6c976a1146756726fdd8c", gameProgress.RichPresencePatch)
-				require.Equal(t, updated, *gameProgress.Updated)
 				require.Equal(t, "PlayStation 2", gameProgress.ConsoleName)
 				require.Equal(t, 1287, gameProgress.NumDistinctPlayers)
 				require.Equal(t, 93, gameProgress.NumAchievements)
@@ -807,7 +819,9 @@ func TestGetGameInfoAndUserProgress(tt *testing.T) {
 				require.Equal(t, 0, achievement.DisplayOrder)
 				require.Equal(t, "3cf81e50c3ff8387e5034b79478d9a04", achievement.MemAddr)
 				require.Equal(t, "progression", achievement.Type)
-				require.Equal(t, released, *gameProgress.ReleasedAt)
+				require.Equal(t, models.DateOnly{
+					Time: released,
+				}, *gameProgress.Released)
 				require.Equal(t, "day", *gameProgress.ReleasedAtGranularity)
 				require.Equal(t, 1230, gameProgress.PlayersTotal)
 				require.Equal(t, 61, gameProgress.AchievementsPublished)
@@ -841,7 +855,7 @@ func TestGetGameInfoAndUserProgress(tt *testing.T) {
 			defer server.Close()
 
 			client := retroachievements.New(test.modifyURL(server.URL), "some_secret")
-			gameProgress, err := client.GetGameInfoAndUserProgress(test.username, test.gameId, test.incluideAwardMetadata)
+			gameProgress, err := client.GetGameInfoAndUserProgress(test.params)
 			test.assert(t, gameProgress, err)
 		})
 	}

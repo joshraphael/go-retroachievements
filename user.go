@@ -88,19 +88,22 @@ func (c *Client) GetAchievementsEarnedOnDay(params models.GetAchievementsEarnedO
 }
 
 // GetGameInfoAndUserProgress get metadata about a game as well as a user's progress on that game.
-func (c *Client) GetGameInfoAndUserProgress(username string, gameId int, includeAwardMetadata bool) (*models.UserGameProgress, error) {
-	resp, err := c.do(
+func (c *Client) GetGameInfoAndUserProgress(params models.GetGameInfoAndUserProgressParameters) (*models.GetGameInfoAndUserProgress, error) {
+	details := []raHttp.RequestDetail{
 		raHttp.Method(http.MethodGet),
 		raHttp.Path("/API/API_GetGameInfoAndUserProgress.php"),
 		raHttp.APIToken(c.Secret),
-		raHttp.Username(username),
-		raHttp.GameID(gameId),
-		raHttp.AwardMetadata(includeAwardMetadata),
-	)
+		raHttp.Username(params.Username),
+		raHttp.GameID(params.GameID),
+	}
+	if params.IncludeAwardMetadata != nil {
+		details = append(details, raHttp.AwardMetadata(*params.IncludeAwardMetadata))
+	}
+	resp, err := c.do(details...)
 	if err != nil {
 		return nil, fmt.Errorf("calling endpoint: %w", err)
 	}
-	gameProgress, err := raHttp.ResponseObject[models.UserGameProgress](resp)
+	gameProgress, err := raHttp.ResponseObject[models.GetGameInfoAndUserProgress](resp)
 	if err != nil {
 		return nil, fmt.Errorf("parsing response object: %w", err)
 	}

@@ -128,6 +128,7 @@ type GetAchievementsEarnedBetweenParameters struct {
 	To time.Time
 }
 
+// GetAchievementsEarnedBetween describes elements of an achievement earned between two dates
 type GetAchievementsEarnedBetween struct {
 	// Title of the achievement
 	Title string `json:"Title"`
@@ -178,6 +179,7 @@ type GetAchievementsEarnedBetween struct {
 	GameURL string `json:"GameURL"`
 }
 
+// GetAchievementsEarnedOnDayParameters contains the parameters needed for getting a users achievements earned on a specific day
 type GetAchievementsEarnedOnDayParameters struct {
 	// The target username
 	Username string
@@ -186,6 +188,7 @@ type GetAchievementsEarnedOnDayParameters struct {
 	Date time.Time
 }
 
+// GetAchievementsEarnedOnDay describes elements of an achievement earned on a specific day
 type GetAchievementsEarnedOnDay struct {
 	// Title of the achievement
 	Title string `json:"Title"`
@@ -234,4 +237,71 @@ type GetAchievementsEarnedOnDay struct {
 
 	// URL resource to the game page
 	GameURL string `json:"GameURL"`
+}
+
+// GetAchievementsEarnedOnDayParameters contains the parameters needed for getting a users game and achievement progress
+type GetGameInfoAndUserProgressParameters struct {
+	// The target username
+	Username string
+
+	// The target game ID
+	GameID int
+
+	// [Optional] Include additional award metadata (Default false)
+	IncludeAwardMetadata *bool
+}
+
+type GetGameInfoAndUserProgressAchievement struct {
+	ID                 int       `json:"ID"`
+	NumAwarded         int       `json:"NumAwarded"`
+	NumAwardedHardcore int       `json:"NumAwardedHardcore"`
+	Title              string    `json:"Title"`
+	Description        string    `json:"Description"`
+	Points             int       `json:"Points"`
+	TrueRatio          int       `json:"TrueRatio"`
+	Author             string    `json:"Author"`
+	DateModified       DateTime  `json:"DateModified"`
+	DateCreated        DateTime  `json:"DateCreated"`
+	BadgeName          string    `json:"BadgeName"`
+	DisplayOrder       int       `json:"DisplayOrder"`
+	MemAddr            string    `json:"MemAddr"`
+	Type               string    `json:"type"`
+	DateEarnedHardcore *DateTime `json:"DateEarnedHardcore"`
+	DateEarned         *DateTime `json:"DateEarned"`
+}
+
+type GetGameInfoAndUserProgress struct {
+	ID                         int                                           `json:"ID"`
+	Title                      string                                        `json:"Title"`
+	ConsoleID                  int                                           `json:"ConsoleID"`
+	ForumTopicID               *int                                          `json:"ForumTopicID"`
+	Flags                      int                                           `json:"Flags"`
+	ImageIcon                  string                                        `json:"ImageIcon"`
+	ImageTitle                 string                                        `json:"ImageTitle"`
+	ImageIngame                string                                        `json:"ImageIngame"`
+	ImageBoxArt                string                                        `json:"ImageBoxArt"`
+	Publisher                  string                                        `json:"Publisher"`
+	Developer                  string                                        `json:"Developer"`
+	Genre                      string                                        `json:"Genre"`
+	Released                   *DateOnly                                     `json:"Released"`
+	ReleasedAtGranularity      *string                                       `json:"ReleasedAtGranularity"`
+	IsFinal                    int                                           `json:"IsFinal"`
+	RichPresencePatch          string                                        `json:"RichPresencePatch"`
+	GuideURL                   *string                                       `json:"GuideURL"`
+	ConsoleName                string                                        `json:"ConsoleName"`
+	ParentGameID               *int                                          `json:"ParentGameID"`
+	NumDistinctPlayers         int                                           `json:"NumDistinctPlayers"`
+	NumAchievements            int                                           `json:"NumAchievements"`
+	Achievements               map[int]GetGameInfoAndUserProgressAchievement `json:"Achievements"`
+	NumDistinctPlayersCasual   int                                           `json:"NumDistinctPlayersCasual"`
+	NumDistinctPlayersHardcore int                                           `json:"NumDistinctPlayersHardcore"`
+	PlayersTotal               int                                           `json:"players_total"`
+	AchievementsPublished      int                                           `json:"achievements_published"`
+	PointsTotal                int                                           `json:"points_total"`
+	NumAwardedToUser           int                                           `json:"NumAwardedToUser"`
+	NumAwardedToUserHardcore   int                                           `json:"NumAwardedToUserHardcore"`
+	UserCompletion             string                                        `json:"UserCompletion"`
+	UserCompletionHardcore     string                                        `json:"UserCompletionHardcore"`
+	HighestAwardKind           *string                                       `json:"HighestAwardKind"`
+	HighestAwardDate           *RFC3339NumColonTZ                            `json:"HighestAwardDate"`
 }

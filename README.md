@@ -34,7 +34,9 @@ client := retroachievements.NewClient("<your web API key>")
 you can now use the client to call any of the available endpoints, for example:
 
 ```go
-profile, err := client.GetUserProfile("jamiras")
+profile, err := client.GetUserProfile(models.GetUserProfileParameters{
+	Username: "jamiras",
+})
 ```
 
 Check out the [examples](examples/) directory for how to call each endpoint, as well as our GoDocs (TBD)
@@ -50,7 +52,7 @@ For convenience, the API docs and examples can be found in the tables below
 |`GetUserRecentAchievements()`|Get a list of achievements recently earned by the user.|[docs](https://api-docs.retroachievements.org/v1/get-user-recent-achievements.html) \| [example](examples/user/getuserrecentachievements/getuserrecentachievements.go)|
 |`GetAchievementsEarnedBetween()`|Get a list of achievements earned by a user between two dates.|[docs](https://api-docs.retroachievements.org/v1/get-achievements-earned-between.html) \| [example](examples/user/getachievementsearnedbetween/getachievementsearnedbetween.go)|
 |`GetAchievementsEarnedOnDay()`|Get a list of achievements earned by a user on a given date.|[docs](https://api-docs.retroachievements.org/v1/get-achievements-earned-on-day.html) \| [example](examples/user/getachievementsearnedonday/getachievementsearnedonday.go)|
-|`GetGameInfoAndUserProgress(string,int,bool)`|Get metadata about a game as well as a user's progress on that game.|[docs](https://api-docs.retroachievements.org/v1/get-game-info-and-user-progress.html) \| [example](examples/user/getgameinfoanduserprogress/getgameinfoanduserprogress.go)|
+|`GetGameInfoAndUserProgress()`|Get metadata about a game as well as a user's progress on that game.|[docs](https://api-docs.retroachievements.org/v1/get-game-info-and-user-progress.html) \| [example](examples/user/getgameinfoanduserprogress/getgameinfoanduserprogress.go)|
 |`GetUserCompletionProgress(string)`|Get metadata about all the user's played games and any awards associated with them.|[docs](https://api-docs.retroachievements.org/v1/get-user-completion-progress.html) \| [example](examples/user/getusercompletionprogress/getusercompletionprogress.go)|
 |`GetUserAwards(string)`|Get a list of a user's site awards/badges.|[docs](https://api-docs.retroachievements.org/v1/get-user-awards.html) \| [example](examples/user/getuserawards/getuserawards.go)|
 |`GetUserClaims(string)`|Get a list of set development claims made over the lifetime of a user.|[docs](https://api-docs.retroachievements.org/v1/get-user-claims.html) \| [example](examples/user/getuserclaims/getuserclaims.go)|
