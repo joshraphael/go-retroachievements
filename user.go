@@ -129,17 +129,17 @@ func (c *Client) GetUserCompletionProgress(params models.GetUserCompletionProgre
 }
 
 // GetUserAwards get a list of a user's site awards/badges.
-func (c *Client) GetUserAwards(username string) (*models.UserAwards, error) {
+func (c *Client) GetUserAwards(params models.GetUserAwardsParameters) (*models.GetUserAwards, error) {
 	resp, err := c.do(
 		raHttp.Method(http.MethodGet),
 		raHttp.Path("/API/API_GetUserAwards.php"),
 		raHttp.APIToken(c.Secret),
-		raHttp.Username(username),
+		raHttp.Username(params.Username),
 	)
 	if err != nil {
 		return nil, fmt.Errorf("calling endpoint: %w", err)
 	}
-	awards, err := raHttp.ResponseObject[models.UserAwards](resp)
+	awards, err := raHttp.ResponseObject[models.GetUserAwards](resp)
 	if err != nil {
 		return nil, fmt.Errorf("parsing response object: %w", err)
 	}

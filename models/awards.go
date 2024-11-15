@@ -12,19 +12,6 @@ type UserAwards struct {
 	VisibleUserAwards         []Award `json:"VisibleUserAwards"`
 }
 
-type Award struct {
-	AwardedAt      RFC3339NumColonTZ `json:"AwardedAt"`
-	AwardType      string            `json:"AwardType"`
-	AwardData      int               `json:"AwardData"`
-	AwardDataExtra int               `json:"AwardDataExtra"`
-	DisplayOrder   int               `json:"DisplayOrder"`
-	Title          *string           `json:"Title"`
-	ConsoleID      *int              `json:"ConsoleID"`
-	ConsoleName    *string           `json:"ConsoleName"`
-	Flags          *int              `json:"Flags"`
-	ImageIcon      *string           `json:"ImageIcon"`
-}
-
 type Points struct {
 	Points         int `json:"Points"`
 	SoftcorePoints int `json:"SoftcorePoints"`

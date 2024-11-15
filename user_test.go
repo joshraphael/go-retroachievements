@@ -1020,17 +1020,19 @@ func TestGetUserAwards(tt *testing.T) {
 	imageIcons := "/Images/074224.png"
 	tests := []struct {
 		name            string
-		username        string
+		params          models.GetUserAwardsParameters
 		modifyURL       func(url string) string
 		responseCode    int
 		responseMessage models.UserAwards
 		responseError   models.ErrorResponse
 		response        func(messageBytes []byte, errorBytes []byte) []byte
-		assert          func(t *testing.T, userAwards *models.UserAwards, err error)
+		assert          func(t *testing.T, userAwards *models.GetUserAwards, err error)
 	}{
 		{
-			name:     "fail to call endpoint",
-			username: "Test",
+			name: "fail to call endpoint",
+			params: models.GetUserAwardsParameters{
+				Username: "Test",
+			},
 			modifyURL: func(url string) string {
 				return ""
 			},
@@ -1048,14 +1050,16 @@ func TestGetUserAwards(tt *testing.T) {
 			response: func(messageBytes []byte, errorBytes []byte) []byte {
 				return errorBytes
 			},
-			assert: func(t *testing.T, userAwards *models.UserAwards, err error) {
+			assert: func(t *testing.T, userAwards *models.GetUserAwards, err error) {
 				require.Nil(t, userAwards)
 				require.EqualError(t, err, "calling endpoint: Get \"/API/API_GetUserAwards.php?u=Test&y=some_secret\": unsupported protocol scheme \"\"")
 			},
 		},
 		{
-			name:     "error response",
-			username: "Test",
+			name: "error response",
+			params: models.GetUserAwardsParameters{
+				Username: "Test",
+			},
 			modifyURL: func(url string) string {
 				return url
 			},
@@ -1073,14 +1077,16 @@ func TestGetUserAwards(tt *testing.T) {
 			response: func(messageBytes []byte, errorBytes []byte) []byte {
 				return errorBytes
 			},
-			assert: func(t *testing.T, userAwards *models.UserAwards, err error) {
+			assert: func(t *testing.T, userAwards *models.GetUserAwards, err error) {
 				require.Nil(t, userAwards)
 				require.EqualError(t, err, "parsing response object: error responses: [401] Not Authorized")
 			},
 		},
 		{
-			name:     "success",
-			username: "Test",
+			name: "success",
+			params: models.GetUserAwardsParameters{
+				Username: "Test",
+			},
 			modifyURL: func(url string) string {
 				return url
 			},
@@ -1114,7 +1120,7 @@ func TestGetUserAwards(tt *testing.T) {
 			response: func(messageBytes []byte, errorBytes []byte) []byte {
 				return messageBytes
 			},
-			assert: func(t *testing.T, userAwards *models.UserAwards, err error) {
+			assert: func(t *testing.T, userAwards *models.GetUserAwards, err error) {
 				require.NotNil(t, userAwards)
 				require.Equal(t, 9, userAwards.TotalAwardsCount)
 				require.Equal(t, 0, userAwards.HiddenAwardsCount)
@@ -1159,7 +1165,7 @@ func TestGetUserAwards(tt *testing.T) {
 			defer server.Close()
 
 			client := retroachievements.New(test.modifyURL(server.URL), "some_secret")
-			userAwards, err := client.GetUserAwards(test.username)
+			userAwards, err := client.GetUserAwards(test.params)
 			test.assert(t, userAwards, err)
 		})
 	}
