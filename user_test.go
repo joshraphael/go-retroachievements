@@ -867,17 +867,19 @@ func TestGetUserCompletionProgress(tt *testing.T) {
 	require.NoError(tt, err)
 	tests := []struct {
 		name            string
-		username        string
+		params          models.GetUserCompletionProgressParameters
 		modifyURL       func(url string) string
 		responseCode    int
-		responseMessage models.UserCompletionProgress
+		responseMessage models.GetUserCompletionProgress
 		responseError   models.ErrorResponse
 		response        func(messageBytes []byte, errorBytes []byte) []byte
-		assert          func(t *testing.T, completionProgress *models.UserCompletionProgress, err error)
+		assert          func(t *testing.T, completionProgress *models.GetUserCompletionProgress, err error)
 	}{
 		{
-			name:     "fail to call endpoint",
-			username: "Test",
+			name: "fail to call endpoint",
+			params: models.GetUserCompletionProgressParameters{
+				Username: "Test",
+			},
 			modifyURL: func(url string) string {
 				return ""
 			},
@@ -895,14 +897,16 @@ func TestGetUserCompletionProgress(tt *testing.T) {
 			response: func(messageBytes []byte, errorBytes []byte) []byte {
 				return errorBytes
 			},
-			assert: func(t *testing.T, completionProgress *models.UserCompletionProgress, err error) {
+			assert: func(t *testing.T, completionProgress *models.GetUserCompletionProgress, err error) {
 				require.Nil(t, completionProgress)
 				require.EqualError(t, err, "calling endpoint: Get \"/API/API_GetUserCompletionProgress.php?u=Test&y=some_secret\": unsupported protocol scheme \"\"")
 			},
 		},
 		{
-			name:     "error response",
-			username: "Test",
+			name: "error response",
+			params: models.GetUserCompletionProgressParameters{
+				Username: "Test",
+			},
 			modifyURL: func(url string) string {
 				return url
 			},
@@ -920,19 +924,21 @@ func TestGetUserCompletionProgress(tt *testing.T) {
 			response: func(messageBytes []byte, errorBytes []byte) []byte {
 				return errorBytes
 			},
-			assert: func(t *testing.T, completionProgress *models.UserCompletionProgress, err error) {
+			assert: func(t *testing.T, completionProgress *models.GetUserCompletionProgress, err error) {
 				require.Nil(t, completionProgress)
 				require.EqualError(t, err, "parsing response object: error responses: [401] Not Authorized")
 			},
 		},
 		{
-			name:     "success",
-			username: "Test",
+			name: "success",
+			params: models.GetUserCompletionProgressParameters{
+				Username: "Test",
+			},
 			modifyURL: func(url string) string {
 				return url
 			},
 			responseCode: http.StatusOK,
-			responseMessage: models.UserCompletionProgress{
+			responseMessage: models.GetUserCompletionProgress{
 				Count: 19,
 				Total: 18,
 				Results: []models.CompletionProgress{
@@ -958,7 +964,7 @@ func TestGetUserCompletionProgress(tt *testing.T) {
 			response: func(messageBytes []byte, errorBytes []byte) []byte {
 				return messageBytes
 			},
-			assert: func(t *testing.T, completionProgress *models.UserCompletionProgress, err error) {
+			assert: func(t *testing.T, completionProgress *models.GetUserCompletionProgress, err error) {
 				require.NotNil(t, completionProgress)
 				require.Equal(t, 19, completionProgress.Count)
 				require.Equal(t, 18, completionProgress.Total)
@@ -998,7 +1004,7 @@ func TestGetUserCompletionProgress(tt *testing.T) {
 			defer server.Close()
 
 			client := retroachievements.New(test.modifyURL(server.URL), "some_secret")
-			userCompletionProgress, err := client.GetUserCompletionProgress(test.username)
+			userCompletionProgress, err := client.GetUserCompletionProgress(test.params)
 			test.assert(t, userCompletionProgress, err)
 		})
 	}
