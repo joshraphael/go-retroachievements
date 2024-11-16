@@ -165,18 +165,18 @@ func (c *Client) GetUserClaims(params models.GetUserClaimsParameters) ([]models.
 }
 
 // GetUserGameRankAndScore get metadata about how a user has performed on a given game.
-func (c *Client) GetUserGameRankAndScore(username string, gameId int) ([]models.UserGameRankScore, error) {
+func (c *Client) GetUserGameRankAndScore(params models.GetUserGameRankAndScoreParameters) ([]models.GetUserGameRankAndScore, error) {
 	resp, err := c.do(
 		raHttp.Method(http.MethodGet),
 		raHttp.Path("/API/API_GetUserGameRankAndScore.php"),
 		raHttp.APIToken(c.Secret),
-		raHttp.Username(username),
-		raHttp.GameID(gameId),
+		raHttp.Username(params.Username),
+		raHttp.GameID(params.GameID),
 	)
 	if err != nil {
 		return nil, fmt.Errorf("calling endpoint: %w", err)
 	}
-	userGameRankScore, err := raHttp.ResponseList[models.UserGameRankScore](resp)
+	userGameRankScore, err := raHttp.ResponseList[models.GetUserGameRankAndScore](resp)
 	if err != nil {
 		return nil, fmt.Errorf("parsing response list: %w", err)
 	}

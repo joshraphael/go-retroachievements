@@ -1334,18 +1334,20 @@ func TestGetUserGameRankAndScore(tt *testing.T) {
 	require.NoError(tt, err)
 	tests := []struct {
 		name            string
-		username        string
-		gameId          int
+		params          models.GetUserGameRankAndScoreParameters
 		modifyURL       func(url string) string
 		responseCode    int
-		responseMessage []models.UserGameRankScore
+		responseMessage []models.GetUserGameRankAndScore
 		responseError   models.ErrorResponse
 		response        func(messageBytes []byte, errorBytes []byte) []byte
-		assert          func(t *testing.T, userGameRankScore []models.UserGameRankScore, err error)
+		assert          func(t *testing.T, userGameRankScore []models.GetUserGameRankAndScore, err error)
 	}{
 		{
-			name:     "fail to call endpoint",
-			username: "Test",
+			name: "fail to call endpoint",
+			params: models.GetUserGameRankAndScoreParameters{
+				Username: "Test",
+				GameID:   10,
+			},
 			modifyURL: func(url string) string {
 				return ""
 			},
@@ -1363,14 +1365,17 @@ func TestGetUserGameRankAndScore(tt *testing.T) {
 			response: func(messageBytes []byte, errorBytes []byte) []byte {
 				return errorBytes
 			},
-			assert: func(t *testing.T, userGameRankScore []models.UserGameRankScore, err error) {
+			assert: func(t *testing.T, userGameRankScore []models.GetUserGameRankAndScore, err error) {
 				require.Nil(t, userGameRankScore)
-				require.EqualError(t, err, "calling endpoint: Get \"/API/API_GetUserGameRankAndScore.php?g=0&u=Test&y=some_secret\": unsupported protocol scheme \"\"")
+				require.EqualError(t, err, "calling endpoint: Get \"/API/API_GetUserGameRankAndScore.php?g=10&u=Test&y=some_secret\": unsupported protocol scheme \"\"")
 			},
 		},
 		{
-			name:     "error response",
-			username: "Test",
+			name: "error response",
+			params: models.GetUserGameRankAndScoreParameters{
+				Username: "Test",
+				GameID:   10,
+			},
 			modifyURL: func(url string) string {
 				return url
 			},
@@ -1388,19 +1393,22 @@ func TestGetUserGameRankAndScore(tt *testing.T) {
 			response: func(messageBytes []byte, errorBytes []byte) []byte {
 				return errorBytes
 			},
-			assert: func(t *testing.T, userGameRankScore []models.UserGameRankScore, err error) {
+			assert: func(t *testing.T, userGameRankScore []models.GetUserGameRankAndScore, err error) {
 				require.Nil(t, userGameRankScore)
 				require.EqualError(t, err, "parsing response list: error responses: [401] Not Authorized")
 			},
 		},
 		{
-			name:     "success",
-			username: "Test",
+			name: "success",
+			params: models.GetUserGameRankAndScoreParameters{
+				Username: "Test",
+				GameID:   10,
+			},
 			modifyURL: func(url string) string {
 				return url
 			},
 			responseCode: http.StatusOK,
-			responseMessage: []models.UserGameRankScore{
+			responseMessage: []models.GetUserGameRankAndScore{
 				{
 					User:       "joshraphael",
 					UserRank:   699,
@@ -1413,7 +1421,7 @@ func TestGetUserGameRankAndScore(tt *testing.T) {
 			response: func(messageBytes []byte, errorBytes []byte) []byte {
 				return messageBytes
 			},
-			assert: func(t *testing.T, userGameRankScore []models.UserGameRankScore, err error) {
+			assert: func(t *testing.T, userGameRankScore []models.GetUserGameRankAndScore, err error) {
 				require.NotNil(t, userGameRankScore)
 				require.Len(t, userGameRankScore, 1)
 				require.Equal(t, "joshraphael", userGameRankScore[0].User)
@@ -1444,7 +1452,7 @@ func TestGetUserGameRankAndScore(tt *testing.T) {
 			defer server.Close()
 
 			client := retroachievements.New(test.modifyURL(server.URL), "some_secret")
-			userGameRankScore, err := client.GetUserGameRankAndScore(test.username, test.gameId)
+			userGameRankScore, err := client.GetUserGameRankAndScore(test.params)
 			test.assert(t, userGameRankScore, err)
 		})
 	}

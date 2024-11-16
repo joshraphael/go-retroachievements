@@ -389,3 +389,18 @@ type GetUserClaims struct {
 	UserIsJrDev int      `json:"UserIsJrDev"`
 	MinutesLeft int      `json:"MinutesLeft"`
 }
+
+type GetUserGameRankAndScoreParameters struct {
+	// The target username
+	Username string
+
+	// The target game ID
+	GameID int
+}
+
+type GetUserGameRankAndScore struct {
+	User       string    `json:"User"`
+	UserRank   int       `json:"UserRank"`
+	TotalScore int       `json:"TotalScore"`
+	LastAward  *DateTime `json:"LastAward"`
+}

@@ -56,10 +56,3 @@ type UserGameProgress struct {
 	HighestAwardKind         *string            `json:"HighestAwardKind"`
 	HighestAwardDate         *RFC3339NumColonTZ `json:"HighestAwardDate"`
 }
-
-type UserGameRankScore struct {
-	User       string    `json:"User"`
-	UserRank   int       `json:"UserRank"`
-	TotalScore int       `json:"TotalScore"`
-	LastAward  *DateTime `json:"LastAward"`
-}
