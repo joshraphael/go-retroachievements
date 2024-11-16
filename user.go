@@ -184,17 +184,17 @@ func (c *Client) GetUserGameRankAndScore(params models.GetUserGameRankAndScorePa
 }
 
 // GetUserPoints get a user's total hardcore and softcore points.
-func (c *Client) GetUserPoints(username string) (*models.Points, error) {
+func (c *Client) GetUserPoints(params models.GetUserPointsParameters) (*models.GetUserPoints, error) {
 	resp, err := c.do(
 		raHttp.Method(http.MethodGet),
 		raHttp.Path("/API/API_GetUserPoints.php"),
 		raHttp.APIToken(c.Secret),
-		raHttp.Username(username),
+		raHttp.Username(params.Username),
 	)
 	if err != nil {
 		return nil, fmt.Errorf("calling endpoint: %w", err)
 	}
-	points, err := raHttp.ResponseObject[models.Points](resp)
+	points, err := raHttp.ResponseObject[models.GetUserPoints](resp)
 	if err != nil {
 		return nil, fmt.Errorf("parsing response object: %w", err)
 	}

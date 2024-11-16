@@ -11,8 +11,3 @@ type UserAwards struct {
 	SiteAwardsCount           int     `json:"SiteAwardsCount"`
 	VisibleUserAwards         []Award `json:"VisibleUserAwards"`
 }
-
-type Points struct {
-	Points         int `json:"Points"`
-	SoftcorePoints int `json:"SoftcorePoints"`
-}

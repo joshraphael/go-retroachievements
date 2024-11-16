@@ -1461,17 +1461,19 @@ func TestGetUserGameRankAndScore(tt *testing.T) {
 func TestGetUserPoints(tt *testing.T) {
 	tests := []struct {
 		name            string
-		username        string
+		params          models.GetUserPointsParameters
 		modifyURL       func(url string) string
 		responseCode    int
-		responseMessage models.Points
+		responseMessage models.GetUserPoints
 		responseError   models.ErrorResponse
 		response        func(messageBytes []byte, errorBytes []byte) []byte
-		assert          func(t *testing.T, points *models.Points, err error)
+		assert          func(t *testing.T, points *models.GetUserPoints, err error)
 	}{
 		{
-			name:     "fail to call endpoint",
-			username: "Test",
+			name: "fail to call endpoint",
+			params: models.GetUserPointsParameters{
+				Username: "Test",
+			},
 			modifyURL: func(url string) string {
 				return ""
 			},
@@ -1489,14 +1491,16 @@ func TestGetUserPoints(tt *testing.T) {
 			response: func(messageBytes []byte, errorBytes []byte) []byte {
 				return errorBytes
 			},
-			assert: func(t *testing.T, points *models.Points, err error) {
+			assert: func(t *testing.T, points *models.GetUserPoints, err error) {
 				require.Nil(t, points)
 				require.EqualError(t, err, "calling endpoint: Get \"/API/API_GetUserPoints.php?u=Test&y=some_secret\": unsupported protocol scheme \"\"")
 			},
 		},
 		{
-			name:     "error response",
-			username: "Test",
+			name: "error response",
+			params: models.GetUserPointsParameters{
+				Username: "Test",
+			},
 			modifyURL: func(url string) string {
 				return url
 			},
@@ -1514,26 +1518,28 @@ func TestGetUserPoints(tt *testing.T) {
 			response: func(messageBytes []byte, errorBytes []byte) []byte {
 				return errorBytes
 			},
-			assert: func(t *testing.T, points *models.Points, err error) {
+			assert: func(t *testing.T, points *models.GetUserPoints, err error) {
 				require.Nil(t, points)
 				require.EqualError(t, err, "parsing response object: error responses: [401] Not Authorized")
 			},
 		},
 		{
-			name:     "success",
-			username: "Test",
+			name: "success",
+			params: models.GetUserPointsParameters{
+				Username: "Test",
+			},
 			modifyURL: func(url string) string {
 				return url
 			},
 			responseCode: http.StatusOK,
-			responseMessage: models.Points{
+			responseMessage: models.GetUserPoints{
 				Points:         230,
 				SoftcorePoints: 342,
 			},
 			response: func(messageBytes []byte, errorBytes []byte) []byte {
 				return messageBytes
 			},
-			assert: func(t *testing.T, points *models.Points, err error) {
+			assert: func(t *testing.T, points *models.GetUserPoints, err error) {
 				require.NotNil(t, points)
 				require.Equal(t, 230, points.Points)
 				require.Equal(t, 342, points.SoftcorePoints)
@@ -1561,7 +1567,7 @@ func TestGetUserPoints(tt *testing.T) {
 			defer server.Close()
 
 			client := retroachievements.New(test.modifyURL(server.URL), "some_secret")
-			points, err := client.GetUserPoints(test.username)
+			points, err := client.GetUserPoints(test.params)
 			test.assert(t, points, err)
 		})
 	}

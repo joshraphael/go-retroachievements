@@ -390,6 +390,7 @@ type GetUserClaims struct {
 	MinutesLeft int      `json:"MinutesLeft"`
 }
 
+// GetUserGameRankAndScoreParameters contains the parameters needed for getting a users rank and score
 type GetUserGameRankAndScoreParameters struct {
 	// The target username
 	Username string
@@ -403,4 +404,15 @@ type GetUserGameRankAndScore struct {
 	UserRank   int       `json:"UserRank"`
 	TotalScore int       `json:"TotalScore"`
 	LastAward  *DateTime `json:"LastAward"`
+}
+
+// GetUserPointsParameters contains the parameters needed for getting a users points
+type GetUserPointsParameters struct {
+	// The target username
+	Username string
+}
+
+type GetUserPoints struct {
+	Points         int `json:"Points"`
+	SoftcorePoints int `json:"SoftcorePoints"`
 }
