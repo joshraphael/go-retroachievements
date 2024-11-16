@@ -416,3 +416,20 @@ type GetUserPoints struct {
 	Points         int `json:"Points"`
 	SoftcorePoints int `json:"SoftcorePoints"`
 }
+
+type GetUserProgressParameters struct {
+	// The target username
+	Username string
+
+	// The target game IDs
+	GameIDs []int
+}
+
+type GetUserProgress struct {
+	NumPossibleAchievements int `json:"NumPossibleAchievements"`
+	PossibleScore           int `json:"PossibleScore"`
+	NumAchieved             int `json:"NumAchieved"`
+	ScoreAchieved           int `json:"ScoreAchieved"`
+	NumAchievedHardcore     int `json:"NumAchievedHardcore"`
+	ScoreAchievedHardcore   int `json:"ScoreAchievedHardcore"`
+}

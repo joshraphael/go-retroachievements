@@ -1576,19 +1576,20 @@ func TestGetUserPoints(tt *testing.T) {
 func TestGetUserProgress(tt *testing.T) {
 	tests := []struct {
 		name            string
-		username        string
-		gameIDs         []int
+		params          models.GetUserProgressParameters
 		modifyURL       func(url string) string
 		responseCode    int
-		responseMessage map[string]models.Progress
+		responseMessage map[string]models.GetUserProgress
 		responseError   models.ErrorResponse
 		response        func(messageBytes []byte, errorBytes []byte) []byte
-		assert          func(t *testing.T, progress map[string]models.Progress, err error)
+		assert          func(t *testing.T, progress map[string]models.GetUserProgress, err error)
 	}{
 		{
-			name:     "fail to call endpoint",
-			username: "Test",
-			gameIDs:  []int{1, 2, 5352},
+			name: "fail to call endpoint",
+			params: models.GetUserProgressParameters{
+				Username: "Test",
+				GameIDs:  []int{1, 2, 5352},
+			},
 			modifyURL: func(url string) string {
 				return ""
 			},
@@ -1606,15 +1607,17 @@ func TestGetUserProgress(tt *testing.T) {
 			response: func(messageBytes []byte, errorBytes []byte) []byte {
 				return errorBytes
 			},
-			assert: func(t *testing.T, progress map[string]models.Progress, err error) {
+			assert: func(t *testing.T, progress map[string]models.GetUserProgress, err error) {
 				require.Nil(t, progress)
 				require.EqualError(t, err, "calling endpoint: Get \"/API/API_GetUserProgress.php?i=1%2C2%2C5352&u=Test&y=some_secret\": unsupported protocol scheme \"\"")
 			},
 		},
 		{
-			name:     "error response",
-			username: "Test",
-			gameIDs:  []int{1, 2, 5352},
+			name: "error response",
+			params: models.GetUserProgressParameters{
+				Username: "Test",
+				GameIDs:  []int{1, 2, 5352},
+			},
 			modifyURL: func(url string) string {
 				return url
 			},
@@ -1632,20 +1635,22 @@ func TestGetUserProgress(tt *testing.T) {
 			response: func(messageBytes []byte, errorBytes []byte) []byte {
 				return errorBytes
 			},
-			assert: func(t *testing.T, progress map[string]models.Progress, err error) {
+			assert: func(t *testing.T, progress map[string]models.GetUserProgress, err error) {
 				require.Nil(t, progress)
 				require.EqualError(t, err, "parsing response object: error responses: [401] Not Authorized")
 			},
 		},
 		{
-			name:     "success",
-			username: "Test",
-			gameIDs:  []int{1, 2, 5352},
+			name: "success",
+			params: models.GetUserProgressParameters{
+				Username: "Test",
+				GameIDs:  []int{1, 2, 5352},
+			},
 			modifyURL: func(url string) string {
 				return url
 			},
 			responseCode: http.StatusOK,
-			responseMessage: map[string]models.Progress{
+			responseMessage: map[string]models.GetUserProgress{
 				"1": {
 					NumPossibleAchievements: 36,
 					PossibleScore:           305,
@@ -1674,7 +1679,7 @@ func TestGetUserProgress(tt *testing.T) {
 			response: func(messageBytes []byte, errorBytes []byte) []byte {
 				return messageBytes
 			},
-			assert: func(t *testing.T, progress map[string]models.Progress, err error) {
+			assert: func(t *testing.T, progress map[string]models.GetUserProgress, err error) {
 				require.NotNil(t, progress)
 				// first element
 				first, ok := progress["1"]
@@ -1728,7 +1733,7 @@ func TestGetUserProgress(tt *testing.T) {
 			}))
 			defer server.Close()
 			client := retroachievements.New(test.modifyURL(server.URL), "some_secret")
-			progress, err := client.GetUserProgress(test.username, test.gameIDs)
+			progress, err := client.GetUserProgress(test.params)
 			test.assert(t, progress, err)
 		})
 	}

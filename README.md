@@ -21,6 +21,7 @@ go get github.com/joshraphael/go-retroachievements@latest
 Then include it in your application:
 ```go
 import "github.com/joshraphael/go-retroachievements"
+import "github.com/joshraphael/go-retroachievements/models"
 ```
 
 ## Usage
@@ -58,7 +59,7 @@ For convenience, the API docs and examples can be found in the tables below
 |`GetUserClaims()`|Get a list of set development claims made over the lifetime of a user.|[docs](https://api-docs.retroachievements.org/v1/get-user-claims.html) \| [example](examples/user/getuserclaims/getuserclaims.go)|
 |`GetUserGameRankAndScore()`|Get metadata about how a user has performed on a given game.|[docs](https://api-docs.retroachievements.org/v1/get-user-game-rank-and-score.html) \| [example](examples/user/getusergamerankandscore/getusergamerankandscore.go)|
 |`GetUserPoints()`|Get a user's total hardcore and softcore points.|[docs](https://api-docs.retroachievements.org/v1/get-user-points.html) \| [example](examples/user/getuserpoints/getuserpoints.go)|
-|`GetUserProgress(string,[]int)`|Get a user's progress on a list of specified games.|[docs](https://api-docs.retroachievements.org/v1/get-user-progress.html) \| [example](examples/user/getuserprogress/getuserprogress.go)|
+|`GetUserProgress()`|Get a user's progress on a list of specified games.|[docs](https://api-docs.retroachievements.org/v1/get-user-progress.html) \| [example](examples/user/getuserprogress/getuserprogress.go)|
 |`GetUserRecentlyPlayedGames(string,int,int)`|Get a list of games a user has recently played.|[docs](https://api-docs.retroachievements.org/v1/get-user-recently-played-games.html) \| [example](examples/user/getuserrecentlyplayedgames/getuserrecentlyplayedgames.go)|
 
 <h3>Game</h3>

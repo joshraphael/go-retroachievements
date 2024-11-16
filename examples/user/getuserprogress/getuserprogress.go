@@ -6,6 +6,7 @@ import (
 	"os"
 
 	"github.com/joshraphael/go-retroachievements"
+	"github.com/joshraphael/go-retroachievements/models"
 )
 
 /*
@@ -16,7 +17,10 @@ func main() {
 
 	client := retroachievements.NewClient(secret)
 
-	resp, err := client.GetUserProgress("jamiras", []int{1, 16247})
+	resp, err := client.GetUserProgress(models.GetUserProgressParameters{
+		Username: "jamiras",
+		GameIDs:  []int{1, 16247},
+	})
 	if err != nil {
 		panic(err)
 	}
