@@ -6,6 +6,7 @@ import (
 	"os"
 
 	"github.com/joshraphael/go-retroachievements"
+	"github.com/joshraphael/go-retroachievements/models"
 )
 
 /*
@@ -16,7 +17,9 @@ func main() {
 
 	client := retroachievements.NewClient(secret)
 
-	resp, err := client.GetGame(293)
+	resp, err := client.GetGame(models.GetGameParameters{
+		GameID: 293,
+	})
 	if err != nil {
 		panic(err)
 	}

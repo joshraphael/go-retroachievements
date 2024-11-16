@@ -34,43 +34,62 @@ func makGame(released time.Time) models.Game {
 }
 
 func TestGetGame(tt *testing.T) {
+	forumTopicId := 16654
+	flags := 0
 	released, err := time.Parse(models.LongMonthDateFormat, "June 18, 2001")
 	require.NoError(tt, err)
 	tests := []struct {
 		name             string
-		id               int
+		params           models.GetGameParameters
 		modifyURL        func(url string) string
 		responseCode     int
-		responseGameInfo models.GameInfo
+		responseGameInfo models.GetGame
 		responseError    models.ErrorResponse
-		response         func(gameInfoBytes []byte, errorBytes []byte) []byte
-		assert           func(t *testing.T, gameInfo *models.GameInfo, err error)
+		response         func(messageBytes []byte, errorBytes []byte) []byte
+		assert           func(t *testing.T, resp *models.GetGame, err error)
 	}{
 		{
 			name: "fail to call endpoint",
-			id:   2991,
+			params: models.GetGameParameters{
+				GameID: 2991,
+			},
 			modifyURL: func(url string) string {
 				return ""
 			},
 			responseCode: http.StatusOK,
-			responseGameInfo: models.GameInfo{
-				Game:        makGame(released),
+			responseGameInfo: models.GetGame{
+				Title:        "Twisted Metal: Black",
+				ConsoleID:    21,
+				ForumTopicID: &forumTopicId,
+				Flags:        &flags,
+				ImageIcon:    "/Images/057992.png",
+				ImageTitle:   "/Images/056152.png",
+				ImageIngame:  "/Images/056151.png",
+				ImageBoxArt:  "/Images/050832.png",
+				Publisher:    "Sony Computer Entertainment",
+				Developer:    "Incognito Entertainment",
+				Genre:        "Vehicular Combat",
+				Released: models.DateOnly{
+					Time: released,
+				},
 				GameTitle:   "Twisted Metal: Black",
 				ConsoleName: "Playstation 2",
 				Console:     "Playstation 2",
 				GameIcon:    "/Images/057992.png",
 			},
-			response: func(gameInfoBytes []byte, errorBytes []byte) []byte {
-				return gameInfoBytes
+			response: func(messageBytes []byte, errorBytes []byte) []byte {
+				return messageBytes
 			},
-			assert: func(t *testing.T, gameInfo *models.GameInfo, err error) {
-				require.Nil(t, gameInfo)
+			assert: func(t *testing.T, resp *models.GetGame, err error) {
+				require.Nil(t, resp)
 				require.EqualError(t, err, "calling endpoint: Get \"/API/API_GetGame.php?i=2991&y=some_secret\": unsupported protocol scheme \"\"")
 			},
 		},
 		{
 			name: "error response",
-			id:   2991,
+			params: models.GetGameParameters{
+				GameID: 2991,
+			},
 			modifyURL: func(url string) string {
 				return url
 			},
@@ -85,49 +104,64 @@ func TestGetGame(tt *testing.T) {
 					},
 				},
 			},
-			response: func(gameInfoBytes []byte, errorBytes []byte) []byte {
+			response: func(messageBytes []byte, errorBytes []byte) []byte {
 				return errorBytes
 			},
-			assert: func(t *testing.T, gameInfo *models.GameInfo, err error) {
-				require.Nil(t, gameInfo)
+			assert: func(t *testing.T, resp *models.GetGame, err error) {
+				require.Nil(t, resp)
 				require.EqualError(t, err, "parsing response object: error responses: [401] Not Authorized")
 			},
 		},
 		{
 			name: "success",
-			id:   2991,
+			params: models.GetGameParameters{
+				GameID: 2991,
+			},
 			modifyURL: func(url string) string {
 				return url
 			},
 			responseCode: http.StatusOK,
-			responseGameInfo: models.GameInfo{
-				Game:        makGame(released),
+			responseGameInfo: models.GetGame{
+				Title:        "Twisted Metal: Black",
+				ConsoleID:    21,
+				ForumTopicID: &forumTopicId,
+				Flags:        &flags,
+				ImageIcon:    "/Images/057992.png",
+				ImageTitle:   "/Images/056152.png",
+				ImageIngame:  "/Images/056151.png",
+				ImageBoxArt:  "/Images/050832.png",
+				Publisher:    "Sony Computer Entertainment",
+				Developer:    "Incognito Entertainment",
+				Genre:        "Vehicular Combat",
+				Released: models.DateOnly{
+					Time: released,
+				},
 				GameTitle:   "Twisted Metal: Black",
 				ConsoleName: "Playstation 2",
 				Console:     "Playstation 2",
 				GameIcon:    "/Images/057992.png",
 			},
-			response: func(gameInfoBytes []byte, errorBytes []byte) []byte {
-				return gameInfoBytes
+			response: func(messageBytes []byte, errorBytes []byte) []byte {
+				return messageBytes
 			},
-			assert: func(t *testing.T, gameInfo *models.GameInfo, err error) {
-				require.NotNil(t, gameInfo)
-				require.Equal(t, gameInfo.Title, "Twisted Metal: Black")
-				require.Equal(t, "Twisted Metal: Black", gameInfo.GameTitle)
-				require.Equal(t, 21, gameInfo.ConsoleID)
-				require.Equal(t, "Playstation 2", gameInfo.ConsoleName)
-				require.Equal(t, "Playstation 2", gameInfo.Console)
-				require.Equal(t, 16654, *gameInfo.ForumTopicID)
-				require.Equal(t, 0, *gameInfo.Flags)
-				require.Equal(t, "/Images/057992.png", gameInfo.GameIcon)
-				require.Equal(t, "/Images/057992.png", gameInfo.ImageIcon)
-				require.Equal(t, "/Images/056152.png", gameInfo.ImageTitle)
-				require.Equal(t, "/Images/056151.png", gameInfo.ImageIngame)
-				require.Equal(t, "/Images/050832.png", gameInfo.ImageBoxArt)
-				require.Equal(t, "Sony Computer Entertainment", gameInfo.Publisher)
-				require.Equal(t, "Incognito Entertainment", gameInfo.Developer)
-				require.Equal(t, "Vehicular Combat", gameInfo.Genre)
-				require.Equal(t, released, gameInfo.Released.Time)
+			assert: func(t *testing.T, resp *models.GetGame, err error) {
+				require.NotNil(t, resp)
+				require.Equal(t, resp.Title, "Twisted Metal: Black")
+				require.Equal(t, "Twisted Metal: Black", resp.GameTitle)
+				require.Equal(t, 21, resp.ConsoleID)
+				require.Equal(t, "Playstation 2", resp.ConsoleName)
+				require.Equal(t, "Playstation 2", resp.Console)
+				require.Equal(t, 16654, *resp.ForumTopicID)
+				require.Equal(t, 0, *resp.Flags)
+				require.Equal(t, "/Images/057992.png", resp.GameIcon)
+				require.Equal(t, "/Images/057992.png", resp.ImageIcon)
+				require.Equal(t, "/Images/056152.png", resp.ImageTitle)
+				require.Equal(t, "/Images/056151.png", resp.ImageIngame)
+				require.Equal(t, "/Images/050832.png", resp.ImageBoxArt)
+				require.Equal(t, "Sony Computer Entertainment", resp.Publisher)
+				require.Equal(t, "Incognito Entertainment", resp.Developer)
+				require.Equal(t, "Vehicular Combat", resp.Genre)
+				require.Equal(t, released, resp.Released.Time)
 				require.NoError(t, err)
 			},
 		},
@@ -152,8 +186,8 @@ func TestGetGame(tt *testing.T) {
 			defer server.Close()
 
 			client := retroachievements.New(test.modifyURL(server.URL), "some_secret")
-			gameInfo, err := client.GetGame(test.id)
-			test.assert(t, gameInfo, err)
+			resp, err := client.GetGame(test.params)
+			test.assert(t, resp, err)
 		})
 	}
 }
