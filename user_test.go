@@ -1607,8 +1607,8 @@ func TestGetUserProgress(tt *testing.T) {
 			response: func(messageBytes []byte, errorBytes []byte) []byte {
 				return errorBytes
 			},
-			assert: func(t *testing.T, progress map[string]models.GetUserProgress, err error) {
-				require.Nil(t, progress)
+			assert: func(t *testing.T, resp map[string]models.GetUserProgress, err error) {
+				require.Nil(t, resp)
 				require.EqualError(t, err, "calling endpoint: Get \"/API/API_GetUserProgress.php?i=1%2C2%2C5352&u=Test&y=some_secret\": unsupported protocol scheme \"\"")
 			},
 		},
@@ -1635,8 +1635,8 @@ func TestGetUserProgress(tt *testing.T) {
 			response: func(messageBytes []byte, errorBytes []byte) []byte {
 				return errorBytes
 			},
-			assert: func(t *testing.T, progress map[string]models.GetUserProgress, err error) {
-				require.Nil(t, progress)
+			assert: func(t *testing.T, resp map[string]models.GetUserProgress, err error) {
+				require.Nil(t, resp)
 				require.EqualError(t, err, "parsing response object: error responses: [401] Not Authorized")
 			},
 		},
@@ -1679,10 +1679,10 @@ func TestGetUserProgress(tt *testing.T) {
 			response: func(messageBytes []byte, errorBytes []byte) []byte {
 				return messageBytes
 			},
-			assert: func(t *testing.T, progress map[string]models.GetUserProgress, err error) {
-				require.NotNil(t, progress)
+			assert: func(t *testing.T, resp map[string]models.GetUserProgress, err error) {
+				require.NotNil(t, resp)
 				// first element
-				first, ok := progress["1"]
+				first, ok := resp["1"]
 				require.True(t, ok)
 				require.Equal(t, 36, first.NumPossibleAchievements)
 				require.Equal(t, 305, first.PossibleScore)
@@ -1692,7 +1692,7 @@ func TestGetUserProgress(tt *testing.T) {
 				require.Equal(t, 100, first.ScoreAchievedHardcore)
 
 				// second element
-				second, ok := progress["2"]
+				second, ok := resp["2"]
 				require.True(t, ok)
 				require.Equal(t, 56, second.NumPossibleAchievements)
 				require.Equal(t, 600, second.PossibleScore)
@@ -1702,7 +1702,7 @@ func TestGetUserProgress(tt *testing.T) {
 				require.Equal(t, 0, second.ScoreAchievedHardcore)
 
 				// third element
-				third, ok := progress["5352"]
+				third, ok := resp["5352"]
 				require.True(t, ok)
 				require.Equal(t, 13, third.NumPossibleAchievements)
 				require.Equal(t, 230, third.PossibleScore)
@@ -1733,8 +1733,202 @@ func TestGetUserProgress(tt *testing.T) {
 			}))
 			defer server.Close()
 			client := retroachievements.New(test.modifyURL(server.URL), "some_secret")
-			progress, err := client.GetUserProgress(test.params)
-			test.assert(t, progress, err)
+			resp, err := client.GetUserProgress(test.params)
+			test.assert(t, resp, err)
+		})
+	}
+}
+
+func TestGetUserRecentlyPlayedGames(tt *testing.T) {
+	count := 10
+	offset := 0
+	lastPlayed, err := time.Parse(time.DateTime, "2024-05-07 08:48:54")
+	require.NoError(tt, err)
+	lastPlayed2, err := time.Parse(time.DateTime, "2024-09-19 10:08:09")
+	require.NoError(tt, err)
+	tests := []struct {
+		name            string
+		params          models.GetUserRecentlyPlayedGamesParameters
+		modifyURL       func(url string) string
+		responseCode    int
+		responseMessage []models.GetUserRecentlyPlayedGames
+		responseError   models.ErrorResponse
+		response        func(messageBytes []byte, errorBytes []byte) []byte
+		assert          func(t *testing.T, resp []models.GetUserRecentlyPlayedGames, err error)
+	}{
+		{
+			name: "fail to call endpoint",
+			params: models.GetUserRecentlyPlayedGamesParameters{
+				Username: "Test",
+				Count:    &count,
+				Offset:   &offset,
+			},
+			modifyURL: func(url string) string {
+				return ""
+			},
+			responseCode: http.StatusUnauthorized,
+			responseError: models.ErrorResponse{
+				Message: "test",
+				Errors: []models.ErrorDetail{
+					{
+						Status: http.StatusUnauthorized,
+						Code:   "unauthorized",
+						Title:  "Not Authorized",
+					},
+				},
+			},
+			response: func(messageBytes []byte, errorBytes []byte) []byte {
+				return errorBytes
+			},
+			assert: func(t *testing.T, resp []models.GetUserRecentlyPlayedGames, err error) {
+				require.Nil(t, resp)
+				require.EqualError(t, err, "calling endpoint: Get \"/API/API_GetUserRecentlyPlayedGames.php?c=10&o=0&u=Test&y=some_secret\": unsupported protocol scheme \"\"")
+			},
+		},
+		{
+			name: "error response",
+			params: models.GetUserRecentlyPlayedGamesParameters{
+				Username: "Test",
+				Count:    &count,
+				Offset:   &offset,
+			},
+			modifyURL: func(url string) string {
+				return url
+			},
+			responseCode: http.StatusUnauthorized,
+			responseError: models.ErrorResponse{
+				Message: "test",
+				Errors: []models.ErrorDetail{
+					{
+						Status: http.StatusUnauthorized,
+						Code:   "unauthorized",
+						Title:  "Not Authorized",
+					},
+				},
+			},
+			response: func(messageBytes []byte, errorBytes []byte) []byte {
+				return errorBytes
+			},
+			assert: func(t *testing.T, resp []models.GetUserRecentlyPlayedGames, err error) {
+				require.Nil(t, resp)
+				require.EqualError(t, err, "parsing response list: error responses: [401] Not Authorized")
+			},
+		},
+		{
+			name: "success",
+			params: models.GetUserRecentlyPlayedGamesParameters{
+				Username: "Test",
+				Count:    &count,
+				Offset:   &offset,
+			},
+			modifyURL: func(url string) string {
+				return url
+			},
+			responseCode: http.StatusOK,
+			responseMessage: []models.GetUserRecentlyPlayedGames{
+				{
+					NumPossibleAchievements: 36,
+					PossibleScore:           305,
+					NumAchieved:             13,
+					ScoreAchieved:           100,
+					NumAchievedHardcore:     13,
+					ScoreAchievedHardcore:   100,
+					GameID:                  123,
+					ConsoleID:               2,
+					ConsoleName:             "Game Cube",
+					Title:                   "Batman",
+					ImageIcon:               "/img/something.png",
+					ImageTitle:              "batman image",
+					ImageIngame:             "/img/ingame.png",
+					ImageBoxArt:             "/img/boxart.png",
+					LastPlayed: models.DateTime{
+						Time: lastPlayed,
+					},
+					AchievementsTotal: 16,
+				},
+				{
+					NumPossibleAchievements: 66,
+					PossibleScore:           355,
+					NumAchieved:             100,
+					ScoreAchieved:           1990,
+					NumAchievedHardcore:     56,
+					ScoreAchievedHardcore:   101,
+					GameID:                  234,
+					ConsoleID:               6,
+					ConsoleName:             "PlayStation",
+					Title:                   "Call Of Duty",
+					ImageIcon:               "/img/duty.png",
+					ImageTitle:              "cod image",
+					ImageIngame:             "/img/cod_battlefield.png",
+					ImageBoxArt:             "/img/cod_cover.png",
+					LastPlayed: models.DateTime{
+						Time: lastPlayed2,
+					},
+					AchievementsTotal: 42,
+				},
+			},
+			response: func(messageBytes []byte, errorBytes []byte) []byte {
+				return messageBytes
+			},
+			assert: func(t *testing.T, resp []models.GetUserRecentlyPlayedGames, err error) {
+				require.NoError(t, err)
+				require.Equal(t, 36, resp[0].NumPossibleAchievements)
+				require.Equal(t, 305, resp[0].PossibleScore)
+				require.Equal(t, 13, resp[0].NumAchieved)
+				require.Equal(t, 100, resp[0].ScoreAchieved)
+				require.Equal(t, 13, resp[0].NumAchievedHardcore)
+				require.Equal(t, 100, resp[0].ScoreAchievedHardcore)
+				require.Equal(t, 123, resp[0].GameID)
+				require.Equal(t, 2, resp[0].ConsoleID)
+				require.Equal(t, "Game Cube", resp[0].ConsoleName)
+				require.Equal(t, "Batman", resp[0].Title)
+				require.Equal(t, "/img/something.png", resp[0].ImageIcon)
+				require.Equal(t, "batman image", resp[0].ImageTitle)
+				require.Equal(t, "/img/ingame.png", resp[0].ImageIngame)
+				require.Equal(t, "/img/boxart.png", resp[0].ImageBoxArt)
+				require.Equal(t, lastPlayed, resp[0].LastPlayed.Time)
+				require.Equal(t, 16, resp[0].AchievementsTotal)
+
+				require.Equal(t, 66, resp[1].NumPossibleAchievements)
+				require.Equal(t, 355, resp[1].PossibleScore)
+				require.Equal(t, 100, resp[1].NumAchieved)
+				require.Equal(t, 1990, resp[1].ScoreAchieved)
+				require.Equal(t, 56, resp[1].NumAchievedHardcore)
+				require.Equal(t, 101, resp[1].ScoreAchievedHardcore)
+				require.Equal(t, 234, resp[1].GameID)
+				require.Equal(t, 6, resp[1].ConsoleID)
+				require.Equal(t, "PlayStation", resp[1].ConsoleName)
+				require.Equal(t, "Call Of Duty", resp[1].Title)
+				require.Equal(t, "/img/duty.png", resp[1].ImageIcon)
+				require.Equal(t, "cod image", resp[1].ImageTitle)
+				require.Equal(t, "/img/cod_battlefield.png", resp[1].ImageIngame)
+				require.Equal(t, "/img/cod_cover.png", resp[1].ImageBoxArt)
+				require.Equal(t, lastPlayed2, resp[1].LastPlayed.Time)
+				require.Equal(t, 42, resp[1].AchievementsTotal)
+			},
+		},
+	}
+	for _, test := range tests {
+		tt.Run(test.name, func(t *testing.T) {
+			server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+				expectedPath := "/API/API_GetUserRecentlyPlayedGames.php"
+				if r.URL.Path != expectedPath {
+					t.Errorf("Expected to request '%s', got: %s", expectedPath, r.URL.Path)
+				}
+				w.WriteHeader(test.responseCode)
+				responseMessage, err := json.Marshal(test.responseMessage)
+				require.NoError(t, err)
+				errBytes, err := json.Marshal(test.responseError)
+				require.NoError(t, err)
+				resp := test.response(responseMessage, errBytes)
+				num, err := w.Write(resp)
+				require.NoError(t, err)
+				require.Equal(t, num, len(resp))
+			}))
+			defer server.Close()
+			client := retroachievements.New(test.modifyURL(server.URL), "some_secret")
+			resp, err := client.GetUserRecentlyPlayedGames(test.params)
+			test.assert(t, resp, err)
 		})
 	}
 }
