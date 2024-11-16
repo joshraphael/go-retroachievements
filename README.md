@@ -67,4 +67,4 @@ For convenience, the API docs and examples can be found in the tables below
 |Function|Description|Links|
 |-|-|-|
 |`GetGame()`|Get basic metadata about a game.|[docs](https://api-docs.retroachievements.org/v1/get-game.html) \| [example](examples/game/getgame/getgame.go)|
-|`GetGameExtended(int)`|Get extended metadata about a game.|[docs](https://api-docs.retroachievements.org/v1/get-game-extended.html) \| [example](examples/game/getgameextended/getgameextended.go)|
+|`GetGameExtended()`|Get extended metadata about a game.|[docs](https://api-docs.retroachievements.org/v1/get-game-extended.html) \| [example](examples/game/getgameextended/getgameextended.go)|

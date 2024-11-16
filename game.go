@@ -27,17 +27,21 @@ func (c *Client) GetGame(params models.GetGameParameters) (*models.GetGame, erro
 }
 
 // GetGameExtended get extended metadata about a game.
-func (c *Client) GetGameExtended(id int) (*models.ExtentedGameInfo, error) {
-	resp, err := c.do(
+func (c *Client) GetGameExtended(params models.GetGameExtentedParameters) (*models.GetGameExtented, error) {
+	details := []raHttp.RequestDetail{
 		raHttp.Method(http.MethodGet),
 		raHttp.Path("/API/API_GetGameExtended.php"),
 		raHttp.APIToken(c.Secret),
-		raHttp.IDs([]int{id}),
-	)
+		raHttp.IDs([]int{params.GameID}),
+	}
+	if params.Unofficial {
+		details = append(details, raHttp.From(int64(5)))
+	}
+	resp, err := c.do(details...)
 	if err != nil {
 		return nil, fmt.Errorf("calling endpoint: %w", err)
 	}
-	game, err := raHttp.ResponseObject[models.ExtentedGameInfo](resp)
+	game, err := raHttp.ResponseObject[models.GetGameExtented](resp)
 	if err != nil {
 		return nil, fmt.Errorf("parsing response object: %w", err)
 	}

@@ -12,27 +12,6 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
-func makGame(released time.Time) models.Game {
-	forumTopicId := 16654
-	flags := 0
-	return models.Game{
-		Title:        "Twisted Metal: Black",
-		ConsoleID:    21,
-		ForumTopicID: &forumTopicId,
-		Flags:        &flags,
-		ImageIcon:    "/Images/057992.png",
-		ImageTitle:   "/Images/056152.png",
-		ImageIngame:  "/Images/056151.png",
-		ImageBoxArt:  "/Images/050832.png",
-		Publisher:    "Sony Computer Entertainment",
-		Developer:    "Incognito Entertainment",
-		Genre:        "Vehicular Combat",
-		Released: models.LongMonthDate{
-			Time: released,
-		},
-	}
-}
-
 func TestGetGame(tt *testing.T) {
 	forumTopicId := 16654
 	flags := 0
@@ -145,7 +124,6 @@ func TestGetGame(tt *testing.T) {
 				return messageBytes
 			},
 			assert: func(t *testing.T, resp *models.GetGame, err error) {
-				require.NoError(t, err)
 				require.NotNil(t, resp)
 				require.Equal(t, resp.Title, "Twisted Metal: Black")
 				require.Equal(t, "Twisted Metal: Black", resp.GameTitle)
@@ -193,7 +171,9 @@ func TestGetGame(tt *testing.T) {
 }
 
 func TestGetGameExtended(tt *testing.T) {
-	released, err := time.Parse(models.LongMonthDateFormat, "June 18, 2001")
+	forumTopicId := 16654
+	flags := 0
+	released, err := time.Parse(time.DateOnly, "2001-06-18")
 	require.NoError(tt, err)
 	updated, err := time.Parse(time.RFC3339Nano, "2024-08-15T11:46:06.000000Z")
 	require.NoError(tt, err)
@@ -202,24 +182,40 @@ func TestGetGameExtended(tt *testing.T) {
 	created, err := time.Parse(time.DateTime, "2022-09-28 00:36:26")
 	require.NoError(tt, err)
 	tests := []struct {
-		name                     string
-		id                       int
-		modifyURL                func(url string) string
-		responseCode             int
-		responseExtendedGameInfo models.ExtentedGameInfo
-		responseError            models.ErrorResponse
-		response                 func(gameBytes []byte, errorBytes []byte) []byte
-		assert                   func(t *testing.T, game *models.ExtentedGameInfo, err error)
+		name            string
+		params          models.GetGameExtentedParameters
+		modifyURL       func(url string) string
+		responseCode    int
+		responseMessage models.GetGameExtented
+		responseError   models.ErrorResponse
+		response        func(messageBytes []byte, errorBytes []byte) []byte
+		assert          func(t *testing.T, game *models.GetGameExtented, err error)
 	}{
 		{
 			name: "fail to call endpoint",
-			id:   2991,
+			params: models.GetGameExtentedParameters{
+				GameID:     2991,
+				Unofficial: true,
+			},
 			modifyURL: func(url string) string {
 				return ""
 			},
 			responseCode: http.StatusOK,
-			responseExtendedGameInfo: models.ExtentedGameInfo{
-				Game:               makGame(released),
+			responseMessage: models.GetGameExtented{
+				Title:        "Twisted Metal: Black",
+				ConsoleID:    21,
+				ForumTopicID: &forumTopicId,
+				Flags:        &flags,
+				ImageIcon:    "/Images/057992.png",
+				ImageTitle:   "/Images/056152.png",
+				ImageIngame:  "/Images/056151.png",
+				ImageBoxArt:  "/Images/050832.png",
+				Publisher:    "Sony Computer Entertainment",
+				Developer:    "Incognito Entertainment",
+				Genre:        "Vehicular Combat",
+				Released: &models.DateOnly{
+					Time: released,
+				},
 				ID:                 2991,
 				IsFinal:            0,
 				RichPresencePatch:  "e7a5e12072a6c976a1146756726fdd8c",
@@ -227,15 +223,13 @@ func TestGetGameExtended(tt *testing.T) {
 				ConsoleName:        "PlayStation 2",
 				NumDistinctPlayers: 1287,
 				NumAchievements:    93,
-				Achievements: map[int]models.GameAchievement{
+				Achievements: map[int]models.GetGameExtentedAchievement{
 					252117: {
-						Achievement: models.Achievement{
-							Title:       "Zorko Bros. Scrap & Salvage",
-							Description: "Destroy all enemies in Junkyard in Story Mode",
-							Points:      5,
-							TrueRatio:   5,
-							Author:      "TheJediSonic",
-						},
+						Title:              "Zorko Bros. Scrap & Salvage",
+						Description:        "Destroy all enemies in Junkyard in Story Mode",
+						Points:             5,
+						TrueRatio:          5,
+						Author:             "TheJediSonic",
 						ID:                 252117,
 						NumAwarded:         819,
 						NumAwardedHardcore: 327,
@@ -252,17 +246,19 @@ func TestGetGameExtended(tt *testing.T) {
 					},
 				},
 			},
-			response: func(extendedGameInfoBytes []byte, errorBytes []byte) []byte {
-				return extendedGameInfoBytes
+			response: func(messageBytes []byte, errorBytes []byte) []byte {
+				return messageBytes
 			},
-			assert: func(t *testing.T, game *models.ExtentedGameInfo, err error) {
-				require.Nil(t, game)
-				require.EqualError(t, err, "calling endpoint: Get \"/API/API_GetGameExtended.php?i=2991&y=some_secret\": unsupported protocol scheme \"\"")
+			assert: func(t *testing.T, resp *models.GetGameExtented, err error) {
+				require.Nil(t, resp)
+				require.EqualError(t, err, "calling endpoint: Get \"/API/API_GetGameExtended.php?f=5&i=2991&y=some_secret\": unsupported protocol scheme \"\"")
 			},
 		},
 		{
 			name: "error response",
-			id:   2991,
+			params: models.GetGameExtentedParameters{
+				GameID: 2991,
+			},
 			modifyURL: func(url string) string {
 				return url
 			},
@@ -277,23 +273,38 @@ func TestGetGameExtended(tt *testing.T) {
 					},
 				},
 			},
-			response: func(gameBytes []byte, errorBytes []byte) []byte {
+			response: func(messageBytes []byte, errorBytes []byte) []byte {
 				return errorBytes
 			},
-			assert: func(t *testing.T, game *models.ExtentedGameInfo, err error) {
-				require.Nil(t, game)
+			assert: func(t *testing.T, resp *models.GetGameExtented, err error) {
+				require.Nil(t, resp)
 				require.EqualError(t, err, "parsing response object: error responses: [401] Not Authorized")
 			},
 		},
 		{
 			name: "success",
-			id:   2991,
+			params: models.GetGameExtentedParameters{
+				GameID: 2991,
+			},
 			modifyURL: func(url string) string {
 				return url
 			},
 			responseCode: http.StatusOK,
-			responseExtendedGameInfo: models.ExtentedGameInfo{
-				Game:               makGame(released),
+			responseMessage: models.GetGameExtented{
+				Title:        "Twisted Metal: Black",
+				ConsoleID:    21,
+				ForumTopicID: &forumTopicId,
+				Flags:        &flags,
+				ImageIcon:    "/Images/057992.png",
+				ImageTitle:   "/Images/056152.png",
+				ImageIngame:  "/Images/056151.png",
+				ImageBoxArt:  "/Images/050832.png",
+				Publisher:    "Sony Computer Entertainment",
+				Developer:    "Incognito Entertainment",
+				Genre:        "Vehicular Combat",
+				Released: &models.DateOnly{
+					Time: released,
+				},
 				ID:                 2991,
 				IsFinal:            0,
 				RichPresencePatch:  "e7a5e12072a6c976a1146756726fdd8c",
@@ -301,15 +312,13 @@ func TestGetGameExtended(tt *testing.T) {
 				ConsoleName:        "PlayStation 2",
 				NumDistinctPlayers: 1287,
 				NumAchievements:    93,
-				Achievements: map[int]models.GameAchievement{
+				Achievements: map[int]models.GetGameExtentedAchievement{
 					252117: {
-						Achievement: models.Achievement{
-							Title:       "Zorko Bros. Scrap & Salvage",
-							Description: "Destroy all enemies in Junkyard in Story Mode",
-							Points:      5,
-							TrueRatio:   5,
-							Author:      "TheJediSonic",
-						},
+						Title:              "Zorko Bros. Scrap & Salvage",
+						Description:        "Destroy all enemies in Junkyard in Story Mode",
+						Points:             5,
+						TrueRatio:          5,
+						Author:             "TheJediSonic",
 						ID:                 252117,
 						NumAwarded:         819,
 						NumAwardedHardcore: 327,
@@ -326,33 +335,33 @@ func TestGetGameExtended(tt *testing.T) {
 					},
 				},
 			},
-			response: func(extendedGameInfoBytes []byte, errorBytes []byte) []byte {
-				return extendedGameInfoBytes
+			response: func(messageBytes []byte, errorBytes []byte) []byte {
+				return messageBytes
 			},
-			assert: func(t *testing.T, extendedGameInfo *models.ExtentedGameInfo, err error) {
-				require.NotNil(t, extendedGameInfo)
-				require.Equal(t, "Twisted Metal: Black", extendedGameInfo.Title)
-				require.Equal(t, 21, extendedGameInfo.ConsoleID)
-				require.Equal(t, "PlayStation 2", extendedGameInfo.ConsoleName)
-				require.Equal(t, 16654, *extendedGameInfo.ForumTopicID)
-				require.Equal(t, 0, *extendedGameInfo.Flags)
-				require.Equal(t, "/Images/057992.png", extendedGameInfo.ImageIcon)
-				require.Equal(t, "/Images/056152.png", extendedGameInfo.ImageTitle)
-				require.Equal(t, "/Images/056151.png", extendedGameInfo.ImageIngame)
-				require.Equal(t, "/Images/050832.png", extendedGameInfo.ImageBoxArt)
-				require.Equal(t, "Sony Computer Entertainment", extendedGameInfo.Publisher)
-				require.Equal(t, "Incognito Entertainment", extendedGameInfo.Developer)
-				require.Equal(t, "Vehicular Combat", extendedGameInfo.Genre)
-				require.Equal(t, released, extendedGameInfo.Released.Time)
-				require.Equal(t, 2991, extendedGameInfo.ID)
-				require.Equal(t, 0, extendedGameInfo.IsFinal)
-				require.Equal(t, "e7a5e12072a6c976a1146756726fdd8c", extendedGameInfo.RichPresencePatch)
-				require.Equal(t, updated, *extendedGameInfo.Updated)
-				require.Equal(t, "PlayStation 2", extendedGameInfo.ConsoleName)
-				require.Equal(t, 1287, extendedGameInfo.NumDistinctPlayers)
-				require.Equal(t, 93, extendedGameInfo.NumAchievements)
-				require.Len(t, extendedGameInfo.Achievements, 1)
-				achievement, ok := extendedGameInfo.Achievements[252117]
+			assert: func(t *testing.T, resp *models.GetGameExtented, err error) {
+				require.NotNil(t, resp)
+				require.Equal(t, "Twisted Metal: Black", resp.Title)
+				require.Equal(t, 21, resp.ConsoleID)
+				require.Equal(t, "PlayStation 2", resp.ConsoleName)
+				require.Equal(t, 16654, *resp.ForumTopicID)
+				require.Equal(t, 0, *resp.Flags)
+				require.Equal(t, "/Images/057992.png", resp.ImageIcon)
+				require.Equal(t, "/Images/056152.png", resp.ImageTitle)
+				require.Equal(t, "/Images/056151.png", resp.ImageIngame)
+				require.Equal(t, "/Images/050832.png", resp.ImageBoxArt)
+				require.Equal(t, "Sony Computer Entertainment", resp.Publisher)
+				require.Equal(t, "Incognito Entertainment", resp.Developer)
+				require.Equal(t, "Vehicular Combat", resp.Genre)
+				require.Equal(t, released, resp.Released.Time)
+				require.Equal(t, 2991, resp.ID)
+				require.Equal(t, 0, resp.IsFinal)
+				require.Equal(t, "e7a5e12072a6c976a1146756726fdd8c", resp.RichPresencePatch)
+				require.Equal(t, updated, *resp.Updated)
+				require.Equal(t, "PlayStation 2", resp.ConsoleName)
+				require.Equal(t, 1287, resp.NumDistinctPlayers)
+				require.Equal(t, 93, resp.NumAchievements)
+				require.Len(t, resp.Achievements, 1)
+				achievement, ok := resp.Achievements[252117]
 				require.True(t, ok)
 				require.NotNil(t, achievement)
 				require.Equal(t, "Zorko Bros. Scrap & Salvage", achievement.Title)
@@ -381,11 +390,11 @@ func TestGetGameExtended(tt *testing.T) {
 					t.Errorf("Expected to request '%s', got: %s", expectedPath, r.URL.Path)
 				}
 				w.WriteHeader(test.responseCode)
-				extendedGameInfoBytes, err := json.Marshal(test.responseExtendedGameInfo)
+				messageBytes, err := json.Marshal(test.responseMessage)
 				require.NoError(t, err)
 				errBytes, err := json.Marshal(test.responseError)
 				require.NoError(t, err)
-				resp := test.response(extendedGameInfoBytes, errBytes)
+				resp := test.response(messageBytes, errBytes)
 				num, err := w.Write(resp)
 				require.NoError(t, err)
 				require.Equal(t, num, len(resp))
@@ -393,8 +402,8 @@ func TestGetGameExtended(tt *testing.T) {
 			defer server.Close()
 
 			client := retroachievements.New(test.modifyURL(server.URL), "some_secret")
-			extendedGameInfo, err := client.GetGameExtended(test.id)
-			test.assert(t, extendedGameInfo, err)
+			resp, err := client.GetGameExtended(test.params)
+			test.assert(t, resp, err)
 		})
 	}
 }

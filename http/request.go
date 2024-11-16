@@ -67,17 +67,17 @@ func LookbackMinutes(minutes int) RequestDetail {
 	})
 }
 
-// FromTime adds a start time to the query parameters in unix seconds
-func FromTime(t time.Time) RequestDetail {
+// From adds a start time to the query parameters in unix seconds
+func From(t int64) RequestDetail {
 	return requestDetailFn(func(r *Request) {
-		r.Params["f"] = strconv.Itoa(int(t.UTC().Unix()))
+		r.Params["f"] = strconv.Itoa(int(t))
 	})
 }
 
-// ToTime adds a end time to the query parameters in unix seconds
-func ToTime(t time.Time) RequestDetail {
+// To adds a end time to the query parameters in unix seconds
+func To(t int64) RequestDetail {
 	return requestDetailFn(func(r *Request) {
-		r.Params["t"] = strconv.Itoa(int(t.UTC().Unix()))
+		r.Params["t"] = strconv.Itoa(int(t))
 	})
 }
 

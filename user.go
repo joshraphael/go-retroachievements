@@ -34,7 +34,7 @@ func (c *Client) GetUserRecentAchievements(params models.GetUserRecentAchievemen
 		raHttp.APIToken(c.Secret),
 		raHttp.Username(params.Username),
 	}
-	if params.LookbackMinutes != nil && *params.LookbackMinutes > 0 {
+	if params.LookbackMinutes != nil {
 		details = append(details, raHttp.LookbackMinutes(*params.LookbackMinutes))
 	}
 	resp, err := c.do(details...)
@@ -55,8 +55,8 @@ func (c *Client) GetAchievementsEarnedBetween(params models.GetAchievementsEarne
 		raHttp.Path("/API/API_GetAchievementsEarnedBetween.php"),
 		raHttp.APIToken(c.Secret),
 		raHttp.Username(params.Username),
-		raHttp.FromTime(params.From),
-		raHttp.ToTime(params.To),
+		raHttp.From(params.From.Unix()),
+		raHttp.To(params.To.Unix()),
 	)
 	if err != nil {
 		return nil, fmt.Errorf("calling endpoint: %w", err)
