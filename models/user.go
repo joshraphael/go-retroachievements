@@ -363,3 +363,29 @@ type Award struct {
 	Flags          *int              `json:"Flags"`
 	ImageIcon      *string           `json:"ImageIcon"`
 }
+
+// GetUserClaimsParameters contains the parameters needed for getting a users claims
+type GetUserClaimsParameters struct {
+	// The target username
+	Username string
+}
+
+type GetUserClaims struct {
+	ID          int      `json:"ID"`
+	User        string   `json:"User"`
+	GameID      int      `json:"GameID"`
+	GameTitle   string   `json:"GameTitle"`
+	GameIcon    string   `json:"GameIcon"`
+	ConsoleID   int      `json:"ConsoleID"`
+	ConsoleName string   `json:"ConsoleName"`
+	ClaimType   int      `json:"ClaimType"`
+	SetType     int      `json:"SetType"`
+	Status      int      `json:"Status"`
+	Extension   int      `json:"Extension"`
+	Special     int      `json:"Special"`
+	Created     DateTime `json:"Created"`
+	DoneTime    DateTime `json:"DoneTime"`
+	Updated     DateTime `json:"Updated"`
+	UserIsJrDev int      `json:"UserIsJrDev"`
+	MinutesLeft int      `json:"MinutesLeft"`
+}

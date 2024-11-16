@@ -1178,17 +1178,19 @@ func TestGetUserClaims(tt *testing.T) {
 	require.NoError(tt, err)
 	tests := []struct {
 		name            string
-		username        string
+		params          models.GetUserClaimsParameters
 		modifyURL       func(url string) string
 		responseCode    int
-		responseMessage []models.UserClaims
+		responseMessage []models.GetUserClaims
 		responseError   models.ErrorResponse
 		response        func(messageBytes []byte, errorBytes []byte) []byte
-		assert          func(t *testing.T, userClaims []models.UserClaims, err error)
+		assert          func(t *testing.T, userClaims []models.GetUserClaims, err error)
 	}{
 		{
-			name:     "fail to call endpoint",
-			username: "Test",
+			name: "fail to call endpoint",
+			params: models.GetUserClaimsParameters{
+				Username: "Test",
+			},
 			modifyURL: func(url string) string {
 				return ""
 			},
@@ -1206,14 +1208,16 @@ func TestGetUserClaims(tt *testing.T) {
 			response: func(messageBytes []byte, errorBytes []byte) []byte {
 				return errorBytes
 			},
-			assert: func(t *testing.T, userClaims []models.UserClaims, err error) {
+			assert: func(t *testing.T, userClaims []models.GetUserClaims, err error) {
 				require.Nil(t, userClaims)
 				require.EqualError(t, err, "calling endpoint: Get \"/API/API_GetUserClaims.php?u=Test&y=some_secret\": unsupported protocol scheme \"\"")
 			},
 		},
 		{
-			name:     "error response",
-			username: "Test",
+			name: "error response",
+			params: models.GetUserClaimsParameters{
+				Username: "Test",
+			},
 			modifyURL: func(url string) string {
 				return url
 			},
@@ -1231,19 +1235,21 @@ func TestGetUserClaims(tt *testing.T) {
 			response: func(messageBytes []byte, errorBytes []byte) []byte {
 				return errorBytes
 			},
-			assert: func(t *testing.T, userClaims []models.UserClaims, err error) {
+			assert: func(t *testing.T, userClaims []models.GetUserClaims, err error) {
 				require.Nil(t, userClaims)
 				require.EqualError(t, err, "parsing response list: error responses: [401] Not Authorized")
 			},
 		},
 		{
-			name:     "success",
-			username: "Test",
+			name: "success",
+			params: models.GetUserClaimsParameters{
+				Username: "Test",
+			},
 			modifyURL: func(url string) string {
 				return url
 			},
 			responseCode: http.StatusOK,
-			responseMessage: []models.UserClaims{
+			responseMessage: []models.GetUserClaims{
 				{
 					ID:          13657,
 					User:        "joshraphael",
@@ -1273,7 +1279,7 @@ func TestGetUserClaims(tt *testing.T) {
 			response: func(messageBytes []byte, errorBytes []byte) []byte {
 				return messageBytes
 			},
-			assert: func(t *testing.T, userClaims []models.UserClaims, err error) {
+			assert: func(t *testing.T, userClaims []models.GetUserClaims, err error) {
 				require.NotNil(t, userClaims)
 				require.Len(t, userClaims, 1)
 				require.Equal(t, 13657, userClaims[0].ID)
@@ -1317,7 +1323,7 @@ func TestGetUserClaims(tt *testing.T) {
 			defer server.Close()
 
 			client := retroachievements.New(test.modifyURL(server.URL), "some_secret")
-			userClaims, err := client.GetUserClaims(test.username)
+			userClaims, err := client.GetUserClaims(test.params)
 			test.assert(t, userClaims, err)
 		})
 	}

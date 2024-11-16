@@ -147,21 +147,21 @@ func (c *Client) GetUserAwards(params models.GetUserAwardsParameters) (*models.G
 }
 
 // GetUserClaims get a list of set development claims made over the lifetime of a user.
-func (c *Client) GetUserClaims(username string) ([]models.UserClaims, error) {
+func (c *Client) GetUserClaims(params models.GetUserClaimsParameters) ([]models.GetUserClaims, error) {
 	resp, err := c.do(
 		raHttp.Method(http.MethodGet),
 		raHttp.Path("/API/API_GetUserClaims.php"),
 		raHttp.APIToken(c.Secret),
-		raHttp.Username(username),
+		raHttp.Username(params.Username),
 	)
 	if err != nil {
 		return nil, fmt.Errorf("calling endpoint: %w", err)
 	}
-	awards, err := raHttp.ResponseList[models.UserClaims](resp)
+	claims, err := raHttp.ResponseList[models.GetUserClaims](resp)
 	if err != nil {
 		return nil, fmt.Errorf("parsing response list: %w", err)
 	}
-	return awards, nil
+	return claims, nil
 }
 
 // GetUserGameRankAndScore get metadata about how a user has performed on a given game.
