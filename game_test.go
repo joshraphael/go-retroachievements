@@ -36,17 +36,17 @@ func makGame(released time.Time) models.Game {
 func TestGetGame(tt *testing.T) {
 	forumTopicId := 16654
 	flags := 0
-	released, err := time.Parse(models.LongMonthDateFormat, "June 18, 2001")
+	released, err := time.Parse(time.DateOnly, "2001-06-18")
 	require.NoError(tt, err)
 	tests := []struct {
-		name             string
-		params           models.GetGameParameters
-		modifyURL        func(url string) string
-		responseCode     int
-		responseGameInfo models.GetGame
-		responseError    models.ErrorResponse
-		response         func(messageBytes []byte, errorBytes []byte) []byte
-		assert           func(t *testing.T, resp *models.GetGame, err error)
+		name            string
+		params          models.GetGameParameters
+		modifyURL       func(url string) string
+		responseCode    int
+		responseMessage models.GetGame
+		responseError   models.ErrorResponse
+		response        func(messageBytes []byte, errorBytes []byte) []byte
+		assert          func(t *testing.T, resp *models.GetGame, err error)
 	}{
 		{
 			name: "fail to call endpoint",
@@ -57,7 +57,7 @@ func TestGetGame(tt *testing.T) {
 				return ""
 			},
 			responseCode: http.StatusOK,
-			responseGameInfo: models.GetGame{
+			responseMessage: models.GetGame{
 				Title:        "Twisted Metal: Black",
 				ConsoleID:    21,
 				ForumTopicID: &forumTopicId,
@@ -69,7 +69,7 @@ func TestGetGame(tt *testing.T) {
 				Publisher:    "Sony Computer Entertainment",
 				Developer:    "Incognito Entertainment",
 				Genre:        "Vehicular Combat",
-				Released: models.DateOnly{
+				Released: &models.DateOnly{
 					Time: released,
 				},
 				GameTitle:   "Twisted Metal: Black",
@@ -121,7 +121,7 @@ func TestGetGame(tt *testing.T) {
 				return url
 			},
 			responseCode: http.StatusOK,
-			responseGameInfo: models.GetGame{
+			responseMessage: models.GetGame{
 				Title:        "Twisted Metal: Black",
 				ConsoleID:    21,
 				ForumTopicID: &forumTopicId,
@@ -133,7 +133,7 @@ func TestGetGame(tt *testing.T) {
 				Publisher:    "Sony Computer Entertainment",
 				Developer:    "Incognito Entertainment",
 				Genre:        "Vehicular Combat",
-				Released: models.DateOnly{
+				Released: &models.DateOnly{
 					Time: released,
 				},
 				GameTitle:   "Twisted Metal: Black",
@@ -145,6 +145,7 @@ func TestGetGame(tt *testing.T) {
 				return messageBytes
 			},
 			assert: func(t *testing.T, resp *models.GetGame, err error) {
+				require.NoError(t, err)
 				require.NotNil(t, resp)
 				require.Equal(t, resp.Title, "Twisted Metal: Black")
 				require.Equal(t, "Twisted Metal: Black", resp.GameTitle)
@@ -174,17 +175,16 @@ func TestGetGame(tt *testing.T) {
 					t.Errorf("Expected to request '%s', got: %s", expectedPath, r.URL.Path)
 				}
 				w.WriteHeader(test.responseCode)
-				gameInfoBytes, err := json.Marshal(test.responseGameInfo)
+				responseMessage, err := json.Marshal(test.responseMessage)
 				require.NoError(t, err)
 				errBytes, err := json.Marshal(test.responseError)
 				require.NoError(t, err)
-				resp := test.response(gameInfoBytes, errBytes)
+				resp := test.response(responseMessage, errBytes)
 				num, err := w.Write(resp)
 				require.NoError(t, err)
 				require.Equal(t, num, len(resp))
 			}))
 			defer server.Close()
-
 			client := retroachievements.New(test.modifyURL(server.URL), "some_secret")
 			resp, err := client.GetGame(test.params)
 			test.assert(t, resp, err)
