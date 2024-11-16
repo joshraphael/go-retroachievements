@@ -417,6 +417,7 @@ type GetUserPoints struct {
 	SoftcorePoints int `json:"SoftcorePoints"`
 }
 
+// GetUserProgressParameters contains the parameters needed for getting a users progress
 type GetUserProgressParameters struct {
 	// The target username
 	Username string
@@ -432,4 +433,35 @@ type GetUserProgress struct {
 	ScoreAchieved           int `json:"ScoreAchieved"`
 	NumAchievedHardcore     int `json:"NumAchievedHardcore"`
 	ScoreAchievedHardcore   int `json:"ScoreAchievedHardcore"`
+}
+
+// GetUserRecentlyPlayedGamesParameters contains the parameters needed for getting a users recently played games
+type GetUserRecentlyPlayedGamesParameters struct {
+	// The target username
+	Username string
+
+	// [Optional] The number of games to return
+	Count *int
+
+	// [Optional] The offset from the beginning to start returning records
+	Offset *int
+}
+
+type GetUserRecentlyPlayedGames struct {
+	NumPossibleAchievements int      `json:"NumPossibleAchievements"`
+	PossibleScore           int      `json:"PossibleScore"`
+	NumAchieved             int      `json:"NumAchieved"`
+	ScoreAchieved           int      `json:"ScoreAchieved"`
+	NumAchievedHardcore     int      `json:"NumAchievedHardcore"`
+	ScoreAchievedHardcore   int      `json:"ScoreAchievedHardcore"`
+	GameID                  int      `json:"GameID"`
+	ConsoleID               int      `json:"ConsoleID"`
+	ConsoleName             string   `json:"ConsoleName"`
+	Title                   string   `json:"Title"`
+	ImageIcon               string   `json:"ImageIcon"`
+	ImageTitle              string   `json:"ImageTitle"`
+	ImageIngame             string   `json:"ImageIngame"`
+	ImageBoxArt             string   `json:"ImageBoxArt"`
+	LastPlayed              DateTime `json:"LastPlayed"`
+	AchievementsTotal       int      `json:"AchievementsTotal"`
 }

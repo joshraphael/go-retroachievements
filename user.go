@@ -221,30 +221,24 @@ func (c *Client) GetUserProgress(params models.GetUserProgressParameters) (map[s
 }
 
 // GetUserRecentlyPlayedGames get a list of games a user has recently played.
-func (c *Client) GetUserRecentlyPlayedGames(username string, count int, offset int) ([]models.UserRecentlyPlayed, error) {
-	numCount := count
-	if count <= 0 {
-		numCount = 10
-	}
-	if count > 50 {
-		numCount = 50
-	}
-	numOffset := offset
-	if offset < 0 {
-		numOffset = 0
-	}
-	resp, err := c.do(
+func (c *Client) GetUserRecentlyPlayedGames(params models.GetUserRecentlyPlayedGamesParameters) ([]models.GetUserRecentlyPlayedGames, error) {
+	details := []raHttp.RequestDetail{
 		raHttp.Method(http.MethodGet),
 		raHttp.Path("/API/API_GetUserRecentlyPlayedGames.php"),
 		raHttp.APIToken(c.Secret),
-		raHttp.Username(username),
-		raHttp.Count(numCount),
-		raHttp.Offset(numOffset),
-	)
+		raHttp.Username(params.Username),
+	}
+	if params.Count != nil {
+		details = append(details, raHttp.Count(*params.Count))
+	}
+	if params.Offset != nil {
+		details = append(details, raHttp.Offset(*params.Offset))
+	}
+	resp, err := c.do(details...)
 	if err != nil {
 		return nil, fmt.Errorf("calling endpoint: %w", err)
 	}
-	recentlyPlayed, err := raHttp.ResponseList[models.UserRecentlyPlayed](resp)
+	recentlyPlayed, err := raHttp.ResponseList[models.GetUserRecentlyPlayedGames](resp)
 	if err != nil {
 		return nil, fmt.Errorf("parsing response list: %w", err)
 	}
