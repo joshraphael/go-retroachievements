@@ -1023,7 +1023,7 @@ func TestGetUserAwards(tt *testing.T) {
 		params          models.GetUserAwardsParameters
 		modifyURL       func(url string) string
 		responseCode    int
-		responseMessage models.UserAwards
+		responseMessage models.GetUserAwards
 		responseError   models.ErrorResponse
 		response        func(messageBytes []byte, errorBytes []byte) []byte
 		assert          func(t *testing.T, userAwards *models.GetUserAwards, err error)
@@ -1091,7 +1091,7 @@ func TestGetUserAwards(tt *testing.T) {
 				return url
 			},
 			responseCode: http.StatusOK,
-			responseMessage: models.UserAwards{
+			responseMessage: models.GetUserAwards{
 				TotalAwardsCount:          9,
 				HiddenAwardsCount:         0,
 				MasteryAwardsCount:        4,
@@ -1928,6 +1928,294 @@ func TestGetUserRecentlyPlayedGames(tt *testing.T) {
 			defer server.Close()
 			client := retroachievements.New(test.modifyURL(server.URL), "some_secret")
 			resp, err := client.GetUserRecentlyPlayedGames(test.params)
+			test.assert(t, resp, err)
+		})
+	}
+}
+
+func TestGetUserSummary(tt *testing.T) {
+	gameCount := 10
+	achievementCount := 5
+	rank := 130
+	memberSince, err := time.Parse(time.DateTime, "2017-06-18 18:49:00")
+	require.NoError(tt, err)
+	lastPlayed, err := time.Parse(time.DateTime, "2024-11-17 04:00:35")
+	require.NoError(tt, err)
+	releaseDate, err := time.Parse(models.LongMonthDateFormat, "September 27, 2011")
+	require.NoError(tt, err)
+	cheevoType := "progression"
+	tests := []struct {
+		name            string
+		params          models.GetUserSummaryParameters
+		modifyURL       func(url string) string
+		responseCode    int
+		responseMessage models.GetUserSummary
+		responseError   models.ErrorResponse
+		response        func(messageBytes []byte, errorBytes []byte) []byte
+		assert          func(t *testing.T, resp *models.GetUserSummary, err error)
+	}{
+		{
+			name: "fail to call endpoint",
+			params: models.GetUserSummaryParameters{
+				Username:          "Test",
+				GamesCount:        &gameCount,
+				AchievementsCount: &achievementCount,
+			},
+			modifyURL: func(url string) string {
+				return ""
+			},
+			responseCode: http.StatusUnauthorized,
+			responseError: models.ErrorResponse{
+				Message: "test",
+				Errors: []models.ErrorDetail{
+					{
+						Status: http.StatusUnauthorized,
+						Code:   "unauthorized",
+						Title:  "Not Authorized",
+					},
+				},
+			},
+			response: func(messageBytes []byte, errorBytes []byte) []byte {
+				return errorBytes
+			},
+			assert: func(t *testing.T, resp *models.GetUserSummary, err error) {
+				require.Nil(t, resp)
+				require.EqualError(t, err, "calling endpoint: Get \"/API/API_GetUserSummary.php?a=5&g=10&u=Test&y=some_secret\": unsupported protocol scheme \"\"")
+			},
+		},
+		{
+			name: "error response",
+			params: models.GetUserSummaryParameters{
+				Username:          "Test",
+				GamesCount:        &gameCount,
+				AchievementsCount: &achievementCount,
+			},
+			modifyURL: func(url string) string {
+				return url
+			},
+			responseCode: http.StatusUnauthorized,
+			responseError: models.ErrorResponse{
+				Message: "test",
+				Errors: []models.ErrorDetail{
+					{
+						Status: http.StatusUnauthorized,
+						Code:   "unauthorized",
+						Title:  "Not Authorized",
+					},
+				},
+			},
+			response: func(messageBytes []byte, errorBytes []byte) []byte {
+				return errorBytes
+			},
+			assert: func(t *testing.T, resp *models.GetUserSummary, err error) {
+				require.Nil(t, resp)
+				require.EqualError(t, err, "parsing response object: error responses: [401] Not Authorized")
+			},
+		},
+		{
+			name: "success",
+			params: models.GetUserSummaryParameters{
+				Username:          "Test",
+				GamesCount:        &gameCount,
+				AchievementsCount: &achievementCount,
+			},
+			modifyURL: func(url string) string {
+				return url
+			},
+			responseCode: http.StatusOK,
+			responseMessage: models.GetUserSummary{
+				User:                "Jamiras",
+				RichPresenceMsg:     "In Chapter 3: The Paladin Clan • 3h13 • Level 5 • 3 • 4918 Rings • 12/83",
+				LastGameID:          9404,
+				ContribCount:        179822,
+				ContribYield:        1208742,
+				TotalPoints:         116649,
+				TotalSoftcorePoints: 1350,
+				TotalTruePoints:     322472,
+				Permissions:         4,
+				Untracked:           0,
+				ID:                  43495,
+				UserWallActive:      0,
+				Motto:               "",
+				RecentlyPlayedCount: 1,
+				UserPic:             "/UserPic/jamiras.png",
+				TotalRanked:         78332,
+				Status:              "Offline",
+				Rank:                &rank,
+				MemberSince: models.DateTime{
+					Time: memberSince,
+				},
+				LastActivity: models.GetUserSummaryLastActivity{
+					ID:   0,
+					User: "jamiras",
+				},
+				RecentlyPlayed: []models.GetUserSummaryRecentlyPlayed{
+					{
+						GameID:      9404,
+						ConsoleID:   18,
+						ConsoleName: "Nintendo DS",
+						Title:       "Solatorobo: Red the Hunter",
+						ImageIcon:   "/Images/088320.png",
+						ImageTitle:  "/Images/073286.png",
+						ImageIngame: "/Images/073287.png",
+						ImageBoxArt: "/Images/028653.png",
+						LastPlayed: models.DateTime{
+							Time: lastPlayed,
+						},
+						AchievementsTotal: 133,
+					},
+				},
+				Awarded: map[string]models.GetUserSummaryAwarded{
+					"9404": {
+						NumPossibleAchievements: 133,
+						PossibleScore:           935,
+						NumAchieved:             16,
+						ScoreAchieved:           95,
+						NumAchievedHardcore:     16,
+						ScoreAchievedHardcore:   95,
+					},
+				},
+				RecentAchievements: map[string]map[string]models.GetUserSummaryRecentAchievements{
+					"9404": {
+						"328833": {
+							ID:          328833,
+							GameID:      9404,
+							GameTitle:   "Solatorobo: Red the Hunter",
+							Title:       "Chapter 3: The Paladin Clan",
+							Description: "Complete the Chapter 3",
+							Points:      10,
+							Type:        &cheevoType,
+							BadgeName:   "368292",
+							IsAwarded:   "1",
+							DateAwarded: models.DateTime{
+								Time: lastPlayed,
+							},
+							HardcoreAchieved: 1,
+						},
+					},
+				},
+				LastGame: models.GetUserSummaryLastGame{
+					ID:           9404,
+					Title:        "Solatorobo: Red the Hunter",
+					ConsoleID:    18,
+					ConsoleName:  "Nintendo DS",
+					ForumTopicID: 21569,
+					Flags:        0,
+					ImageIcon:    "/Images/088320.png",
+					ImageTitle:   "/Images/073286.png",
+					ImageIngame:  "/Images/073287.png",
+					ImageBoxArt:  "/Images/028653.png",
+					Publisher:    "XSEED Games",
+					Developer:    "CyberConnect2 | CyberConnect",
+					Genre:        "Action RPG",
+					Released: models.LongMonthDate{
+						Time: releaseDate,
+					},
+					IsFinal: 0,
+				},
+			},
+			response: func(messageBytes []byte, errorBytes []byte) []byte {
+				return messageBytes
+			},
+			assert: func(t *testing.T, resp *models.GetUserSummary, err error) {
+				require.NoError(t, err)
+				require.Equal(t, "Jamiras", resp.User)
+				require.Equal(t, "In Chapter 3: The Paladin Clan • 3h13 • Level 5 • 3 • 4918 Rings • 12/83", resp.RichPresenceMsg)
+				require.Equal(t, 9404, resp.LastGameID)
+				require.Equal(t, 179822, resp.ContribCount)
+				require.Equal(t, 1208742, resp.ContribYield)
+				require.Equal(t, 116649, resp.TotalPoints)
+				require.Equal(t, 1350, resp.TotalSoftcorePoints)
+				require.Equal(t, 322472, resp.TotalTruePoints)
+				require.Equal(t, 4, resp.Permissions)
+				require.Equal(t, 0, resp.Untracked)
+				require.Equal(t, 43495, resp.ID)
+				require.Equal(t, 0, resp.UserWallActive)
+				require.Equal(t, "", resp.Motto)
+				require.Equal(t, 1, resp.RecentlyPlayedCount)
+				require.Equal(t, "/UserPic/jamiras.png", resp.UserPic)
+				require.Equal(t, 78332, resp.TotalRanked)
+				require.Equal(t, "Offline", resp.Status)
+				require.NotNil(t, resp.Rank)
+				require.Equal(t, 130, *resp.Rank)
+				require.Equal(t, memberSince, resp.MemberSince.Time)
+				require.Equal(t, 0, resp.LastActivity.ID)
+				require.Equal(t, "jamiras", resp.LastActivity.User)
+				require.Len(t, resp.RecentlyPlayed, 1)
+				require.Equal(t, 9404, resp.RecentlyPlayed[0].GameID)
+				require.Equal(t, 18, resp.RecentlyPlayed[0].ConsoleID)
+				require.Equal(t, "Nintendo DS", resp.RecentlyPlayed[0].ConsoleName)
+				require.Equal(t, "Solatorobo: Red the Hunter", resp.RecentlyPlayed[0].Title)
+				require.Equal(t, "/Images/088320.png", resp.RecentlyPlayed[0].ImageIcon)
+				require.Equal(t, "/Images/073286.png", resp.RecentlyPlayed[0].ImageTitle)
+				require.Equal(t, "/Images/073287.png", resp.RecentlyPlayed[0].ImageIngame)
+				require.Equal(t, "/Images/028653.png", resp.RecentlyPlayed[0].ImageBoxArt)
+				require.Equal(t, 133, resp.RecentlyPlayed[0].AchievementsTotal)
+				require.Len(t, resp.Awarded, 1)
+				award, ok := resp.Awarded["9404"]
+				require.True(t, ok)
+				require.Equal(t, 133, award.NumPossibleAchievements)
+				require.Equal(t, 935, award.PossibleScore)
+				require.Equal(t, 16, award.NumAchieved)
+				require.Equal(t, 95, award.ScoreAchieved)
+				require.Equal(t, 16, award.NumAchievedHardcore)
+				require.Equal(t, 95, award.ScoreAchievedHardcore)
+				require.Len(t, resp.RecentAchievements, 1)
+				recent, ok := resp.RecentAchievements["9404"]
+				require.True(t, ok)
+				require.Len(t, recent, 1)
+				cheevo, ok := recent["328833"]
+				require.True(t, ok)
+				require.Equal(t, 328833, cheevo.ID)
+				require.Equal(t, 9404, cheevo.GameID)
+				require.Equal(t, "Solatorobo: Red the Hunter", cheevo.GameTitle)
+				require.Equal(t, "Chapter 3: The Paladin Clan", cheevo.Title)
+				require.Equal(t, "Complete the Chapter 3", cheevo.Description)
+				require.Equal(t, 10, cheevo.Points)
+				require.Equal(t, "368292", cheevo.BadgeName)
+				require.Equal(t, "1", cheevo.IsAwarded)
+				require.Equal(t, 1, cheevo.HardcoreAchieved)
+				require.NotNil(t, cheevo.Type)
+				require.Equal(t, cheevoType, *cheevo.Type)
+				require.Equal(t, lastPlayed, cheevo.DateAwarded.Time)
+				require.Equal(t, 9404, resp.LastGame.ID)
+				require.Equal(t, "Solatorobo: Red the Hunter", resp.LastGame.Title)
+				require.Equal(t, 18, resp.LastGame.ConsoleID)
+				require.Equal(t, "Nintendo DS", resp.LastGame.ConsoleName)
+				require.Equal(t, 21569, resp.LastGame.ForumTopicID)
+				require.Equal(t, 0, resp.LastGame.Flags)
+				require.Equal(t, "/Images/088320.png", resp.LastGame.ImageIcon)
+				require.Equal(t, "/Images/073286.png", resp.LastGame.ImageTitle)
+				require.Equal(t, "/Images/073287.png", resp.LastGame.ImageIngame)
+				require.Equal(t, "/Images/028653.png", resp.LastGame.ImageBoxArt)
+				require.Equal(t, "XSEED Games", resp.LastGame.Publisher)
+				require.Equal(t, "CyberConnect2 | CyberConnect", resp.LastGame.Developer)
+				require.Equal(t, "Action RPG", resp.LastGame.Genre)
+				require.Equal(t, releaseDate, resp.LastGame.Released.Time)
+				require.Equal(t, 0, resp.LastGame.IsFinal)
+			},
+		},
+	}
+	for _, test := range tests {
+		tt.Run(test.name, func(t *testing.T) {
+			server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+				expectedPath := "/API/API_GetUserSummary.php"
+				if r.URL.Path != expectedPath {
+					t.Errorf("Expected to request '%s', got: %s", expectedPath, r.URL.Path)
+				}
+				w.WriteHeader(test.responseCode)
+				responseMessage, err := json.Marshal(test.responseMessage)
+				require.NoError(t, err)
+				errBytes, err := json.Marshal(test.responseError)
+				require.NoError(t, err)
+				resp := test.response(responseMessage, errBytes)
+				num, err := w.Write(resp)
+				require.NoError(t, err)
+				require.Equal(t, num, len(resp))
+			}))
+			defer server.Close()
+			client := retroachievements.New(test.modifyURL(server.URL), "some_secret")
+			resp, err := client.GetUserSummary(test.params)
 			test.assert(t, resp, err)
 		})
 	}

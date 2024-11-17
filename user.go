@@ -94,10 +94,10 @@ func (c *Client) GetGameInfoAndUserProgress(params models.GetGameInfoAndUserProg
 		raHttp.Path("/API/API_GetGameInfoAndUserProgress.php"),
 		raHttp.APIToken(c.Secret),
 		raHttp.Username(params.Username),
-		raHttp.GameID(params.GameID),
+		raHttp.Game(params.GameID),
 	}
-	if params.IncludeAwardMetadata != nil {
-		details = append(details, raHttp.AwardMetadata(*params.IncludeAwardMetadata))
+	if params.IncludeAwardMetadata != nil && *params.IncludeAwardMetadata {
+		details = append(details, raHttp.Achievement(1))
 	}
 	resp, err := c.do(details...)
 	if err != nil {
@@ -171,7 +171,7 @@ func (c *Client) GetUserGameRankAndScore(params models.GetUserGameRankAndScorePa
 		raHttp.Path("/API/API_GetUserGameRankAndScore.php"),
 		raHttp.APIToken(c.Secret),
 		raHttp.Username(params.Username),
-		raHttp.GameID(params.GameID),
+		raHttp.Game(params.GameID),
 	)
 	if err != nil {
 		return nil, fmt.Errorf("calling endpoint: %w", err)
@@ -241,6 +241,31 @@ func (c *Client) GetUserRecentlyPlayedGames(params models.GetUserRecentlyPlayedG
 	recentlyPlayed, err := raHttp.ResponseList[models.GetUserRecentlyPlayedGames](resp)
 	if err != nil {
 		return nil, fmt.Errorf("parsing response list: %w", err)
+	}
+	return recentlyPlayed, nil
+}
+
+// GetUserSummary get summary information about a given user.
+func (c *Client) GetUserSummary(params models.GetUserSummaryParameters) (*models.GetUserSummary, error) {
+	details := []raHttp.RequestDetail{
+		raHttp.Method(http.MethodGet),
+		raHttp.Path("/API/API_GetUserSummary.php"),
+		raHttp.APIToken(c.Secret),
+		raHttp.Username(params.Username),
+	}
+	if params.GamesCount != nil {
+		details = append(details, raHttp.Game(*params.GamesCount))
+	}
+	if params.AchievementsCount != nil {
+		details = append(details, raHttp.Achievement(*params.AchievementsCount))
+	}
+	resp, err := c.do(details...)
+	if err != nil {
+		return nil, fmt.Errorf("calling endpoint: %w", err)
+	}
+	recentlyPlayed, err := raHttp.ResponseObject[models.GetUserSummary](resp)
+	if err != nil {
+		return nil, fmt.Errorf("parsing response object: %w", err)
 	}
 	return recentlyPlayed, nil
 }

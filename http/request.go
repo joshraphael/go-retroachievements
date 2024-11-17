@@ -99,10 +99,10 @@ func IDs(ids []int) RequestDetail {
 	})
 }
 
-// GameID adds a target game id to the query parameters
-func GameID(gameId int) RequestDetail {
+// Game adds a target game id to the query parameters
+func Game(game int) RequestDetail {
 	return requestDetailFn(func(r *Request) {
-		r.Params["g"] = strconv.Itoa(gameId)
+		r.Params["g"] = strconv.Itoa(game)
 	})
 }
 
@@ -120,14 +120,14 @@ func Offset(offset int) RequestDetail {
 	})
 }
 
-// AwardMetadata adds a target game id to the query parameters
-func AwardMetadata(awardMetadata bool) RequestDetail {
+// Achievement adds a achievement number query parameter
+func Achievement(achievement int) RequestDetail {
 	return requestDetailFn(func(r *Request) {
-		a := "0"
-		if awardMetadata {
-			a = "1"
-		}
-		r.Params["a"] = a
+		// a := "0"
+		// if awardMetadata {
+		// 	a = "1"
+		// }
+		r.Params["a"] = strconv.Itoa(achievement)
 	})
 }
 

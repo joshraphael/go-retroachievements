@@ -25,8 +25,8 @@ func TestNewRequest(t *testing.T) {
 		raHttp.To(later.Unix()),
 		raHttp.Date(now),
 		raHttp.IDs([]int{2837, 4535}),
-		raHttp.GameID(345),
-		raHttp.AwardMetadata(true),
+		raHttp.Game(345),
+		raHttp.Achievement(1),
 		raHttp.Count(20),
 		raHttp.Offset(34),
 	)
