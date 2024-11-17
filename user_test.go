@@ -1582,7 +1582,7 @@ func TestGetUserProgress(tt *testing.T) {
 		responseMessage map[string]models.GetUserProgress
 		responseError   models.ErrorResponse
 		response        func(messageBytes []byte, errorBytes []byte) []byte
-		assert          func(t *testing.T, progress map[string]models.GetUserProgress, err error)
+		assert          func(t *testing.T, progress *map[string]models.GetUserProgress, err error)
 	}{
 		{
 			name: "fail to call endpoint",
@@ -1607,7 +1607,7 @@ func TestGetUserProgress(tt *testing.T) {
 			response: func(messageBytes []byte, errorBytes []byte) []byte {
 				return errorBytes
 			},
-			assert: func(t *testing.T, resp map[string]models.GetUserProgress, err error) {
+			assert: func(t *testing.T, resp *map[string]models.GetUserProgress, err error) {
 				require.Nil(t, resp)
 				require.EqualError(t, err, "calling endpoint: Get \"/API/API_GetUserProgress.php?i=1%2C2%2C5352&u=Test&y=some_secret\": unsupported protocol scheme \"\"")
 			},
@@ -1635,7 +1635,7 @@ func TestGetUserProgress(tt *testing.T) {
 			response: func(messageBytes []byte, errorBytes []byte) []byte {
 				return errorBytes
 			},
-			assert: func(t *testing.T, resp map[string]models.GetUserProgress, err error) {
+			assert: func(t *testing.T, resp *map[string]models.GetUserProgress, err error) {
 				require.Nil(t, resp)
 				require.EqualError(t, err, "parsing response object: error responses: [401] Not Authorized")
 			},
@@ -1679,10 +1679,11 @@ func TestGetUserProgress(tt *testing.T) {
 			response: func(messageBytes []byte, errorBytes []byte) []byte {
 				return messageBytes
 			},
-			assert: func(t *testing.T, resp map[string]models.GetUserProgress, err error) {
+			assert: func(t *testing.T, resp *map[string]models.GetUserProgress, err error) {
 				require.NotNil(t, resp)
+				r := *resp
 				// first element
-				first, ok := resp["1"]
+				first, ok := r["1"]
 				require.True(t, ok)
 				require.Equal(t, 36, first.NumPossibleAchievements)
 				require.Equal(t, 305, first.PossibleScore)
@@ -1692,7 +1693,7 @@ func TestGetUserProgress(tt *testing.T) {
 				require.Equal(t, 100, first.ScoreAchievedHardcore)
 
 				// second element
-				second, ok := resp["2"]
+				second, ok := r["2"]
 				require.True(t, ok)
 				require.Equal(t, 56, second.NumPossibleAchievements)
 				require.Equal(t, 600, second.PossibleScore)
@@ -1702,7 +1703,7 @@ func TestGetUserProgress(tt *testing.T) {
 				require.Equal(t, 0, second.ScoreAchievedHardcore)
 
 				// third element
-				third, ok := resp["5352"]
+				third, ok := r["5352"]
 				require.True(t, ok)
 				require.Equal(t, 13, third.NumPossibleAchievements)
 				require.Equal(t, 230, third.PossibleScore)
@@ -2216,6 +2217,136 @@ func TestGetUserSummary(tt *testing.T) {
 			defer server.Close()
 			client := retroachievements.New(test.modifyURL(server.URL), "some_secret")
 			resp, err := client.GetUserSummary(test.params)
+			test.assert(t, resp, err)
+		})
+	}
+}
+
+func TestGetUserCompletedGames(tt *testing.T) {
+	tests := []struct {
+		name            string
+		params          models.GetUserCompletedGamesParameters
+		modifyURL       func(url string) string
+		responseCode    int
+		responseMessage []models.GetUserCompletedGames
+		responseError   models.ErrorResponse
+		response        func(messageBytes []byte, errorBytes []byte) []byte
+		assert          func(t *testing.T, resp []models.GetUserCompletedGames, err error)
+	}{
+		{
+			name: "fail to call endpoint",
+			params: models.GetUserCompletedGamesParameters{
+				Username: "Test",
+			},
+			modifyURL: func(url string) string {
+				return ""
+			},
+			responseCode: http.StatusUnauthorized,
+			responseError: models.ErrorResponse{
+				Message: "test",
+				Errors: []models.ErrorDetail{
+					{
+						Status: http.StatusUnauthorized,
+						Code:   "unauthorized",
+						Title:  "Not Authorized",
+					},
+				},
+			},
+			response: func(messageBytes []byte, errorBytes []byte) []byte {
+				return errorBytes
+			},
+			assert: func(t *testing.T, resp []models.GetUserCompletedGames, err error) {
+				require.Nil(t, resp)
+				require.EqualError(t, err, "calling endpoint: Get \"/API/API_GetUserCompletedGames.php?u=Test&y=some_secret\": unsupported protocol scheme \"\"")
+			},
+		},
+		{
+			name: "error response",
+			params: models.GetUserCompletedGamesParameters{
+				Username: "Test",
+			},
+			modifyURL: func(url string) string {
+				return url
+			},
+			responseCode: http.StatusUnauthorized,
+			responseError: models.ErrorResponse{
+				Message: "test",
+				Errors: []models.ErrorDetail{
+					{
+						Status: http.StatusUnauthorized,
+						Code:   "unauthorized",
+						Title:  "Not Authorized",
+					},
+				},
+			},
+			response: func(messageBytes []byte, errorBytes []byte) []byte {
+				return errorBytes
+			},
+			assert: func(t *testing.T, resp []models.GetUserCompletedGames, err error) {
+				require.Nil(t, resp)
+				require.EqualError(t, err, "parsing response list: error responses: [401] Not Authorized")
+			},
+		},
+		{
+			name: "success",
+			params: models.GetUserCompletedGamesParameters{
+				Username: "Test",
+			},
+			modifyURL: func(url string) string {
+				return url
+			},
+			responseCode: http.StatusOK,
+			responseMessage: []models.GetUserCompletedGames{
+				{
+					GameID:       24941,
+					Title:        "Dragon Quest IV: Chapters of the Chosen [Subset - Plentiful Plunder]",
+					ImageIcon:    "/Images/075762.png",
+					ConsoleID:    18,
+					ConsoleName:  "Nintendo DS",
+					MaxPossible:  202,
+					NumAwarded:   202,
+					PctWon:       "1.0000",
+					HardcoreMode: "1",
+				},
+			},
+			response: func(messageBytes []byte, errorBytes []byte) []byte {
+				return messageBytes
+			},
+			assert: func(t *testing.T, resp []models.GetUserCompletedGames, err error) {
+				require.NoError(t, err)
+				require.Len(t, resp, 1)
+				require.Equal(t, 24941, resp[0].GameID)
+				require.Equal(t, "Dragon Quest IV: Chapters of the Chosen [Subset - Plentiful Plunder]", resp[0].Title)
+				require.Equal(t, "/Images/075762.png", resp[0].ImageIcon)
+				require.Equal(t, 18, resp[0].ConsoleID)
+				require.Equal(t, "Nintendo DS", resp[0].ConsoleName)
+				require.Equal(t, 202, resp[0].MaxPossible)
+				require.Equal(t, 202, resp[0].NumAwarded)
+				require.Equal(t, "1.0000", resp[0].PctWon)
+				require.Equal(t, "1", resp[0].HardcoreMode)
+			},
+		},
+	}
+	for _, test := range tests {
+		tt.Run(test.name, func(t *testing.T) {
+			server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+				expectedPath := "/API/API_GetUserCompletedGames.php"
+				if r.URL.Path != expectedPath {
+					t.Errorf("Expected to request '%s', got: %s", expectedPath, r.URL.Path)
+				}
+				w.WriteHeader(test.responseCode)
+				responseMessage, err := json.Marshal(test.responseMessage)
+				require.NoError(t, err)
+				errBytes, err := json.Marshal(test.responseError)
+				require.NoError(t, err)
+				resp := test.response(responseMessage, errBytes)
+				num, err := w.Write(resp)
+				require.NoError(t, err)
+				require.Equal(t, num, len(resp))
+			}))
+			defer server.Close()
+			client := retroachievements.New(test.modifyURL(server.URL), "some_secret")
+			resp, err := client.GetUserCompletedGames(test.params)
 			test.assert(t, resp, err)
 		})
 	}

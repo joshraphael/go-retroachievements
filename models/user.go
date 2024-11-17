@@ -562,3 +562,20 @@ type GetUserSummaryLastGame struct {
 	Released     LongMonthDate `json:"Released"`
 	IsFinal      int           `json:"IsFinal"`
 }
+
+type GetUserCompletedGamesParameters struct {
+	// The target username
+	Username string
+}
+
+type GetUserCompletedGames struct {
+	GameID       int    `json:"GameID"`
+	Title        string `json:"Title"`
+	ImageIcon    string `json:"ImageIcon"`
+	ConsoleID    int    `json:"ConsoleID"`
+	ConsoleName  string `json:"ConsoleName"`
+	MaxPossible  int    `json:"MaxPossible"`
+	NumAwarded   int    `json:"NumAwarded"`
+	PctWon       string `json:"PctWon"`
+	HardcoreMode string `json:"HardcoreMode"`
+}

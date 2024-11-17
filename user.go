@@ -202,7 +202,7 @@ func (c *Client) GetUserPoints(params models.GetUserPointsParameters) (*models.G
 }
 
 // GetUserProgress get a user's progress on a list of specified games.
-func (c *Client) GetUserProgress(params models.GetUserProgressParameters) (map[string]models.GetUserProgress, error) {
+func (c *Client) GetUserProgress(params models.GetUserProgressParameters) (*map[string]models.GetUserProgress, error) {
 	resp, err := c.do(
 		raHttp.Method(http.MethodGet),
 		raHttp.Path("/API/API_GetUserProgress.php"),
@@ -217,7 +217,7 @@ func (c *Client) GetUserProgress(params models.GetUserProgressParameters) (map[s
 	if err != nil {
 		return nil, fmt.Errorf("parsing response object: %w", err)
 	}
-	return *progress, nil
+	return progress, nil
 }
 
 // GetUserRecentlyPlayedGames get a list of games a user has recently played.
@@ -268,4 +268,22 @@ func (c *Client) GetUserSummary(params models.GetUserSummaryParameters) (*models
 		return nil, fmt.Errorf("parsing response object: %w", err)
 	}
 	return recentlyPlayed, nil
+}
+
+// GetUserCompletedGames gets completion metadata about the games a given user has played.
+func (c *Client) GetUserCompletedGames(params models.GetUserCompletedGamesParameters) ([]models.GetUserCompletedGames, error) {
+	resp, err := c.do(
+		raHttp.Method(http.MethodGet),
+		raHttp.Path("/API/API_GetUserCompletedGames.php"),
+		raHttp.APIToken(c.Secret),
+		raHttp.Username(params.Username),
+	)
+	if err != nil {
+		return nil, fmt.Errorf("calling endpoint: %w", err)
+	}
+	games, err := raHttp.ResponseList[models.GetUserCompletedGames](resp)
+	if err != nil {
+		return nil, fmt.Errorf("parsing response list: %w", err)
+	}
+	return games, nil
 }
