@@ -65,3 +65,21 @@ func (c *Client) GetGameHashes(params models.GetGameHashesParameters) (*models.G
 	}
 	return resp, nil
 }
+
+// GetAchievementCount the list of achievement IDs for a game.
+func (c *Client) GetAchievementCount(params models.GetAchievementCountParameters) (*models.GetAchievementCount, error) {
+	r, err := c.do(
+		raHttp.Method(http.MethodGet),
+		raHttp.Path("/API/API_GetAchievementCount.php"),
+		raHttp.APIToken(c.Secret),
+		raHttp.IDs([]int{params.GameID}),
+	)
+	if err != nil {
+		return nil, fmt.Errorf("calling endpoint: %w", err)
+	}
+	resp, err := raHttp.ResponseObject[models.GetAchievementCount](r)
+	if err != nil {
+		return nil, fmt.Errorf("parsing response object: %w", err)
+	}
+	return resp, nil
+}

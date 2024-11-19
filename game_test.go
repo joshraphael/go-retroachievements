@@ -528,3 +528,139 @@ func TestGetGameHashes(tt *testing.T) {
 		})
 	}
 }
+
+func TestGetAchievementCount(tt *testing.T) {
+	tests := []struct {
+		name            string
+		params          models.GetAchievementCountParameters
+		modifyURL       func(url string) string
+		responseCode    int
+		responseMessage models.GetAchievementCount
+		responseError   models.ErrorResponse
+		response        func(messageBytes []byte, errorBytes []byte) []byte
+		assert          func(t *testing.T, game *models.GetAchievementCount, err error)
+	}{
+		{
+			name: "fail to call endpoint",
+			params: models.GetAchievementCountParameters{
+				GameID: 14402,
+			},
+			modifyURL: func(url string) string {
+				return ""
+			},
+			responseCode: http.StatusOK,
+			response: func(messageBytes []byte, errorBytes []byte) []byte {
+				return messageBytes
+			},
+			assert: func(t *testing.T, resp *models.GetAchievementCount, err error) {
+				require.Nil(t, resp)
+				require.EqualError(t, err, "calling endpoint: Get \"/API/API_GetAchievementCount.php?i=14402&y=some_secret\": unsupported protocol scheme \"\"")
+			},
+		},
+		{
+			name: "error response",
+			params: models.GetAchievementCountParameters{
+				GameID: 14402,
+			},
+			modifyURL: func(url string) string {
+				return url
+			},
+			responseCode: http.StatusUnauthorized,
+			responseError: models.ErrorResponse{
+				Message: "test",
+				Errors: []models.ErrorDetail{
+					{
+						Status: http.StatusUnauthorized,
+						Code:   "unauthorized",
+						Title:  "Not Authorized",
+					},
+				},
+			},
+			response: func(messageBytes []byte, errorBytes []byte) []byte {
+				return errorBytes
+			},
+			assert: func(t *testing.T, resp *models.GetAchievementCount, err error) {
+				require.Nil(t, resp)
+				require.EqualError(t, err, "parsing response object: error responses: [401] Not Authorized")
+			},
+		},
+		{
+			name: "success",
+			params: models.GetAchievementCountParameters{
+				GameID: 14402,
+			},
+			modifyURL: func(url string) string {
+				return url
+			},
+			responseCode: http.StatusOK,
+			responseMessage: models.GetAchievementCount{
+				GameID: 14402,
+				AchievementIDs: []int{
+					79434,
+					79435,
+					79436,
+					79437,
+					79438,
+					79439,
+					79440,
+					79441,
+					79442,
+					79443,
+					79444,
+					79445,
+					325413,
+					325414,
+					325415,
+				},
+			},
+			response: func(messageBytes []byte, errorBytes []byte) []byte {
+				return messageBytes
+			},
+			assert: func(t *testing.T, resp *models.GetAchievementCount, err error) {
+				require.NotNil(t, resp)
+				require.Equal(t, 14402, resp.GameID)
+				require.Len(t, resp.AchievementIDs, 15)
+				require.Equal(t, 79434, resp.AchievementIDs[0])
+				require.Equal(t, 79435, resp.AchievementIDs[1])
+				require.Equal(t, 79436, resp.AchievementIDs[2])
+				require.Equal(t, 79437, resp.AchievementIDs[3])
+				require.Equal(t, 79438, resp.AchievementIDs[4])
+				require.Equal(t, 79439, resp.AchievementIDs[5])
+				require.Equal(t, 79440, resp.AchievementIDs[6])
+				require.Equal(t, 79441, resp.AchievementIDs[7])
+				require.Equal(t, 79442, resp.AchievementIDs[8])
+				require.Equal(t, 79443, resp.AchievementIDs[9])
+				require.Equal(t, 79444, resp.AchievementIDs[10])
+				require.Equal(t, 79445, resp.AchievementIDs[11])
+				require.Equal(t, 325413, resp.AchievementIDs[12])
+				require.Equal(t, 325414, resp.AchievementIDs[13])
+				require.Equal(t, 325415, resp.AchievementIDs[14])
+				require.NoError(t, err)
+			},
+		},
+	}
+	for _, test := range tests {
+		tt.Run(test.name, func(t *testing.T) {
+			server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+				expectedPath := "/API/API_GetAchievementCount.php"
+				if r.URL.Path != expectedPath {
+					t.Errorf("Expected to request '%s', got: %s", expectedPath, r.URL.Path)
+				}
+				w.WriteHeader(test.responseCode)
+				messageBytes, err := json.Marshal(test.responseMessage)
+				require.NoError(t, err)
+				errBytes, err := json.Marshal(test.responseError)
+				require.NoError(t, err)
+				resp := test.response(messageBytes, errBytes)
+				num, err := w.Write(resp)
+				require.NoError(t, err)
+				require.Equal(t, num, len(resp))
+			}))
+			defer server.Close()
+
+			client := retroachievements.New(test.modifyURL(server.URL), "some_secret")
+			resp, err := client.GetAchievementCount(test.params)
+			test.assert(t, resp, err)
+		})
+	}
+}

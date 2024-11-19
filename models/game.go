@@ -107,3 +107,13 @@ type GetGameHashesResult struct {
 	Labels   []string `json:"Labels"`
 	PatchUrl *string  `json:"PatchUrl"`
 }
+
+type GetAchievementCountParameters struct {
+	// The target game ID
+	GameID int
+}
+
+type GetAchievementCount struct {
+	GameID         int   `json:"GameID"`
+	AchievementIDs []int `json:"AchievementIDs"`
+}
