@@ -36,7 +36,7 @@ you can now use the client to call any of the available endpoints, for example:
 
 ```go
 profile, err := client.GetUserProfile(models.GetUserProfileParameters{
-	Username: "jamiras",
+    Username: "jamiras",
 })
 ```
 
@@ -63,6 +63,7 @@ For convenience, the API docs and examples can be found in the tables below
 |`GetUserRecentlyPlayedGames()`|Get a list of games a user has recently played.|[docs](https://api-docs.retroachievements.org/v1/get-user-recently-played-games.html) \| [example](examples/user/getuserrecentlyplayedgames/getuserrecentlyplayedgames.go)|
 |`GetUserSummary()`|Get a user's profile metadata.|[docs](https://api-docs.retroachievements.org/v1/get-user-summary.html) \| [example](examples/user/getusersummary/getusersummary.go)|
 |`GetUserCompletedGames()`|[Deprecated] Get hardcore and softcore completion metadata about games a user has played.|[docs](https://api-docs.retroachievements.org/v1/get-user-completed-games.html) \| [example](examples/user/getusercompletedgames/getusercompletedgames.go)|
+|`GetUserWantToPlayList()`|Get a user's "Want to Play Games" list.|[docs](https://api-docs.retroachievements.org/v1/get-user-want-to-play-list.html) \| [example](examples/user/getuserwanttoplaylist/getuserwanttoplaylist.go)|
 
 <h3>Game</h3>
 

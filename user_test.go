@@ -2351,3 +2351,143 @@ func TestGetUserCompletedGames(tt *testing.T) {
 		})
 	}
 }
+
+func TestGetUserWantToPlayList(tt *testing.T) {
+	count := 10
+	offset := 23
+	tests := []struct {
+		name            string
+		params          models.GetUserWantToPlayListParameters
+		modifyURL       func(url string) string
+		responseCode    int
+		responseMessage models.GetUserWantToPlayList
+		responseError   models.ErrorResponse
+		response        func(messageBytes []byte, errorBytes []byte) []byte
+		assert          func(t *testing.T, resp *models.GetUserWantToPlayList, err error)
+	}{
+		{
+			name: "fail to call endpoint",
+			params: models.GetUserWantToPlayListParameters{
+				Username: "Test",
+				Count:    &count,
+				Offset:   &offset,
+			},
+			modifyURL: func(url string) string {
+				return ""
+			},
+			responseCode: http.StatusUnauthorized,
+			responseError: models.ErrorResponse{
+				Message: "test",
+				Errors: []models.ErrorDetail{
+					{
+						Status: http.StatusUnauthorized,
+						Code:   "unauthorized",
+						Title:  "Not Authorized",
+					},
+				},
+			},
+			response: func(messageBytes []byte, errorBytes []byte) []byte {
+				return errorBytes
+			},
+			assert: func(t *testing.T, resp *models.GetUserWantToPlayList, err error) {
+				require.Nil(t, resp)
+				require.EqualError(t, err, "calling endpoint: Get \"/API/API_GetUserWantToPlayList.php?c=10&o=23&u=Test&y=some_secret\": unsupported protocol scheme \"\"")
+			},
+		},
+		{
+			name: "error response",
+			params: models.GetUserWantToPlayListParameters{
+				Username: "Test",
+				Count:    &count,
+				Offset:   &offset,
+			},
+			modifyURL: func(url string) string {
+				return url
+			},
+			responseCode: http.StatusUnauthorized,
+			responseError: models.ErrorResponse{
+				Message: "test",
+				Errors: []models.ErrorDetail{
+					{
+						Status: http.StatusUnauthorized,
+						Code:   "unauthorized",
+						Title:  "Not Authorized",
+					},
+				},
+			},
+			response: func(messageBytes []byte, errorBytes []byte) []byte {
+				return errorBytes
+			},
+			assert: func(t *testing.T, resp *models.GetUserWantToPlayList, err error) {
+				require.Nil(t, resp)
+				require.EqualError(t, err, "parsing response object: error responses: [401] Not Authorized")
+			},
+		},
+		{
+			name: "success",
+			params: models.GetUserWantToPlayListParameters{
+				Username: "Test",
+				Count:    &count,
+				Offset:   &offset,
+			},
+			modifyURL: func(url string) string {
+				return url
+			},
+			responseCode: http.StatusOK,
+			responseMessage: models.GetUserWantToPlayList{
+				Count: 1,
+				Total: 1,
+				Results: []models.GetUserWantToPlayListResult{
+					{
+						ID:                    189,
+						Title:                 "Super Mario Galaxy",
+						ConsoleID:             19,
+						ConsoleName:           "Wii",
+						ImageIcon:             "/Images/079076.png",
+						PointsTotal:           0,
+						AchievementsPublished: 0,
+					},
+				},
+			},
+			response: func(messageBytes []byte, errorBytes []byte) []byte {
+				return messageBytes
+			},
+			assert: func(t *testing.T, resp *models.GetUserWantToPlayList, err error) {
+				require.NoError(t, err)
+				require.Equal(t, 1, resp.Count)
+				require.Equal(t, 1, resp.Total)
+				require.Len(t, resp.Results, 1)
+				require.Equal(t, 189, resp.Results[0].ID)
+				require.Equal(t, "Super Mario Galaxy", resp.Results[0].Title)
+				require.Equal(t, 19, resp.Results[0].ConsoleID)
+				require.Equal(t, "Wii", resp.Results[0].ConsoleName)
+				require.Equal(t, "/Images/079076.png", resp.Results[0].ImageIcon)
+				require.Equal(t, 0, resp.Results[0].PointsTotal)
+				require.Equal(t, 0, resp.Results[0].AchievementsPublished)
+			},
+		},
+	}
+	for _, test := range tests {
+		tt.Run(test.name, func(t *testing.T) {
+			server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+				expectedPath := "/API/API_GetUserWantToPlayList.php"
+				if r.URL.Path != expectedPath {
+					t.Errorf("Expected to request '%s', got: %s", expectedPath, r.URL.Path)
+				}
+				w.WriteHeader(test.responseCode)
+				responseMessage, err := json.Marshal(test.responseMessage)
+				require.NoError(t, err)
+				errBytes, err := json.Marshal(test.responseError)
+				require.NoError(t, err)
+				resp := test.response(responseMessage, errBytes)
+				num, err := w.Write(resp)
+				require.NoError(t, err)
+				require.Equal(t, num, len(resp))
+			}))
+			defer server.Close()
+			client := retroachievements.New(test.modifyURL(server.URL), "some_secret")
+			resp, err := client.GetUserWantToPlayList(test.params)
+			test.assert(t, resp, err)
+		})
+	}
+}

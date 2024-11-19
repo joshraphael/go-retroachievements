@@ -579,3 +579,30 @@ type GetUserCompletedGames struct {
 	PctWon       string `json:"PctWon"`
 	HardcoreMode string `json:"HardcoreMode"`
 }
+
+type GetUserWantToPlayListParameters struct {
+	// The target username
+	Username string
+
+	// [Optional] The number of records to return (default: 100, max: 500).
+	Count *int
+
+	// [Optional] The number of entries to skip (default: 0).
+	Offset *int
+}
+
+type GetUserWantToPlayList struct {
+	Count   int                           `json:"Count"`
+	Total   int                           `json:"Total"`
+	Results []GetUserWantToPlayListResult `json:"Results"`
+}
+
+type GetUserWantToPlayListResult struct {
+	ID                    int    `json:"ID"`
+	Title                 string `json:"Title"`
+	ImageIcon             string `json:"ImageIcon"`
+	ConsoleID             int    `json:"ConsoleID"`
+	ConsoleName           string `json:"ConsoleName"`
+	PointsTotal           int    `json:"PointsTotal"`
+	AchievementsPublished int    `json:"AchievementsPublished"`
+}

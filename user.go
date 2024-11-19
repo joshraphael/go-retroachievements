@@ -287,3 +287,28 @@ func (c *Client) GetUserCompletedGames(params models.GetUserCompletedGamesParame
 	}
 	return games, nil
 }
+
+// GetUserWantToPlayList gets a given user's "Want to Play Games" list.
+func (c *Client) GetUserWantToPlayList(params models.GetUserWantToPlayListParameters) (*models.GetUserWantToPlayList, error) {
+	details := []raHttp.RequestDetail{
+		raHttp.Method(http.MethodGet),
+		raHttp.Path("/API/API_GetUserWantToPlayList.php"),
+		raHttp.APIToken(c.Secret),
+		raHttp.Username(params.Username),
+	}
+	if params.Count != nil {
+		details = append(details, raHttp.Count(*params.Count))
+	}
+	if params.Offset != nil {
+		details = append(details, raHttp.Offset(*params.Offset))
+	}
+	resp, err := c.do(details...)
+	if err != nil {
+		return nil, fmt.Errorf("calling endpoint: %w", err)
+	}
+	results, err := raHttp.ResponseObject[models.GetUserWantToPlayList](resp)
+	if err != nil {
+		return nil, fmt.Errorf("parsing response object: %w", err)
+	}
+	return results, nil
+}
