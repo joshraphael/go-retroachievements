@@ -47,3 +47,21 @@ func (c *Client) GetGameExtended(params models.GetGameExtentedParameters) (*mode
 	}
 	return game, nil
 }
+
+// GetGameHashes get the hashes linked to a game.
+func (c *Client) GetGameHashes(params models.GetGameHashesParameters) (*models.GetGameHashes, error) {
+	r, err := c.do(
+		raHttp.Method(http.MethodGet),
+		raHttp.Path("/API/API_GetGameHashes.php"),
+		raHttp.APIToken(c.Secret),
+		raHttp.IDs([]int{params.GameID}),
+	)
+	if err != nil {
+		return nil, fmt.Errorf("calling endpoint: %w", err)
+	}
+	resp, err := raHttp.ResponseObject[models.GetGameHashes](r)
+	if err != nil {
+		return nil, fmt.Errorf("parsing response object: %w", err)
+	}
+	return resp, nil
+}

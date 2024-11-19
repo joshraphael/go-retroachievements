@@ -91,3 +91,19 @@ type GetGameExtentedClaim struct {
 	Created    DateTime `json:"Created"`
 	Expiration DateTime `json:"Expiration"`
 }
+
+type GetGameHashesParameters struct {
+	// The target game ID
+	GameID int
+}
+
+type GetGameHashes struct {
+	Results []GetGameHashesResult `json:"Results"`
+}
+
+type GetGameHashesResult struct {
+	Name     string   `json:"Name"`
+	MD5      string   `json:"MD5"`
+	Labels   []string `json:"Labels"`
+	PatchUrl *string  `json:"PatchUrl"`
+}

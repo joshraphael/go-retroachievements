@@ -407,3 +407,124 @@ func TestGetGameExtended(tt *testing.T) {
 		})
 	}
 }
+
+func TestGetGameHashes(tt *testing.T) {
+	patchUrl := "https://github.com/RetroAchievements/RAPatches/raw/main/MD/Translation/Russian/1-Sonic1-Russian.zip"
+	tests := []struct {
+		name            string
+		params          models.GetGameHashesParameters
+		modifyURL       func(url string) string
+		responseCode    int
+		responseMessage models.GetGameHashes
+		responseError   models.ErrorResponse
+		response        func(messageBytes []byte, errorBytes []byte) []byte
+		assert          func(t *testing.T, game *models.GetGameHashes, err error)
+	}{
+		{
+			name: "fail to call endpoint",
+			params: models.GetGameHashesParameters{
+				GameID: 2991,
+			},
+			modifyURL: func(url string) string {
+				return ""
+			},
+			responseCode: http.StatusOK,
+			response: func(messageBytes []byte, errorBytes []byte) []byte {
+				return messageBytes
+			},
+			assert: func(t *testing.T, resp *models.GetGameHashes, err error) {
+				require.Nil(t, resp)
+				require.EqualError(t, err, "calling endpoint: Get \"/API/API_GetGameHashes.php?i=2991&y=some_secret\": unsupported protocol scheme \"\"")
+			},
+		},
+		{
+			name: "error response",
+			params: models.GetGameHashesParameters{
+				GameID: 2991,
+			},
+			modifyURL: func(url string) string {
+				return url
+			},
+			responseCode: http.StatusUnauthorized,
+			responseError: models.ErrorResponse{
+				Message: "test",
+				Errors: []models.ErrorDetail{
+					{
+						Status: http.StatusUnauthorized,
+						Code:   "unauthorized",
+						Title:  "Not Authorized",
+					},
+				},
+			},
+			response: func(messageBytes []byte, errorBytes []byte) []byte {
+				return errorBytes
+			},
+			assert: func(t *testing.T, resp *models.GetGameHashes, err error) {
+				require.Nil(t, resp)
+				require.EqualError(t, err, "parsing response object: error responses: [401] Not Authorized")
+			},
+		},
+		{
+			name: "success",
+			params: models.GetGameHashesParameters{
+				GameID: 1,
+			},
+			modifyURL: func(url string) string {
+				return url
+			},
+			responseCode: http.StatusOK,
+			responseMessage: models.GetGameHashes{
+				Results: []models.GetGameHashesResult{
+					{
+						Name: "Sonic The Hedgehog (USA, Europe) (Ru) (NewGame).md",
+						MD5:  "1b1d9ac862c387367e904036114c4825",
+						Labels: []string{
+							"nointro",
+							"rapatches",
+						},
+						PatchUrl: &patchUrl,
+					},
+				},
+			},
+			response: func(messageBytes []byte, errorBytes []byte) []byte {
+				return messageBytes
+			},
+			assert: func(t *testing.T, resp *models.GetGameHashes, err error) {
+				require.NotNil(t, resp)
+				require.Len(t, resp.Results, 1)
+				require.Equal(t, "Sonic The Hedgehog (USA, Europe) (Ru) (NewGame).md", resp.Results[0].Name)
+				require.Equal(t, "1b1d9ac862c387367e904036114c4825", resp.Results[0].MD5)
+				require.Len(t, resp.Results[0].Labels, 2)
+				require.Equal(t, resp.Results[0].Labels[0], "nointro")
+				require.Equal(t, resp.Results[0].Labels[1], "rapatches")
+				require.NotNil(t, resp.Results[0].PatchUrl)
+				require.Equal(t, "https://github.com/RetroAchievements/RAPatches/raw/main/MD/Translation/Russian/1-Sonic1-Russian.zip", *resp.Results[0].PatchUrl)
+				require.NoError(t, err)
+			},
+		},
+	}
+	for _, test := range tests {
+		tt.Run(test.name, func(t *testing.T) {
+			server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+				expectedPath := "/API/API_GetGameHashes.php"
+				if r.URL.Path != expectedPath {
+					t.Errorf("Expected to request '%s', got: %s", expectedPath, r.URL.Path)
+				}
+				w.WriteHeader(test.responseCode)
+				messageBytes, err := json.Marshal(test.responseMessage)
+				require.NoError(t, err)
+				errBytes, err := json.Marshal(test.responseError)
+				require.NoError(t, err)
+				resp := test.response(messageBytes, errBytes)
+				num, err := w.Write(resp)
+				require.NoError(t, err)
+				require.Equal(t, num, len(resp))
+			}))
+			defer server.Close()
+
+			client := retroachievements.New(test.modifyURL(server.URL), "some_secret")
+			resp, err := client.GetGameHashes(test.params)
+			test.assert(t, resp, err)
+		})
+	}
+}
