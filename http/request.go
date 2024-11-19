@@ -123,10 +123,6 @@ func Offset(offset int) RequestDetail {
 // Achievement adds a achievement number query parameter
 func Achievement(achievement int) RequestDetail {
 	return requestDetailFn(func(r *Request) {
-		// a := "0"
-		// if awardMetadata {
-		// 	a = "1"
-		// }
 		r.Params["a"] = strconv.Itoa(achievement)
 	})
 }

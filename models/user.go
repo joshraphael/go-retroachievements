@@ -273,6 +273,7 @@ type GetGameInfoAndUserProgressAchievement struct {
 type GetGameInfoAndUserProgress struct {
 	ID                         int                                           `json:"ID"`
 	Title                      string                                        `json:"Title"`
+	SortTitle                  string                                        `json:"sort_title"`
 	ConsoleID                  int                                           `json:"ConsoleID"`
 	ForumTopicID               *int                                          `json:"ForumTopicID"`
 	Flags                      int                                           `json:"Flags"`
@@ -295,9 +296,6 @@ type GetGameInfoAndUserProgress struct {
 	Achievements               map[int]GetGameInfoAndUserProgressAchievement `json:"Achievements"`
 	NumDistinctPlayersCasual   int                                           `json:"NumDistinctPlayersCasual"`
 	NumDistinctPlayersHardcore int                                           `json:"NumDistinctPlayersHardcore"`
-	PlayersTotal               int                                           `json:"players_total"`
-	AchievementsPublished      int                                           `json:"achievements_published"`
-	PointsTotal                int                                           `json:"points_total"`
 	NumAwardedToUser           int                                           `json:"NumAwardedToUser"`
 	NumAwardedToUserHardcore   int                                           `json:"NumAwardedToUserHardcore"`
 	UserCompletion             string                                        `json:"UserCompletion"`
