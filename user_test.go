@@ -722,6 +722,7 @@ func TestGetGameInfoAndUserProgress(tt *testing.T) {
 			responseCode: http.StatusOK,
 			responseMessage: models.GetGameInfoAndUserProgress{
 				Title:              "Twisted Metal: Black",
+				SortTitle:          "twisted metal black",
 				ConsoleID:          21,
 				ForumTopicID:       &forumTopicId,
 				Flags:              0,
@@ -765,9 +766,6 @@ func TestGetGameInfoAndUserProgress(tt *testing.T) {
 					Time: released,
 				},
 				ReleasedAtGranularity:    &granularity,
-				PlayersTotal:             1230,
-				AchievementsPublished:    61,
-				PointsTotal:              743,
 				NumAwardedToUser:         1244,
 				NumAwardedToUserHardcore: 1234,
 				UserCompletion:           "100.00%",
@@ -783,6 +781,7 @@ func TestGetGameInfoAndUserProgress(tt *testing.T) {
 			assert: func(t *testing.T, gameProgress *models.GetGameInfoAndUserProgress, err error) {
 				require.NotNil(t, gameProgress)
 				require.Equal(t, "Twisted Metal: Black", gameProgress.Title)
+				require.Equal(t, "twisted metal black", gameProgress.SortTitle)
 				require.Equal(t, 21, gameProgress.ConsoleID)
 				require.Equal(t, "PlayStation 2", gameProgress.ConsoleName)
 				require.Equal(t, 16654, *gameProgress.ForumTopicID)
@@ -823,9 +822,6 @@ func TestGetGameInfoAndUserProgress(tt *testing.T) {
 					Time: released,
 				}, *gameProgress.Released)
 				require.Equal(t, "day", *gameProgress.ReleasedAtGranularity)
-				require.Equal(t, 1230, gameProgress.PlayersTotal)
-				require.Equal(t, 61, gameProgress.AchievementsPublished)
-				require.Equal(t, 743, gameProgress.PointsTotal)
 				require.Equal(t, 1244, gameProgress.NumAwardedToUser)
 				require.Equal(t, 1234, gameProgress.NumAwardedToUserHardcore)
 				require.Equal(t, "100.00%", gameProgress.UserCompletion)
