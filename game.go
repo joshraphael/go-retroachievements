@@ -83,3 +83,32 @@ func (c *Client) GetAchievementCount(params models.GetAchievementCountParameters
 	}
 	return resp, nil
 }
+
+// GetAchievementDistribution gets how many players have unlocked how many achievements for a game.
+func (c *Client) GetAchievementDistribution(params models.GetAchievementDistributionParameters) (*models.GetAchievementDistribution, error) {
+	details := []raHttp.RequestDetail{
+		raHttp.Method(http.MethodGet),
+		raHttp.Path("/API/API_GetAchievementDistribution.php"),
+		raHttp.APIToken(c.Secret),
+		raHttp.IDs([]int{params.GameID}),
+	}
+	if params.Unofficial != nil {
+		if *params.Unofficial {
+			details = append(details, raHttp.From(int64(5)))
+		} else {
+			details = append(details, raHttp.From(int64(3)))
+		}
+	}
+	if params.Hardcore != nil {
+		details = append(details, raHttp.Hardcore(*params.Hardcore))
+	}
+	r, err := c.do(details...)
+	if err != nil {
+		return nil, fmt.Errorf("calling endpoint: %w", err)
+	}
+	resp, err := raHttp.ResponseObject[models.GetAchievementDistribution](r)
+	if err != nil {
+		return nil, fmt.Errorf("parsing response object: %w", err)
+	}
+	return resp, nil
+}

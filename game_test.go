@@ -664,3 +664,174 @@ func TestGetAchievementCount(tt *testing.T) {
 		})
 	}
 }
+
+func TestGetAchievementDistribution(tt *testing.T) {
+	hardcore := true
+	unofficial := true
+	official := false
+	tests := []struct {
+		name            string
+		params          models.GetAchievementDistributionParameters
+		modifyURL       func(url string) string
+		responseCode    int
+		responseMessage models.GetAchievementDistribution
+		responseError   models.ErrorResponse
+		response        func(messageBytes []byte, errorBytes []byte) []byte
+		assert          func(t *testing.T, game *models.GetAchievementDistribution, err error)
+	}{
+		{
+			name: "fail to call endpoint",
+			params: models.GetAchievementDistributionParameters{
+				GameID:     14402,
+				Hardcore:   &hardcore,
+				Unofficial: &unofficial,
+			},
+			modifyURL: func(url string) string {
+				return ""
+			},
+			responseCode: http.StatusOK,
+			response: func(messageBytes []byte, errorBytes []byte) []byte {
+				return messageBytes
+			},
+			assert: func(t *testing.T, resp *models.GetAchievementDistribution, err error) {
+				require.Nil(t, resp)
+				require.EqualError(t, err, "calling endpoint: Get \"/API/API_GetAchievementDistribution.php?f=5&h=1&i=14402&y=some_secret\": unsupported protocol scheme \"\"")
+			},
+		},
+		{
+			name: "error response",
+			params: models.GetAchievementDistributionParameters{
+				GameID:     14402,
+				Hardcore:   &hardcore,
+				Unofficial: &unofficial,
+			},
+			modifyURL: func(url string) string {
+				return url
+			},
+			responseCode: http.StatusUnauthorized,
+			responseError: models.ErrorResponse{
+				Message: "test",
+				Errors: []models.ErrorDetail{
+					{
+						Status: http.StatusUnauthorized,
+						Code:   "unauthorized",
+						Title:  "Not Authorized",
+					},
+				},
+			},
+			response: func(messageBytes []byte, errorBytes []byte) []byte {
+				return errorBytes
+			},
+			assert: func(t *testing.T, resp *models.GetAchievementDistribution, err error) {
+				require.Nil(t, resp)
+				require.EqualError(t, err, "parsing response object: error responses: [401] Not Authorized")
+			},
+		},
+		{
+			name: "success",
+			params: models.GetAchievementDistributionParameters{
+				GameID:     14402,
+				Hardcore:   &hardcore,
+				Unofficial: &official,
+			},
+			modifyURL: func(url string) string {
+				return url
+			},
+			responseCode: http.StatusOK,
+			responseMessage: models.GetAchievementDistribution{
+				"1":  105,
+				"2":  28,
+				"3":  33,
+				"4":  30,
+				"5":  20,
+				"6":  15,
+				"7":  4,
+				"8":  29,
+				"9":  8,
+				"10": 4,
+				"11": 1,
+				"12": 0,
+				"13": 0,
+				"14": 0,
+				"15": 3,
+			},
+			response: func(messageBytes []byte, errorBytes []byte) []byte {
+				return messageBytes
+			},
+			assert: func(t *testing.T, resp *models.GetAchievementDistribution, err error) {
+				require.NotNil(t, resp)
+				r := *resp
+				val, ok := r["1"]
+				require.True(t, ok)
+				require.Equal(t, 105, val)
+				val, ok = r["2"]
+				require.True(t, ok)
+				require.Equal(t, 28, val)
+				val, ok = r["3"]
+				require.True(t, ok)
+				require.Equal(t, 33, val)
+				val, ok = r["4"]
+				require.True(t, ok)
+				require.Equal(t, 30, val)
+				val, ok = r["5"]
+				require.True(t, ok)
+				require.Equal(t, 20, val)
+				val, ok = r["6"]
+				require.True(t, ok)
+				require.Equal(t, 15, val)
+				val, ok = r["7"]
+				require.True(t, ok)
+				require.Equal(t, 4, val)
+				val, ok = r["8"]
+				require.True(t, ok)
+				require.Equal(t, 29, val)
+				val, ok = r["9"]
+				require.True(t, ok)
+				require.Equal(t, 8, val)
+				val, ok = r["10"]
+				require.True(t, ok)
+				require.Equal(t, 4, val)
+				val, ok = r["11"]
+				require.True(t, ok)
+				require.Equal(t, 1, val)
+				val, ok = r["12"]
+				require.True(t, ok)
+				require.Equal(t, 0, val)
+				val, ok = r["13"]
+				require.True(t, ok)
+				require.Equal(t, 0, val)
+				val, ok = r["14"]
+				require.True(t, ok)
+				require.Equal(t, 0, val)
+				val, ok = r["15"]
+				require.True(t, ok)
+				require.Equal(t, 3, val)
+				require.NoError(t, err)
+			},
+		},
+	}
+	for _, test := range tests {
+		tt.Run(test.name, func(t *testing.T) {
+			server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+				expectedPath := "/API/API_GetAchievementDistribution.php"
+				if r.URL.Path != expectedPath {
+					t.Errorf("Expected to request '%s', got: %s", expectedPath, r.URL.Path)
+				}
+				w.WriteHeader(test.responseCode)
+				messageBytes, err := json.Marshal(test.responseMessage)
+				require.NoError(t, err)
+				errBytes, err := json.Marshal(test.responseError)
+				require.NoError(t, err)
+				resp := test.response(messageBytes, errBytes)
+				num, err := w.Write(resp)
+				require.NoError(t, err)
+				require.Equal(t, num, len(resp))
+			}))
+			defer server.Close()
+
+			client := retroachievements.New(test.modifyURL(server.URL), "some_secret")
+			resp, err := client.GetAchievementDistribution(test.params)
+			test.assert(t, resp, err)
+		})
+	}
+}

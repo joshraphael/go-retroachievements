@@ -117,3 +117,16 @@ type GetAchievementCount struct {
 	GameID         int   `json:"GameID"`
 	AchievementIDs []int `json:"AchievementIDs"`
 }
+
+type GetAchievementDistributionParameters struct {
+	// The target game ID
+	GameID int
+
+	// [Optional] Only query hardcore unlocks (default: false)
+	Hardcore *bool
+
+	// [Optional] Get unofficial achievements (default: false)
+	Unofficial *bool
+}
+
+type GetAchievementDistribution map[string]int

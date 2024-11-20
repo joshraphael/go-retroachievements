@@ -127,6 +127,17 @@ func Achievement(achievement int) RequestDetail {
 	})
 }
 
+// Hardcore adds a Hardcore boolean query parameter
+func Hardcore(hardcore bool) RequestDetail {
+	numHardcore := 0
+	if hardcore {
+		numHardcore = 1
+	}
+	return requestDetailFn(func(r *Request) {
+		r.Params["h"] = strconv.Itoa(numHardcore)
+	})
+}
+
 // Path adds a URL path to the host
 func Path(path string) RequestDetail {
 	return requestDetailFn(func(r *Request) {

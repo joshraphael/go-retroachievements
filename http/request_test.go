@@ -29,6 +29,7 @@ func TestNewRequest(t *testing.T) {
 		raHttp.Achievement(1),
 		raHttp.Count(20),
 		raHttp.Offset(34),
+		raHttp.Hardcore(true),
 	)
 
 	expected := &raHttp.Request{
@@ -50,6 +51,7 @@ func TestNewRequest(t *testing.T) {
 			"a": "1",
 			"c": "20",
 			"o": "34",
+			"h": "1",
 		},
 	}
 
