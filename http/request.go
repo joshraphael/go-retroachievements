@@ -53,6 +53,13 @@ func BearerToken(token string) RequestDetail {
 	})
 }
 
+// UserAgent adds an User-Agent header with the package version
+func UserAgent() RequestDetail {
+	return requestDetailFn(func(r *Request) {
+		r.Headers["User-Agent"] = "go-retroachievements/v0.0.0"
+	})
+}
+
 // Username adds the username to the query parameters
 func Username(username string) RequestDetail {
 	return requestDetailFn(func(r *Request) {

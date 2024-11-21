@@ -17,6 +17,7 @@ func TestNewRequest(t *testing.T) {
 		"http://localhost",
 		raHttp.Path("/api/v1/some_resource"),
 		raHttp.Method(http.MethodPost),
+		raHttp.UserAgent(),
 		raHttp.APIToken("secret_token"),
 		raHttp.BearerToken("secret_bearer"),
 		raHttp.Username("myUsername"),
@@ -38,6 +39,7 @@ func TestNewRequest(t *testing.T) {
 		Host:   "http://localhost",
 		Headers: map[string]string{
 			"Authorization": "Bearer secret_bearer",
+			"User-Agent":    "go-retroachievements/v0.0.0",
 		},
 		Params: map[string]string{
 			"y": "secret_token",

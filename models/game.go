@@ -130,3 +130,18 @@ type GetAchievementDistributionParameters struct {
 }
 
 type GetAchievementDistribution map[string]int
+
+type GetGameRankAndScoreParameters struct {
+	// The target game ID
+	GameID int
+
+	// [Optional] Return the latest masters (dafualt: false)
+	LatestMasters *bool
+}
+
+type GetGameRankAndScore struct {
+	User            string   `json:"User"`
+	NumAchievements int      `json:"NumAchievements"`
+	TotalScore      int      `json:"TotalScore"`
+	LastAward       DateTime `json:"LastAward"`
+}

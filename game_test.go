@@ -189,7 +189,7 @@ func TestGetGameExtended(tt *testing.T) {
 		responseMessage models.GetGameExtented
 		responseError   models.ErrorResponse
 		response        func(messageBytes []byte, errorBytes []byte) []byte
-		assert          func(t *testing.T, game *models.GetGameExtented, err error)
+		assert          func(t *testing.T, resp *models.GetGameExtented, err error)
 	}{
 		{
 			name: "fail to call endpoint",
@@ -418,7 +418,7 @@ func TestGetGameHashes(tt *testing.T) {
 		responseMessage models.GetGameHashes
 		responseError   models.ErrorResponse
 		response        func(messageBytes []byte, errorBytes []byte) []byte
-		assert          func(t *testing.T, game *models.GetGameHashes, err error)
+		assert          func(t *testing.T, resp *models.GetGameHashes, err error)
 	}{
 		{
 			name: "fail to call endpoint",
@@ -538,7 +538,7 @@ func TestGetAchievementCount(tt *testing.T) {
 		responseMessage models.GetAchievementCount
 		responseError   models.ErrorResponse
 		response        func(messageBytes []byte, errorBytes []byte) []byte
-		assert          func(t *testing.T, game *models.GetAchievementCount, err error)
+		assert          func(t *testing.T, resp *models.GetAchievementCount, err error)
 	}{
 		{
 			name: "fail to call endpoint",
@@ -677,7 +677,7 @@ func TestGetAchievementDistribution(tt *testing.T) {
 		responseMessage models.GetAchievementDistribution
 		responseError   models.ErrorResponse
 		response        func(messageBytes []byte, errorBytes []byte) []byte
-		assert          func(t *testing.T, game *models.GetAchievementDistribution, err error)
+		assert          func(t *testing.T, resp *models.GetAchievementDistribution, err error)
 	}{
 		{
 			name: "fail to call endpoint",
@@ -831,6 +831,141 @@ func TestGetAchievementDistribution(tt *testing.T) {
 
 			client := retroachievements.New(test.modifyURL(server.URL), "some_secret")
 			resp, err := client.GetAchievementDistribution(test.params)
+			test.assert(t, resp, err)
+		})
+	}
+}
+
+func TestGetGameRankAndScore(tt *testing.T) {
+	latest := true
+	all := false
+	lastAwarded1, err := time.Parse(time.DateTime, "2022-01-28 21:18:15")
+	require.NoError(tt, err)
+	lastAwarded2, err := time.Parse(time.DateTime, "2022-01-29 04:19:34")
+	require.NoError(tt, err)
+	tests := []struct {
+		name            string
+		params          models.GetGameRankAndScoreParameters
+		modifyURL       func(url string) string
+		responseCode    int
+		responseMessage []models.GetGameRankAndScore
+		responseError   models.ErrorResponse
+		response        func(messageBytes []byte, errorBytes []byte) []byte
+		assert          func(t *testing.T, resp []models.GetGameRankAndScore, err error)
+	}{
+		{
+			name: "fail to call endpoint",
+			params: models.GetGameRankAndScoreParameters{
+				GameID:        14402,
+				LatestMasters: &latest,
+			},
+			modifyURL: func(url string) string {
+				return ""
+			},
+			responseCode: http.StatusOK,
+			response: func(messageBytes []byte, errorBytes []byte) []byte {
+				return messageBytes
+			},
+			assert: func(t *testing.T, resp []models.GetGameRankAndScore, err error) {
+				require.Nil(t, resp)
+				require.EqualError(t, err, "calling endpoint: Get \"/API/API_GetGameRankAndScore.php?g=14402&t=1&y=some_secret\": unsupported protocol scheme \"\"")
+			},
+		},
+		{
+			name: "error response",
+			params: models.GetGameRankAndScoreParameters{
+				GameID:        14402,
+				LatestMasters: &all,
+			},
+			modifyURL: func(url string) string {
+				return url
+			},
+			responseCode: http.StatusUnauthorized,
+			responseError: models.ErrorResponse{
+				Message: "test",
+				Errors: []models.ErrorDetail{
+					{
+						Status: http.StatusUnauthorized,
+						Code:   "unauthorized",
+						Title:  "Not Authorized",
+					},
+				},
+			},
+			response: func(messageBytes []byte, errorBytes []byte) []byte {
+				return errorBytes
+			},
+			assert: func(t *testing.T, resp []models.GetGameRankAndScore, err error) {
+				require.Nil(t, resp)
+				require.EqualError(t, err, "parsing response list: error responses: [401] Not Authorized")
+			},
+		},
+		{
+			name: "success",
+			params: models.GetGameRankAndScoreParameters{
+				GameID:        515,
+				LatestMasters: &latest,
+			},
+			modifyURL: func(url string) string {
+				return url
+			},
+			responseCode: http.StatusOK,
+			responseMessage: []models.GetGameRankAndScore{
+				{
+					User:            "Blazekickn",
+					NumAchievements: 61,
+					TotalScore:      453,
+					LastAward: models.DateTime{
+						Time: lastAwarded1,
+					},
+				},
+				{
+					User:            "mamekin",
+					NumAchievements: 61,
+					TotalScore:      453,
+					LastAward: models.DateTime{
+						Time: lastAwarded2,
+					},
+				},
+			},
+			response: func(messageBytes []byte, errorBytes []byte) []byte {
+				return messageBytes
+			},
+			assert: func(t *testing.T, resp []models.GetGameRankAndScore, err error) {
+				require.NotNil(t, resp)
+				require.Len(t, resp, 2)
+				require.Equal(t, "Blazekickn", resp[0].User)
+				require.Equal(t, 61, resp[0].NumAchievements)
+				require.Equal(t, 453, resp[0].TotalScore)
+				require.Equal(t, lastAwarded1, resp[0].LastAward.Time)
+				require.Equal(t, "mamekin", resp[1].User)
+				require.Equal(t, 61, resp[1].NumAchievements)
+				require.Equal(t, 453, resp[1].TotalScore)
+				require.Equal(t, lastAwarded2, resp[1].LastAward.Time)
+				require.NoError(t, err)
+			},
+		},
+	}
+	for _, test := range tests {
+		tt.Run(test.name, func(t *testing.T) {
+			server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+				expectedPath := "/API/API_GetGameRankAndScore.php"
+				if r.URL.Path != expectedPath {
+					t.Errorf("Expected to request '%s', got: %s", expectedPath, r.URL.Path)
+				}
+				w.WriteHeader(test.responseCode)
+				messageBytes, err := json.Marshal(test.responseMessage)
+				require.NoError(t, err)
+				errBytes, err := json.Marshal(test.responseError)
+				require.NoError(t, err)
+				resp := test.response(messageBytes, errBytes)
+				num, err := w.Write(resp)
+				require.NoError(t, err)
+				require.Equal(t, num, len(resp))
+			}))
+			defer server.Close()
+
+			client := retroachievements.New(test.modifyURL(server.URL), "some_secret")
+			resp, err := client.GetGameRankAndScore(test.params)
 			test.assert(t, resp, err)
 		})
 	}

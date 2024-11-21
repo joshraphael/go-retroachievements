@@ -112,3 +112,29 @@ func (c *Client) GetAchievementDistribution(params models.GetAchievementDistribu
 	}
 	return resp, nil
 }
+
+// GetGameRankAndScore gets metadata about either the latest masters for a game, or the highest points earners for a game.
+func (c *Client) GetGameRankAndScore(params models.GetGameRankAndScoreParameters) ([]models.GetGameRankAndScore, error) {
+	details := []raHttp.RequestDetail{
+		raHttp.Method(http.MethodGet),
+		raHttp.Path("/API/API_GetGameRankAndScore.php"),
+		raHttp.APIToken(c.Secret),
+		raHttp.Game(params.GameID),
+	}
+	if params.LatestMasters != nil {
+		if *params.LatestMasters {
+			details = append(details, raHttp.To(1))
+		} else {
+			details = append(details, raHttp.To(0))
+		}
+	}
+	r, err := c.do(details...)
+	if err != nil {
+		return nil, fmt.Errorf("calling endpoint: %w", err)
+	}
+	resp, err := raHttp.ResponseList[models.GetGameRankAndScore](r)
+	if err != nil {
+		return nil, fmt.Errorf("parsing response list: %w", err)
+	}
+	return resp, nil
+}
