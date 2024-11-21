@@ -37,15 +37,15 @@ func (c *Client) GetGameExtended(params models.GetGameExtentedParameters) (*mode
 	if params.Unofficial {
 		details = append(details, raHttp.From(int64(5)))
 	}
-	resp, err := c.do(details...)
+	r, err := c.do(details...)
 	if err != nil {
 		return nil, fmt.Errorf("calling endpoint: %w", err)
 	}
-	game, err := raHttp.ResponseObject[models.GetGameExtented](resp)
+	resp, err := raHttp.ResponseObject[models.GetGameExtented](r)
 	if err != nil {
 		return nil, fmt.Errorf("parsing response object: %w", err)
 	}
-	return game, nil
+	return resp, nil
 }
 
 // GetGameHashes get the hashes linked to a game.

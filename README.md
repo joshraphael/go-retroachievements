@@ -75,3 +75,9 @@ For convenience, the API docs and examples can be found in the tables below
 |`GetAchievementCount()`|Get the list of achievement IDs for a game.|[docs](https://api-docs.retroachievements.org/v1/get-achievement-count.html) \| [example](examples/game/getachievementcount/getachievementcount.go)|
 |`GetAchievementDistribution()`|Gets how many players have unlocked how many achievements for a game.|[docs](https://api-docs.retroachievements.org/v1/get-achievement-distribution.html) \| [example](examples/game/getachievementdistribution/getachievementdistribution.go)|
 |`GetGameRankAndScore()`|Gets metadata about either the latest masters for a game, or the highest points earners for a game.|[docs](https://api-docs.retroachievements.org/v1/get-game-rank-and-score.html) \| [example](examples/game/getgamerankandscore/getgamerankandscore.go)|
+
+<h3>Leaderboards</h3>
+
+|Function|Description|Links|
+|-|-|-|
+|`GetGameLeaderboards()`|Gets a given games's list of leaderboards.|[docs](https://api-docs.retroachievements.org/v1/get-game-leaderboards.html) \| [example](examples/leaderboards/getgameleaderboards/getgameleaderboards.go)|
