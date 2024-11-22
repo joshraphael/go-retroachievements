@@ -60,45 +60,45 @@ func UserAgent() RequestDetail {
 	})
 }
 
-// Username adds the username to the query parameters
-func Username(username string) RequestDetail {
+// M adds a 'u' string to the query parameters
+func U(u string) RequestDetail {
 	return requestDetailFn(func(r *Request) {
-		r.Params["u"] = username
+		r.Params["u"] = u
 	})
 }
 
-// LookbackMinutes adds the lookback minutes to the query parameters
-func LookbackMinutes(minutes int) RequestDetail {
+// M adds a 'm' number to the query parameters
+func M(m int) RequestDetail {
 	return requestDetailFn(func(r *Request) {
-		r.Params["m"] = strconv.Itoa(minutes)
+		r.Params["m"] = strconv.Itoa(m)
 	})
 }
 
-// From adds a start time to the query parameters in unix seconds
-func From(t int64) RequestDetail {
+// F adds a 'f' number to the query parameters
+func F(f int) RequestDetail {
 	return requestDetailFn(func(r *Request) {
-		r.Params["f"] = strconv.Itoa(int(t))
+		r.Params["f"] = strconv.Itoa(f)
 	})
 }
 
-// To adds a end time to the query parameters in unix seconds
-func To(t int64) RequestDetail {
+// T adds a 't' number to the query parameters
+func T(t int) RequestDetail {
 	return requestDetailFn(func(r *Request) {
-		r.Params["t"] = strconv.Itoa(int(t))
+		r.Params["t"] = strconv.Itoa(t)
 	})
 }
 
-// Date adds a string date (ignoring timestamp) to the query parameters
-func Date(t time.Time) RequestDetail {
+// D adds a 'd' date to the query parameters
+func D(d time.Time) RequestDetail {
 	return requestDetailFn(func(r *Request) {
-		r.Params["d"] = t.UTC().Format(time.DateOnly)
+		r.Params["d"] = d.UTC().Format(time.DateOnly)
 	})
 }
 
-// IDs adds the target game ids to the query parameters
-func IDs(ids []int) RequestDetail {
+// I adds a 'i' number list to the query parameters
+func I(is []int) RequestDetail {
 	var strIDs []string
-	for _, i := range ids {
+	for _, i := range is {
 		strIDs = append(strIDs, strconv.Itoa(i))
 	}
 	return requestDetailFn(func(r *Request) {
@@ -106,42 +106,38 @@ func IDs(ids []int) RequestDetail {
 	})
 }
 
-// Game adds a target game id to the query parameters
-func Game(game int) RequestDetail {
+// G adds a 'g' number to the query parameters
+func G(g int) RequestDetail {
 	return requestDetailFn(func(r *Request) {
-		r.Params["g"] = strconv.Itoa(game)
+		r.Params["g"] = strconv.Itoa(g)
 	})
 }
 
-// Count adds a count to the query parameters
-func Count(count int) RequestDetail {
+// C adds a 'c' number to the query parameters
+func C(c int) RequestDetail {
 	return requestDetailFn(func(r *Request) {
-		r.Params["c"] = strconv.Itoa(count)
+		r.Params["c"] = strconv.Itoa(c)
 	})
 }
 
-// Offset adds a offset to the query parameters
-func Offset(offset int) RequestDetail {
+// O adds a 'o' number to the query parameters
+func O(o int) RequestDetail {
 	return requestDetailFn(func(r *Request) {
-		r.Params["o"] = strconv.Itoa(offset)
+		r.Params["o"] = strconv.Itoa(o)
 	})
 }
 
-// Achievement adds a achievement number query parameter
-func Achievement(achievement int) RequestDetail {
+// A adds a 'a' number to the query parameters
+func A(a int) RequestDetail {
 	return requestDetailFn(func(r *Request) {
-		r.Params["a"] = strconv.Itoa(achievement)
+		r.Params["a"] = strconv.Itoa(a)
 	})
 }
 
-// Hardcore adds a Hardcore boolean query parameter
-func Hardcore(hardcore bool) RequestDetail {
-	numHardcore := 0
-	if hardcore {
-		numHardcore = 1
-	}
+// H adds a 'h' number to the query parameters
+func H(h int) RequestDetail {
 	return requestDetailFn(func(r *Request) {
-		r.Params["h"] = strconv.Itoa(numHardcore)
+		r.Params["h"] = strconv.Itoa(h)
 	})
 }
 

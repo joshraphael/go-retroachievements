@@ -151,7 +151,6 @@ func TestGetUserProfile(tt *testing.T) {
 				require.Equal(t, num, len(resp))
 			}))
 			defer server.Close()
-
 			client := retroachievements.New(test.modifyURL(server.URL), "go-retroachievements/v0.0.0", "some_secret")
 			profile, err := client.GetUserProfile(test.params)
 			test.assert(t, profile, err)
@@ -305,7 +304,6 @@ func TestGetUserRecentAchievements(tt *testing.T) {
 				require.Equal(t, num, len(resp))
 			}))
 			defer server.Close()
-
 			client := retroachievements.New(test.modifyURL(server.URL), "go-retroachievements/v0.0.0", "some_secret")
 			achievements, err := client.GetUserRecentAchievements(test.params)
 			test.assert(t, achievements, err)
@@ -464,7 +462,6 @@ func TestGetAchievementsEarnedBetween(tt *testing.T) {
 				require.Equal(t, num, len(resp))
 			}))
 			defer server.Close()
-
 			client := retroachievements.New(test.modifyURL(server.URL), "go-retroachievements/v0.0.0", "some_secret")
 			achievements, err := client.GetAchievementsEarnedBetween(test.params)
 			test.assert(t, achievements, err)
@@ -619,7 +616,6 @@ func TestGetAchievementsEarnedOnDay(tt *testing.T) {
 				require.Equal(t, num, len(resp))
 			}))
 			defer server.Close()
-
 			client := retroachievements.New(test.modifyURL(server.URL), "go-retroachievements/v0.0.0", "some_secret")
 			achievements, err := client.GetAchievementsEarnedOnDay(test.params)
 			test.assert(t, achievements, err)
@@ -849,7 +845,6 @@ func TestGetGameInfoAndUserProgress(tt *testing.T) {
 				require.Equal(t, num, len(resp))
 			}))
 			defer server.Close()
-
 			client := retroachievements.New(test.modifyURL(server.URL), "go-retroachievements/v0.0.0", "some_secret")
 			gameProgress, err := client.GetGameInfoAndUserProgress(test.params)
 			test.assert(t, gameProgress, err)
@@ -998,7 +993,6 @@ func TestGetUserCompletionProgress(tt *testing.T) {
 				require.Equal(t, num, len(resp))
 			}))
 			defer server.Close()
-
 			client := retroachievements.New(test.modifyURL(server.URL), "go-retroachievements/v0.0.0", "some_secret")
 			userCompletionProgress, err := client.GetUserCompletionProgress(test.params)
 			test.assert(t, userCompletionProgress, err)
@@ -1159,7 +1153,6 @@ func TestGetUserAwards(tt *testing.T) {
 				require.Equal(t, num, len(resp))
 			}))
 			defer server.Close()
-
 			client := retroachievements.New(test.modifyURL(server.URL), "go-retroachievements/v0.0.0", "some_secret")
 			userAwards, err := client.GetUserAwards(test.params)
 			test.assert(t, userAwards, err)
@@ -1317,7 +1310,6 @@ func TestGetUserClaims(tt *testing.T) {
 				require.Equal(t, num, len(resp))
 			}))
 			defer server.Close()
-
 			client := retroachievements.New(test.modifyURL(server.URL), "go-retroachievements/v0.0.0", "some_secret")
 			userClaims, err := client.GetUserClaims(test.params)
 			test.assert(t, userClaims, err)
@@ -1446,7 +1438,6 @@ func TestGetUserGameRankAndScore(tt *testing.T) {
 				require.Equal(t, num, len(resp))
 			}))
 			defer server.Close()
-
 			client := retroachievements.New(test.modifyURL(server.URL), "go-retroachievements/v0.0.0", "some_secret")
 			userGameRankScore, err := client.GetUserGameRankAndScore(test.params)
 			test.assert(t, userGameRankScore, err)
@@ -1561,7 +1552,6 @@ func TestGetUserPoints(tt *testing.T) {
 				require.Equal(t, num, len(resp))
 			}))
 			defer server.Close()
-
 			client := retroachievements.New(test.modifyURL(server.URL), "go-retroachievements/v0.0.0", "some_secret")
 			points, err := client.GetUserPoints(test.params)
 			test.assert(t, points, err)

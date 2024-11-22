@@ -32,8 +32,8 @@ type GetGameExtentedParameters struct {
 	// The target game ID
 	GameID int
 
-	// Get unofficial achievements
-	Unofficial bool
+	// [Optional] Get unofficial achievements (default: false)
+	Unofficial *bool
 }
 
 type GetGameExtented struct {

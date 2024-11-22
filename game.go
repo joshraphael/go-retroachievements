@@ -14,7 +14,7 @@ func (c *Client) GetGame(params models.GetGameParameters) (*models.GetGame, erro
 		raHttp.Method(http.MethodGet),
 		raHttp.Path("/API/API_GetGame.php"),
 		raHttp.APIToken(c.Secret),
-		raHttp.IDs([]int{params.GameID}),
+		raHttp.I([]int{params.GameID}),
 	)
 	if err != nil {
 		return nil, fmt.Errorf("calling endpoint: %w", err)
@@ -32,10 +32,14 @@ func (c *Client) GetGameExtended(params models.GetGameExtentedParameters) (*mode
 		raHttp.Method(http.MethodGet),
 		raHttp.Path("/API/API_GetGameExtended.php"),
 		raHttp.APIToken(c.Secret),
-		raHttp.IDs([]int{params.GameID}),
+		raHttp.I([]int{params.GameID}),
 	}
-	if params.Unofficial {
-		details = append(details, raHttp.From(int64(5)))
+	if params.Unofficial != nil {
+		f := 3
+		if *params.Unofficial {
+			f = 5
+		}
+		details = append(details, raHttp.F(f))
 	}
 	r, err := c.do(details...)
 	if err != nil {
@@ -54,7 +58,7 @@ func (c *Client) GetGameHashes(params models.GetGameHashesParameters) (*models.G
 		raHttp.Method(http.MethodGet),
 		raHttp.Path("/API/API_GetGameHashes.php"),
 		raHttp.APIToken(c.Secret),
-		raHttp.IDs([]int{params.GameID}),
+		raHttp.I([]int{params.GameID}),
 	)
 	if err != nil {
 		return nil, fmt.Errorf("calling endpoint: %w", err)
@@ -72,7 +76,7 @@ func (c *Client) GetAchievementCount(params models.GetAchievementCountParameters
 		raHttp.Method(http.MethodGet),
 		raHttp.Path("/API/API_GetAchievementCount.php"),
 		raHttp.APIToken(c.Secret),
-		raHttp.IDs([]int{params.GameID}),
+		raHttp.I([]int{params.GameID}),
 	)
 	if err != nil {
 		return nil, fmt.Errorf("calling endpoint: %w", err)
@@ -90,17 +94,21 @@ func (c *Client) GetAchievementDistribution(params models.GetAchievementDistribu
 		raHttp.Method(http.MethodGet),
 		raHttp.Path("/API/API_GetAchievementDistribution.php"),
 		raHttp.APIToken(c.Secret),
-		raHttp.IDs([]int{params.GameID}),
+		raHttp.I([]int{params.GameID}),
 	}
 	if params.Unofficial != nil {
+		f := 3
 		if *params.Unofficial {
-			details = append(details, raHttp.From(int64(5)))
-		} else {
-			details = append(details, raHttp.From(int64(3)))
+			f = 5
 		}
+		details = append(details, raHttp.F(f))
 	}
 	if params.Hardcore != nil {
-		details = append(details, raHttp.Hardcore(*params.Hardcore))
+		h := 0
+		if *params.Hardcore {
+			h = 1
+		}
+		details = append(details, raHttp.H(h))
 	}
 	r, err := c.do(details...)
 	if err != nil {
@@ -119,14 +127,14 @@ func (c *Client) GetGameRankAndScore(params models.GetGameRankAndScoreParameters
 		raHttp.Method(http.MethodGet),
 		raHttp.Path("/API/API_GetGameRankAndScore.php"),
 		raHttp.APIToken(c.Secret),
-		raHttp.Game(params.GameID),
+		raHttp.G(params.GameID),
 	}
 	if params.LatestMasters != nil {
+		t := 0
 		if *params.LatestMasters {
-			details = append(details, raHttp.To(1))
-		} else {
-			details = append(details, raHttp.To(0))
+			t = 1
 		}
+		details = append(details, raHttp.T(t))
 	}
 	r, err := c.do(details...)
 	if err != nil {

@@ -14,13 +14,13 @@ func (c *Client) GetGameLeaderboards(params models.GetGameLeaderboardsParameters
 		raHttp.Method(http.MethodGet),
 		raHttp.Path("/API/API_GetGameLeaderboards.php"),
 		raHttp.APIToken(c.Secret),
-		raHttp.IDs([]int{params.GameID}),
+		raHttp.I([]int{params.GameID}),
 	}
 	if params.Count != nil {
-		details = append(details, raHttp.Count(*params.Count))
+		details = append(details, raHttp.C(*params.Count))
 	}
 	if params.Offset != nil {
-		details = append(details, raHttp.Offset(*params.Offset))
+		details = append(details, raHttp.O(*params.Offset))
 	}
 	r, err := c.do(details...)
 	if err != nil {
@@ -39,13 +39,13 @@ func (c *Client) GetLeaderboardEntries(params models.GetLeaderboardEntriesParame
 		raHttp.Method(http.MethodGet),
 		raHttp.Path("/API/API_GetLeaderboardEntries.php"),
 		raHttp.APIToken(c.Secret),
-		raHttp.IDs([]int{params.LeaderboardID}),
+		raHttp.I([]int{params.LeaderboardID}),
 	}
 	if params.Count != nil {
-		details = append(details, raHttp.Count(*params.Count))
+		details = append(details, raHttp.C(*params.Count))
 	}
 	if params.Offset != nil {
-		details = append(details, raHttp.Offset(*params.Offset))
+		details = append(details, raHttp.O(*params.Offset))
 	}
 	r, err := c.do(details...)
 	if err != nil {

@@ -14,7 +14,7 @@ func (c *Client) GetUserProfile(params models.GetUserProfileParameters) (*models
 		raHttp.Method(http.MethodGet),
 		raHttp.Path("/API/API_GetUserProfile.php"),
 		raHttp.APIToken(c.Secret),
-		raHttp.Username(params.Username),
+		raHttp.U(params.Username),
 	)
 	if err != nil {
 		return nil, fmt.Errorf("calling endpoint: %w", err)
@@ -32,10 +32,10 @@ func (c *Client) GetUserRecentAchievements(params models.GetUserRecentAchievemen
 		raHttp.Method(http.MethodGet),
 		raHttp.Path("/API/API_GetUserRecentAchievements.php"),
 		raHttp.APIToken(c.Secret),
-		raHttp.Username(params.Username),
+		raHttp.U(params.Username),
 	}
 	if params.LookbackMinutes != nil {
-		details = append(details, raHttp.LookbackMinutes(*params.LookbackMinutes))
+		details = append(details, raHttp.M(*params.LookbackMinutes))
 	}
 	resp, err := c.do(details...)
 	if err != nil {
@@ -54,9 +54,9 @@ func (c *Client) GetAchievementsEarnedBetween(params models.GetAchievementsEarne
 		raHttp.Method(http.MethodGet),
 		raHttp.Path("/API/API_GetAchievementsEarnedBetween.php"),
 		raHttp.APIToken(c.Secret),
-		raHttp.Username(params.Username),
-		raHttp.From(params.From.Unix()),
-		raHttp.To(params.To.Unix()),
+		raHttp.U(params.Username),
+		raHttp.F(int(params.From.Unix())),
+		raHttp.T(int(params.To.Unix())),
 	)
 	if err != nil {
 		return nil, fmt.Errorf("calling endpoint: %w", err)
@@ -74,8 +74,8 @@ func (c *Client) GetAchievementsEarnedOnDay(params models.GetAchievementsEarnedO
 		raHttp.Method(http.MethodGet),
 		raHttp.Path("/API/API_GetAchievementsEarnedOnDay.php"),
 		raHttp.APIToken(c.Secret),
-		raHttp.Username(params.Username),
-		raHttp.Date(params.Date),
+		raHttp.U(params.Username),
+		raHttp.D(params.Date),
 	)
 	if err != nil {
 		return nil, fmt.Errorf("calling endpoint: %w", err)
@@ -93,11 +93,15 @@ func (c *Client) GetGameInfoAndUserProgress(params models.GetGameInfoAndUserProg
 		raHttp.Method(http.MethodGet),
 		raHttp.Path("/API/API_GetGameInfoAndUserProgress.php"),
 		raHttp.APIToken(c.Secret),
-		raHttp.Username(params.Username),
-		raHttp.Game(params.GameID),
+		raHttp.U(params.Username),
+		raHttp.G(params.GameID),
 	}
-	if params.IncludeAwardMetadata != nil && *params.IncludeAwardMetadata {
-		details = append(details, raHttp.Achievement(1))
+	if params.IncludeAwardMetadata != nil {
+		a := 0
+		if *params.IncludeAwardMetadata {
+			a = 1
+		}
+		details = append(details, raHttp.A(a))
 	}
 	resp, err := c.do(details...)
 	if err != nil {
@@ -116,7 +120,7 @@ func (c *Client) GetUserCompletionProgress(params models.GetUserCompletionProgre
 		raHttp.Method(http.MethodGet),
 		raHttp.Path("/API/API_GetUserCompletionProgress.php"),
 		raHttp.APIToken(c.Secret),
-		raHttp.Username(params.Username),
+		raHttp.U(params.Username),
 	)
 	if err != nil {
 		return nil, fmt.Errorf("calling endpoint: %w", err)
@@ -134,7 +138,7 @@ func (c *Client) GetUserAwards(params models.GetUserAwardsParameters) (*models.G
 		raHttp.Method(http.MethodGet),
 		raHttp.Path("/API/API_GetUserAwards.php"),
 		raHttp.APIToken(c.Secret),
-		raHttp.Username(params.Username),
+		raHttp.U(params.Username),
 	)
 	if err != nil {
 		return nil, fmt.Errorf("calling endpoint: %w", err)
@@ -152,7 +156,7 @@ func (c *Client) GetUserClaims(params models.GetUserClaimsParameters) ([]models.
 		raHttp.Method(http.MethodGet),
 		raHttp.Path("/API/API_GetUserClaims.php"),
 		raHttp.APIToken(c.Secret),
-		raHttp.Username(params.Username),
+		raHttp.U(params.Username),
 	)
 	if err != nil {
 		return nil, fmt.Errorf("calling endpoint: %w", err)
@@ -170,8 +174,8 @@ func (c *Client) GetUserGameRankAndScore(params models.GetUserGameRankAndScorePa
 		raHttp.Method(http.MethodGet),
 		raHttp.Path("/API/API_GetUserGameRankAndScore.php"),
 		raHttp.APIToken(c.Secret),
-		raHttp.Username(params.Username),
-		raHttp.Game(params.GameID),
+		raHttp.U(params.Username),
+		raHttp.G(params.GameID),
 	)
 	if err != nil {
 		return nil, fmt.Errorf("calling endpoint: %w", err)
@@ -189,7 +193,7 @@ func (c *Client) GetUserPoints(params models.GetUserPointsParameters) (*models.G
 		raHttp.Method(http.MethodGet),
 		raHttp.Path("/API/API_GetUserPoints.php"),
 		raHttp.APIToken(c.Secret),
-		raHttp.Username(params.Username),
+		raHttp.U(params.Username),
 	)
 	if err != nil {
 		return nil, fmt.Errorf("calling endpoint: %w", err)
@@ -207,8 +211,8 @@ func (c *Client) GetUserProgress(params models.GetUserProgressParameters) (*map[
 		raHttp.Method(http.MethodGet),
 		raHttp.Path("/API/API_GetUserProgress.php"),
 		raHttp.APIToken(c.Secret),
-		raHttp.Username(params.Username),
-		raHttp.IDs(params.GameIDs),
+		raHttp.U(params.Username),
+		raHttp.I(params.GameIDs),
 	)
 	if err != nil {
 		return nil, fmt.Errorf("calling endpoint: %w", err)
@@ -226,13 +230,13 @@ func (c *Client) GetUserRecentlyPlayedGames(params models.GetUserRecentlyPlayedG
 		raHttp.Method(http.MethodGet),
 		raHttp.Path("/API/API_GetUserRecentlyPlayedGames.php"),
 		raHttp.APIToken(c.Secret),
-		raHttp.Username(params.Username),
+		raHttp.U(params.Username),
 	}
 	if params.Count != nil {
-		details = append(details, raHttp.Count(*params.Count))
+		details = append(details, raHttp.C(*params.Count))
 	}
 	if params.Offset != nil {
-		details = append(details, raHttp.Offset(*params.Offset))
+		details = append(details, raHttp.O(*params.Offset))
 	}
 	resp, err := c.do(details...)
 	if err != nil {
@@ -251,13 +255,13 @@ func (c *Client) GetUserSummary(params models.GetUserSummaryParameters) (*models
 		raHttp.Method(http.MethodGet),
 		raHttp.Path("/API/API_GetUserSummary.php"),
 		raHttp.APIToken(c.Secret),
-		raHttp.Username(params.Username),
+		raHttp.U(params.Username),
 	}
 	if params.GamesCount != nil {
-		details = append(details, raHttp.Game(*params.GamesCount))
+		details = append(details, raHttp.G(*params.GamesCount))
 	}
 	if params.AchievementsCount != nil {
-		details = append(details, raHttp.Achievement(*params.AchievementsCount))
+		details = append(details, raHttp.A(*params.AchievementsCount))
 	}
 	resp, err := c.do(details...)
 	if err != nil {
@@ -276,7 +280,7 @@ func (c *Client) GetUserCompletedGames(params models.GetUserCompletedGamesParame
 		raHttp.Method(http.MethodGet),
 		raHttp.Path("/API/API_GetUserCompletedGames.php"),
 		raHttp.APIToken(c.Secret),
-		raHttp.Username(params.Username),
+		raHttp.U(params.Username),
 	)
 	if err != nil {
 		return nil, fmt.Errorf("calling endpoint: %w", err)
@@ -294,13 +298,13 @@ func (c *Client) GetUserWantToPlayList(params models.GetUserWantToPlayListParame
 		raHttp.Method(http.MethodGet),
 		raHttp.Path("/API/API_GetUserWantToPlayList.php"),
 		raHttp.APIToken(c.Secret),
-		raHttp.Username(params.Username),
+		raHttp.U(params.Username),
 	}
 	if params.Count != nil {
-		details = append(details, raHttp.Count(*params.Count))
+		details = append(details, raHttp.C(*params.Count))
 	}
 	if params.Offset != nil {
-		details = append(details, raHttp.Offset(*params.Offset))
+		details = append(details, raHttp.O(*params.Offset))
 	}
 	resp, err := c.do(details...)
 	if err != nil {

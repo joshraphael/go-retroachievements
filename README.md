@@ -81,4 +81,10 @@ For convenience, the API docs and examples can be found in the tables below
 |Function|Description|Links|
 |-|-|-|
 |`GetGameLeaderboards()`|Gets a given games's list of leaderboards.|[docs](https://api-docs.retroachievements.org/v1/get-game-leaderboards.html) \| [example](examples/leaderboards/getgameleaderboards/getgameleaderboards.go)|
-|`GetLeaderboardEntries()`|Gets a given leadboard's entires|[docs](https://api-docs.retroachievements.org/v1/get-leaderboard-entries.html) \| [example](examples/leaderboards/getleaderboardentries/getleaderboardentries.go)|
+|`GetLeaderboardEntries()`|Gets a given leadboard's entries|[docs](https://api-docs.retroachievements.org/v1/get-leaderboard-entries.html) \| [example](examples/leaderboards/getleaderboardentries/getleaderboardentries.go)|
+
+<h3>System</h3>
+
+|Function|Description|Links|
+|-|-|-|
+|`GetConsoleIDs()`|Gets the complete list of all system ID and name pairs on the site.|[docs](https://api-docs.retroachievements.org/v1/get-console-ids.html) \| [example](examples/system/getconsoleids/getconsoleids.go)|

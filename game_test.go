@@ -181,6 +181,7 @@ func TestGetGameExtended(tt *testing.T) {
 	require.NoError(tt, err)
 	created, err := time.Parse(time.DateTime, "2022-09-28 00:36:26")
 	require.NoError(tt, err)
+	unofficial := true
 	tests := []struct {
 		name            string
 		params          models.GetGameExtentedParameters
@@ -195,7 +196,7 @@ func TestGetGameExtended(tt *testing.T) {
 			name: "fail to call endpoint",
 			params: models.GetGameExtentedParameters{
 				GameID:     2991,
-				Unofficial: true,
+				Unofficial: &unofficial,
 			},
 			modifyURL: func(url string) string {
 				return ""
@@ -400,7 +401,6 @@ func TestGetGameExtended(tt *testing.T) {
 				require.Equal(t, num, len(resp))
 			}))
 			defer server.Close()
-
 			client := retroachievements.New(test.modifyURL(server.URL), "go-retroachievements/v0.0.0", "some_secret")
 			resp, err := client.GetGameExtended(test.params)
 			test.assert(t, resp, err)
@@ -521,7 +521,6 @@ func TestGetGameHashes(tt *testing.T) {
 				require.Equal(t, num, len(resp))
 			}))
 			defer server.Close()
-
 			client := retroachievements.New(test.modifyURL(server.URL), "go-retroachievements/v0.0.0", "some_secret")
 			resp, err := client.GetGameHashes(test.params)
 			test.assert(t, resp, err)
@@ -657,7 +656,6 @@ func TestGetAchievementCount(tt *testing.T) {
 				require.Equal(t, num, len(resp))
 			}))
 			defer server.Close()
-
 			client := retroachievements.New(test.modifyURL(server.URL), "go-retroachievements/v0.0.0", "some_secret")
 			resp, err := client.GetAchievementCount(test.params)
 			test.assert(t, resp, err)
@@ -828,7 +826,6 @@ func TestGetAchievementDistribution(tt *testing.T) {
 				require.Equal(t, num, len(resp))
 			}))
 			defer server.Close()
-
 			client := retroachievements.New(test.modifyURL(server.URL), "go-retroachievements/v0.0.0", "some_secret")
 			resp, err := client.GetAchievementDistribution(test.params)
 			test.assert(t, resp, err)
@@ -963,7 +960,6 @@ func TestGetGameRankAndScore(tt *testing.T) {
 				require.Equal(t, num, len(resp))
 			}))
 			defer server.Close()
-
 			client := retroachievements.New(test.modifyURL(server.URL), "go-retroachievements/v0.0.0", "some_secret")
 			resp, err := client.GetGameRankAndScore(test.params)
 			test.assert(t, resp, err)
