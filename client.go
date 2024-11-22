@@ -5,6 +5,8 @@ import (
 	"fmt"
 	"io"
 	"net/http"
+	"runtime/debug"
+	"sync"
 
 	raHttp "github.com/joshraphael/go-retroachievements/http"
 )
@@ -14,6 +16,7 @@ const (
 )
 
 type Client struct {
+	UserAgent  string
 	Host       string
 	Secret     string
 	HttpClient *http.Client
@@ -42,16 +45,32 @@ func HttpClient(httpClient *http.Client) ClientDetail {
 	})
 }
 
+var version = sync.OnceValue(func() string {
+	libraryVersion := "v0.0.0"
+	buildInfo, ok := debug.ReadBuildInfo()
+	if ok {
+		for _, dep := range buildInfo.Deps {
+			if dep.Path == "github.com/joshraphael/go-retroachievements" {
+				libraryVersion = dep.Version
+				break
+			}
+		}
+	}
+
+	return "go-retroachievements/" + libraryVersion
+})
+
 // NewClient makes a new client using the default retroachievement host
 func NewClient(secret string) *Client {
-	return New(RetroAchievementHost, secret)
+	return New(RetroAchievementHost, version(), secret)
 }
 
 // New creates a new client for a given hostname
-func New(host string, secret string, details ...ClientDetail) *Client {
+func New(host string, userAgent string, secret string, details ...ClientDetail) *Client {
 	client := &Client{
-		Host:   host,
-		Secret: secret,
+		UserAgent: userAgent,
+		Host:      host,
+		Secret:    secret,
 		HttpClient: &http.Client{
 			Transport: http.DefaultTransport,
 		},

@@ -31,3 +31,28 @@ type GetGameLeaderboardsTopEntry struct {
 	Score          int    `json:"Score"`
 	FormattedScore string `json:"FormattedScore"`
 }
+
+type GetLeaderboardEntriesParameters struct {
+	// The target leaderboard ID
+	LeaderboardID int
+
+	// [Optional] The number of records to return (default: 100, max: 500).
+	Count *int
+
+	// [Optional] The number of entries to skip (default: 0).
+	Offset *int
+}
+
+type GetLeaderboardEntries struct {
+	Count   int                           `json:"Count"`
+	Total   int                           `json:"Total"`
+	Results []GetLeaderboardEntriesResult `json:"Results"`
+}
+
+type GetLeaderboardEntriesResult struct {
+	Rank           int               `json:"Rank"`
+	User           string            `json:"User"`
+	Score          int               `json:"Score"`
+	FormattedScore string            `json:"FormattedScore"`
+	DateSubmitted  RFC3339NumColonTZ `json:"DateSubmitted"`
+}

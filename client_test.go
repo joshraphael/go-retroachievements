@@ -12,6 +12,7 @@ import (
 func TestNew(t *testing.T) {
 	actual := retroachievements.New(
 		retroachievements.RetroAchievementHost,
+		"newUserAgent",
 		"some_secret",
 		retroachievements.HttpClient(&http.Client{
 			Transport: http.DefaultTransport,
@@ -26,6 +27,7 @@ func TestNew(t *testing.T) {
 			Transport: http.DefaultTransport,
 			Timeout:   5 * time.Minute,
 		},
+		UserAgent: "newUserAgent",
 	}
 
 	require.Equal(t, expected, actual)
@@ -40,6 +42,7 @@ func TestNewClient(t *testing.T) {
 		HttpClient: &http.Client{
 			Transport: http.DefaultTransport,
 		},
+		UserAgent: actual.UserAgent,
 	}
 
 	require.Equal(t, expected, actual)

@@ -5,6 +5,7 @@ import (
 	"net/http"
 	"net/http/httptest"
 	"testing"
+	"time"
 
 	"github.com/joshraphael/go-retroachievements"
 	"github.com/joshraphael/go-retroachievements/models"
@@ -141,8 +142,132 @@ func TestGetGameLeaderboards(tt *testing.T) {
 			}))
 			defer server.Close()
 
-			client := retroachievements.New(test.modifyURL(server.URL), "some_secret")
+			client := retroachievements.New(test.modifyURL(server.URL), "go-retroachievements/v0.0.0", "some_secret")
 			resp, err := client.GetGameLeaderboards(test.params)
+			test.assert(t, resp, err)
+		})
+	}
+}
+
+func TestGetLeaderboardEntries(tt *testing.T) {
+	count := 10
+	offset := 10
+	dateSubmitted, err := time.Parse(models.RFC3339NumColonTZFormat, "2024-10-05T18:30:59+00:00")
+	require.NoError(tt, err)
+	tests := []struct {
+		name            string
+		params          models.GetLeaderboardEntriesParameters
+		modifyURL       func(url string) string
+		responseCode    int
+		responseMessage models.GetLeaderboardEntries
+		responseError   models.ErrorResponse
+		response        func(messageBytes []byte, errorBytes []byte) []byte
+		assert          func(t *testing.T, resp *models.GetLeaderboardEntries, err error)
+	}{
+		{
+			name: "fail to call endpoint",
+			params: models.GetLeaderboardEntriesParameters{
+				LeaderboardID: 14402,
+				Count:         &count,
+				Offset:        &offset,
+			},
+			modifyURL: func(url string) string {
+				return ""
+			},
+			responseCode: http.StatusOK,
+			response: func(messageBytes []byte, errorBytes []byte) []byte {
+				return messageBytes
+			},
+			assert: func(t *testing.T, resp *models.GetLeaderboardEntries, err error) {
+				require.Nil(t, resp)
+				require.EqualError(t, err, "calling endpoint: Get \"/API/API_GetLeaderboardEntries.php?c=10&i=14402&o=10&y=some_secret\": unsupported protocol scheme \"\"")
+			},
+		},
+		{
+			name: "error response",
+			params: models.GetLeaderboardEntriesParameters{
+				LeaderboardID: 14402,
+				Count:         &count,
+				Offset:        &offset,
+			},
+			modifyURL: func(url string) string {
+				return url
+			},
+			responseCode: http.StatusUnauthorized,
+			responseError: models.ErrorResponse{
+				Message: "test",
+				Errors: []models.ErrorDetail{
+					{
+						Status: http.StatusUnauthorized,
+						Code:   "unauthorized",
+						Title:  "Not Authorized",
+					},
+				},
+			},
+			response: func(messageBytes []byte, errorBytes []byte) []byte {
+				return errorBytes
+			},
+			assert: func(t *testing.T, resp *models.GetLeaderboardEntries, err error) {
+				require.Nil(t, resp)
+				require.EqualError(t, err, "parsing response object: error responses: [401] Not Authorized")
+			},
+		},
+		{
+			name: "success",
+			params: models.GetLeaderboardEntriesParameters{
+				LeaderboardID: 14402,
+				Count:         &count,
+				Offset:        &offset,
+			},
+			modifyURL: func(url string) string {
+				return url
+			},
+			responseCode: http.StatusOK,
+			responseMessage: models.GetLeaderboardEntries{
+				Count: 1,
+				Total: 2,
+				Results: []models.GetLeaderboardEntriesResult{
+					{
+						User: "ramenoid",
+						DateSubmitted: models.RFC3339NumColonTZ{
+							Time: dateSubmitted,
+						},
+						Score:          1908730,
+						FormattedScore: "1,908,730",
+						Rank:           1,
+					},
+				},
+			},
+			response: func(messageBytes []byte, errorBytes []byte) []byte {
+				return messageBytes
+			},
+			assert: func(t *testing.T, resp *models.GetLeaderboardEntries, err error) {
+				require.NotNil(t, resp)
+				require.NoError(t, err)
+			},
+		},
+	}
+	for _, test := range tests {
+		tt.Run(test.name, func(t *testing.T) {
+			server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+				expectedPath := "/API/API_GetLeaderboardEntries.php"
+				if r.URL.Path != expectedPath {
+					t.Errorf("Expected to request '%s', got: %s", expectedPath, r.URL.Path)
+				}
+				w.WriteHeader(test.responseCode)
+				messageBytes, err := json.Marshal(test.responseMessage)
+				require.NoError(t, err)
+				errBytes, err := json.Marshal(test.responseError)
+				require.NoError(t, err)
+				resp := test.response(messageBytes, errBytes)
+				num, err := w.Write(resp)
+				require.NoError(t, err)
+				require.Equal(t, num, len(resp))
+			}))
+			defer server.Close()
+
+			client := retroachievements.New(test.modifyURL(server.URL), "go-retroachievements/v0.0.0", "some_secret")
+			resp, err := client.GetLeaderboardEntries(test.params)
 			test.assert(t, resp, err)
 		})
 	}
