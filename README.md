@@ -89,3 +89,9 @@ For convenience, the API docs and examples can be found in the tables below
 |-|-|-|
 |`GetConsoleIDs()`|Gets the complete list of all system ID and name pairs on the site.|[docs](https://api-docs.retroachievements.org/v1/get-console-ids.html) \| [example](examples/system/getconsoleids/getconsoleids.go)|
 |`GetGameList()`|Gets the complete list of games for a specified console on the site.|[docs](https://api-docs.retroachievements.org/v1/get-game-list.html) \| [example](examples/system/getgamelist/getgamelist.go)|
+
+<h3>Achievement</h3>
+
+|Function|Description|Links|
+|-|-|-|
+|`GetAchievementUnlocks()`|Gets a list of users who have earned an achievement.|[docs](https://api-docs.retroachievements.org/v1/get-achievement-unlocks.html) \| [example](examples/achievement/getachievementunlocks/getachievementunlocks.go)|

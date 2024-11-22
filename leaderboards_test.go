@@ -141,7 +141,6 @@ func TestGetGameLeaderboards(tt *testing.T) {
 				require.Equal(t, num, len(resp))
 			}))
 			defer server.Close()
-
 			client := retroachievements.New(test.modifyURL(server.URL), "go-retroachievements/v0.0.0", "some_secret")
 			resp, err := client.GetGameLeaderboards(test.params)
 			test.assert(t, resp, err)
@@ -265,7 +264,6 @@ func TestGetLeaderboardEntries(tt *testing.T) {
 				require.Equal(t, num, len(resp))
 			}))
 			defer server.Close()
-
 			client := retroachievements.New(test.modifyURL(server.URL), "go-retroachievements/v0.0.0", "some_secret")
 			resp, err := client.GetLeaderboardEntries(test.params)
 			test.assert(t, resp, err)
