@@ -95,14 +95,10 @@ func D(d time.Time) RequestDetail {
 	})
 }
 
-// I adds a 'i' number list to the query parameters
-func I(is []int) RequestDetail {
-	var strIDs []string
-	for _, i := range is {
-		strIDs = append(strIDs, strconv.Itoa(i))
-	}
+// I adds a 'i' string list to the query parameters
+func I(i []string) RequestDetail {
 	return requestDetailFn(func(r *Request) {
-		r.Params["i"] = strings.Join(strIDs, ",")
+		r.Params["i"] = strings.Join(i, ",")
 	})
 }
 

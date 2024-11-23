@@ -3,6 +3,7 @@ package retroachievements
 import (
 	"fmt"
 	"net/http"
+	"strconv"
 
 	raHttp "github.com/joshraphael/go-retroachievements/http"
 	"github.com/joshraphael/go-retroachievements/models"
@@ -207,12 +208,16 @@ func (c *Client) GetUserPoints(params models.GetUserPointsParameters) (*models.G
 
 // GetUserProgress get a user's progress on a list of specified games.
 func (c *Client) GetUserProgress(params models.GetUserProgressParameters) (*map[string]models.GetUserProgress, error) {
+	strIDs := []string{}
+	for i := range params.GameIDs {
+		strIDs = append(strIDs, strconv.Itoa(params.GameIDs[i]))
+	}
 	resp, err := c.do(
 		raHttp.Method(http.MethodGet),
 		raHttp.Path("/API/API_GetUserProgress.php"),
 		raHttp.APIToken(c.Secret),
 		raHttp.U(params.Username),
-		raHttp.I(params.GameIDs),
+		raHttp.I(strIDs),
 	)
 	if err != nil {
 		return nil, fmt.Errorf("calling endpoint: %w", err)

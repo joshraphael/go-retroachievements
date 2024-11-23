@@ -70,7 +70,7 @@ func TestGetGameLeaderboards(tt *testing.T) {
 			},
 			assert: func(t *testing.T, resp *models.GetGameLeaderboards, err error) {
 				require.Nil(t, resp)
-				require.EqualError(t, err, "parsing response object: error responses: [401] Not Authorized")
+				require.EqualError(t, err, "parsing response object: error code 401 returned: {\"message\":\"test\",\"errors\":[{\"status\":401,\"code\":\"unauthorized\",\"title\":\"Not Authorized\"}]}")
 			},
 		},
 		{
@@ -208,7 +208,7 @@ func TestGetLeaderboardEntries(tt *testing.T) {
 			},
 			assert: func(t *testing.T, resp *models.GetLeaderboardEntries, err error) {
 				require.Nil(t, resp)
-				require.EqualError(t, err, "parsing response object: error responses: [401] Not Authorized")
+				require.EqualError(t, err, "parsing response object: error code 401 returned: {\"message\":\"test\",\"errors\":[{\"status\":401,\"code\":\"unauthorized\",\"title\":\"Not Authorized\"}]}")
 			},
 		},
 		{

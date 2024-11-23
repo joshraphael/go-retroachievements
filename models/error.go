@@ -20,3 +20,11 @@ type ErrorDetail struct {
 	// Readable problem for this error
 	Title string `json:"title"`
 }
+
+type UnprocessableErrorResponse struct {
+	// Readable problem returned from the API
+	Message string `json:"message"`
+
+	// Map of specific errors
+	Errors map[string][]string `json:"errors"`
+}

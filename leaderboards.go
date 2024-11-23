@@ -3,6 +3,7 @@ package retroachievements
 import (
 	"fmt"
 	"net/http"
+	"strconv"
 
 	raHttp "github.com/joshraphael/go-retroachievements/http"
 	"github.com/joshraphael/go-retroachievements/models"
@@ -14,7 +15,7 @@ func (c *Client) GetGameLeaderboards(params models.GetGameLeaderboardsParameters
 		raHttp.Method(http.MethodGet),
 		raHttp.Path("/API/API_GetGameLeaderboards.php"),
 		raHttp.APIToken(c.Secret),
-		raHttp.I([]int{params.GameID}),
+		raHttp.I([]string{strconv.Itoa(params.GameID)}),
 	}
 	if params.Count != nil {
 		details = append(details, raHttp.C(*params.Count))
@@ -39,7 +40,7 @@ func (c *Client) GetLeaderboardEntries(params models.GetLeaderboardEntriesParame
 		raHttp.Method(http.MethodGet),
 		raHttp.Path("/API/API_GetLeaderboardEntries.php"),
 		raHttp.APIToken(c.Secret),
-		raHttp.I([]int{params.LeaderboardID}),
+		raHttp.I([]string{strconv.Itoa(params.LeaderboardID)}),
 	}
 	if params.Count != nil {
 		details = append(details, raHttp.C(*params.Count))

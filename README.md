@@ -95,3 +95,9 @@ For convenience, the API docs and examples can be found in the tables below
 |Function|Description|Links|
 |-|-|-|
 |`GetAchievementUnlocks()`|Gets a list of users who have earned an achievement.|[docs](https://api-docs.retroachievements.org/v1/get-achievement-unlocks.html) \| [example](examples/achievement/getachievementunlocks/getachievementunlocks.go)|
+
+<h3>Comment</h3>
+
+|Function|Description|Links|
+|-|-|-|
+|`GetComments()`|Gets comments of a specified kind: game, achievement, or user.|[docs](https://api-docs.retroachievements.org/v1/get-comments.html) \| [example](examples/comment/getcomments/getcomments.go)|

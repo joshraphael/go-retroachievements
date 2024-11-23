@@ -88,7 +88,7 @@ func TestGetGame(tt *testing.T) {
 			},
 			assert: func(t *testing.T, resp *models.GetGame, err error) {
 				require.Nil(t, resp)
-				require.EqualError(t, err, "parsing response object: error responses: [401] Not Authorized")
+				require.EqualError(t, err, "parsing response object: error code 401 returned: {\"message\":\"test\",\"errors\":[{\"status\":401,\"code\":\"unauthorized\",\"title\":\"Not Authorized\"}]}")
 			},
 		},
 		{
@@ -279,7 +279,7 @@ func TestGetGameExtended(tt *testing.T) {
 			},
 			assert: func(t *testing.T, resp *models.GetGameExtented, err error) {
 				require.Nil(t, resp)
-				require.EqualError(t, err, "parsing response object: error responses: [401] Not Authorized")
+				require.EqualError(t, err, "parsing response object: error code 401 returned: {\"message\":\"test\",\"errors\":[{\"status\":401,\"code\":\"unauthorized\",\"title\":\"Not Authorized\"}]}")
 			},
 		},
 		{
@@ -461,7 +461,7 @@ func TestGetGameHashes(tt *testing.T) {
 			},
 			assert: func(t *testing.T, resp *models.GetGameHashes, err error) {
 				require.Nil(t, resp)
-				require.EqualError(t, err, "parsing response object: error responses: [401] Not Authorized")
+				require.EqualError(t, err, "parsing response object: error code 401 returned: {\"message\":\"test\",\"errors\":[{\"status\":401,\"code\":\"unauthorized\",\"title\":\"Not Authorized\"}]}")
 			},
 		},
 		{
@@ -580,7 +580,7 @@ func TestGetAchievementCount(tt *testing.T) {
 			},
 			assert: func(t *testing.T, resp *models.GetAchievementCount, err error) {
 				require.Nil(t, resp)
-				require.EqualError(t, err, "parsing response object: error responses: [401] Not Authorized")
+				require.EqualError(t, err, "parsing response object: error code 401 returned: {\"message\":\"test\",\"errors\":[{\"status\":401,\"code\":\"unauthorized\",\"title\":\"Not Authorized\"}]}")
 			},
 		},
 		{
@@ -722,7 +722,7 @@ func TestGetAchievementDistribution(tt *testing.T) {
 			},
 			assert: func(t *testing.T, resp *models.GetAchievementDistribution, err error) {
 				require.Nil(t, resp)
-				require.EqualError(t, err, "parsing response object: error responses: [401] Not Authorized")
+				require.EqualError(t, err, "parsing response object: error code 401 returned: {\"message\":\"test\",\"errors\":[{\"status\":401,\"code\":\"unauthorized\",\"title\":\"Not Authorized\"}]}")
 			},
 		},
 		{
@@ -893,7 +893,7 @@ func TestGetGameRankAndScore(tt *testing.T) {
 			},
 			assert: func(t *testing.T, resp []models.GetGameRankAndScore, err error) {
 				require.Nil(t, resp)
-				require.EqualError(t, err, "parsing response list: error responses: [401] Not Authorized")
+				require.EqualError(t, err, "parsing response list: error code 401 returned: {\"message\":\"test\",\"errors\":[{\"status\":401,\"code\":\"unauthorized\",\"title\":\"Not Authorized\"}]}")
 			},
 		},
 		{

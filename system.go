@@ -3,6 +3,7 @@ package retroachievements
 import (
 	"fmt"
 	"net/http"
+	"strconv"
 
 	raHttp "github.com/joshraphael/go-retroachievements/http"
 	"github.com/joshraphael/go-retroachievements/models"
@@ -46,7 +47,7 @@ func (c *Client) GetGameList(params models.GetGameListParameters) ([]models.GetG
 		raHttp.Method(http.MethodGet),
 		raHttp.Path("/API/API_GetGameList.php"),
 		raHttp.APIToken(c.Secret),
-		raHttp.I([]int{params.SystemID}),
+		raHttp.I([]string{strconv.Itoa(params.SystemID)}),
 	}
 	if params.HasAchievements != nil {
 		f := 0

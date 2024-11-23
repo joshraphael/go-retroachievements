@@ -68,7 +68,7 @@ func TestGetConsoleIDs(tt *testing.T) {
 			},
 			assert: func(t *testing.T, resp []models.GetConsoleIDs, err error) {
 				require.Nil(t, resp)
-				require.EqualError(t, err, "parsing response list: error responses: [401] Not Authorized")
+				require.EqualError(t, err, "parsing response list: error code 401 returned: {\"message\":\"test\",\"errors\":[{\"status\":401,\"code\":\"unauthorized\",\"title\":\"Not Authorized\"}]}")
 			},
 		},
 		{
@@ -209,7 +209,7 @@ func TestGetGameList(tt *testing.T) {
 			},
 			assert: func(t *testing.T, resp []models.GetGameList, err error) {
 				require.Nil(t, resp)
-				require.EqualError(t, err, "parsing response list: error responses: [401] Not Authorized")
+				require.EqualError(t, err, "parsing response list: error code 401 returned: {\"message\":\"test\",\"errors\":[{\"status\":401,\"code\":\"unauthorized\",\"title\":\"Not Authorized\"}]}")
 			},
 		},
 		{

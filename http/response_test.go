@@ -104,7 +104,7 @@ func TestResponseObject(tt *testing.T) {
 			},
 			assert: func(t *testing.T, obj *testObj, err error) {
 				require.Nil(t, obj)
-				require.EqualError(t, err, "invalid character '?' looking for beginning of value")
+				require.EqualError(t, err, "error code 401 returned: ?")
 			},
 		},
 		{
@@ -125,7 +125,7 @@ func TestResponseObject(tt *testing.T) {
 			},
 			assert: func(t *testing.T, obj *testObj, err error) {
 				require.Nil(t, obj)
-				require.EqualError(t, err, "error responses: [401] Not Authorized")
+				require.EqualError(t, err, "error code 401 returned: {\"message\":\"test\",\"errors\":[{\"status\":401,\"code\":\"unauthorized\",\"title\":\"Not Authorized\"}]}")
 			},
 		},
 		{
@@ -136,7 +136,7 @@ func TestResponseObject(tt *testing.T) {
 			},
 			assert: func(t *testing.T, obj *testObj, err error) {
 				require.Nil(t, obj)
-				require.EqualError(t, err, "unknown error returned: 500")
+				require.EqualError(t, err, "error code 500 returned: {\"message\":\"\",\"errors\":null}")
 			},
 		},
 	}
@@ -209,7 +209,7 @@ func TestResponseList(tt *testing.T) {
 			},
 			assert: func(t *testing.T, list []testObj, err error) {
 				require.Nil(t, list)
-				require.EqualError(t, err, "invalid character '?' looking for beginning of value")
+				require.EqualError(t, err, "error code 401 returned: ?")
 			},
 		},
 		{
@@ -230,7 +230,7 @@ func TestResponseList(tt *testing.T) {
 			},
 			assert: func(t *testing.T, list []testObj, err error) {
 				require.Nil(t, list)
-				require.EqualError(t, err, "error responses: [401] Not Authorized")
+				require.EqualError(t, err, "error code 401 returned: {\"message\":\"test\",\"errors\":[{\"status\":401,\"code\":\"unauthorized\",\"title\":\"Not Authorized\"}]}")
 			},
 		},
 		{
@@ -241,7 +241,7 @@ func TestResponseList(tt *testing.T) {
 			},
 			assert: func(t *testing.T, list []testObj, err error) {
 				require.Nil(t, list)
-				require.EqualError(t, err, "unknown error returned: 500")
+				require.EqualError(t, err, "error code 500 returned: {\"message\":\"\",\"errors\":null}")
 			},
 		},
 	}

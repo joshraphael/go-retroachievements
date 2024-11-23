@@ -2,6 +2,7 @@ package http_test
 
 import (
 	"net/http"
+	"strconv"
 	"testing"
 	"time"
 
@@ -25,7 +26,7 @@ func TestNewRequest(t *testing.T) {
 		raHttp.F(int(now.Unix())),
 		raHttp.T(int(later.Unix())),
 		raHttp.D(now),
-		raHttp.I([]int{2837, 4535}),
+		raHttp.I([]string{strconv.Itoa(2837), strconv.Itoa(4535)}),
 		raHttp.G(345),
 		raHttp.A(1),
 		raHttp.C(20),

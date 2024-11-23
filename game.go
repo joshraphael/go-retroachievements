@@ -3,6 +3,7 @@ package retroachievements
 import (
 	"fmt"
 	"net/http"
+	"strconv"
 
 	raHttp "github.com/joshraphael/go-retroachievements/http"
 	"github.com/joshraphael/go-retroachievements/models"
@@ -14,7 +15,7 @@ func (c *Client) GetGame(params models.GetGameParameters) (*models.GetGame, erro
 		raHttp.Method(http.MethodGet),
 		raHttp.Path("/API/API_GetGame.php"),
 		raHttp.APIToken(c.Secret),
-		raHttp.I([]int{params.GameID}),
+		raHttp.I([]string{strconv.Itoa(params.GameID)}),
 	)
 	if err != nil {
 		return nil, fmt.Errorf("calling endpoint: %w", err)
@@ -32,7 +33,7 @@ func (c *Client) GetGameExtended(params models.GetGameExtentedParameters) (*mode
 		raHttp.Method(http.MethodGet),
 		raHttp.Path("/API/API_GetGameExtended.php"),
 		raHttp.APIToken(c.Secret),
-		raHttp.I([]int{params.GameID}),
+		raHttp.I([]string{strconv.Itoa(params.GameID)}),
 	}
 	if params.Unofficial != nil {
 		f := 3
@@ -58,7 +59,7 @@ func (c *Client) GetGameHashes(params models.GetGameHashesParameters) (*models.G
 		raHttp.Method(http.MethodGet),
 		raHttp.Path("/API/API_GetGameHashes.php"),
 		raHttp.APIToken(c.Secret),
-		raHttp.I([]int{params.GameID}),
+		raHttp.I([]string{strconv.Itoa(params.GameID)}),
 	)
 	if err != nil {
 		return nil, fmt.Errorf("calling endpoint: %w", err)
@@ -76,7 +77,7 @@ func (c *Client) GetAchievementCount(params models.GetAchievementCountParameters
 		raHttp.Method(http.MethodGet),
 		raHttp.Path("/API/API_GetAchievementCount.php"),
 		raHttp.APIToken(c.Secret),
-		raHttp.I([]int{params.GameID}),
+		raHttp.I([]string{strconv.Itoa(params.GameID)}),
 	)
 	if err != nil {
 		return nil, fmt.Errorf("calling endpoint: %w", err)
@@ -94,7 +95,7 @@ func (c *Client) GetAchievementDistribution(params models.GetAchievementDistribu
 		raHttp.Method(http.MethodGet),
 		raHttp.Path("/API/API_GetAchievementDistribution.php"),
 		raHttp.APIToken(c.Secret),
-		raHttp.I([]int{params.GameID}),
+		raHttp.I([]string{strconv.Itoa(params.GameID)}),
 	}
 	if params.Unofficial != nil {
 		f := 3
