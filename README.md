@@ -101,3 +101,9 @@ For convenience, the API docs and examples can be found in the tables below
 |Function|Description|Links|
 |-|-|-|
 |`GetComments()`|Gets comments of a specified kind: game, achievement, or user.|[docs](https://api-docs.retroachievements.org/v1/get-comments.html) \| [example](examples/comment/getcomments/getcomments.go)|
+
+<h3>Feed</h3>
+
+|Function|Description|Links|
+|-|-|-|
+|`GetRecentGameAwards()`|Gets all recently granted game awards across the site's userbase.|[docs](https://api-docs.retroachievements.org/v1/get-recent-game-awards.html) \| [example](examples/feed/getrecentgameawards/getrecentgameawards.go)|

@@ -102,6 +102,13 @@ func I(i []string) RequestDetail {
 	})
 }
 
+// K adds a 'k' string list to the query parameters
+func K(k []string) RequestDetail {
+	return requestDetailFn(func(r *Request) {
+		r.Params["k"] = strings.Join(k, ",")
+	})
+}
+
 // G adds a 'g' number to the query parameters
 func G(g int) RequestDetail {
 	return requestDetailFn(func(r *Request) {
