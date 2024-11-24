@@ -149,3 +149,17 @@ type GetDeveloperTicketStats struct {
 	Total    int    `json:"Total"`
 	URL      string `json:"URL"`
 }
+
+type GetAchievementTicketStatsParameters struct {
+	// The target achievement ID
+	AchievementID int
+}
+
+type GetAchievementTicketStats struct {
+	AchievementID          int     `json:"AchievementID"`
+	AchievementTitle       string  `json:"AchievementTitle"`
+	AchievementDescription string  `json:"AchievementDescription"`
+	AchievementType        *string `json:"AchievementType"`
+	URL                    string  `json:"URL"`
+	OpenTickets            int     `json:"OpenTickets"`
+}

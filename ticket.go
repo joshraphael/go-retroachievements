@@ -120,3 +120,21 @@ func (c *Client) GetDeveloperTicketStats(params models.GetDeveloperTicketStatsPa
 	}
 	return resp, nil
 }
+
+// GetDeveloperTicketStats gets ticket stats for an achievement, targeted by that achievement's unique ID.
+func (c *Client) GetAchievementTicketStats(params models.GetAchievementTicketStatsParameters) (*models.GetAchievementTicketStats, error) {
+	r, err := c.do(
+		raHttp.Method(http.MethodGet),
+		raHttp.Path("/API/API_GetTicketData.php"),
+		raHttp.APIToken(c.Secret),
+		raHttp.A(params.AchievementID),
+	)
+	if err != nil {
+		return nil, fmt.Errorf("calling endpoint: %w", err)
+	}
+	resp, err := raHttp.ResponseObject[models.GetAchievementTicketStats](r)
+	if err != nil {
+		return nil, fmt.Errorf("parsing response object: %w", err)
+	}
+	return resp, nil
+}

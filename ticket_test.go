@@ -751,3 +751,117 @@ func TestGetDeveloperTicketStats(tt *testing.T) {
 		})
 	}
 }
+
+func TestGetAchievementTicketStats(tt *testing.T) {
+	achievementType := "progression"
+	tests := []struct {
+		name            string
+		params          models.GetAchievementTicketStatsParameters
+		modifyURL       func(url string) string
+		responseCode    int
+		responseMessage models.GetAchievementTicketStats
+		responseError   models.ErrorResponse
+		response        func(messageBytes []byte, errorBytes []byte) []byte
+		assert          func(t *testing.T, resp *models.GetAchievementTicketStats, err error)
+	}{
+		{
+			name: "fail to call endpoint",
+			params: models.GetAchievementTicketStatsParameters{
+				AchievementID: 284759,
+			},
+			modifyURL: func(url string) string {
+				return ""
+			},
+			responseCode: http.StatusOK,
+			response: func(messageBytes []byte, errorBytes []byte) []byte {
+				return messageBytes
+			},
+			assert: func(t *testing.T, resp *models.GetAchievementTicketStats, err error) {
+				require.Nil(t, resp)
+				require.EqualError(t, err, "calling endpoint: Get \"/API/API_GetTicketData.php?a=284759&y=some_secret\": unsupported protocol scheme \"\"")
+			},
+		},
+		{
+			name: "error response",
+			params: models.GetAchievementTicketStatsParameters{
+				AchievementID: 284759,
+			},
+			modifyURL: func(url string) string {
+				return url
+			},
+			responseCode: http.StatusUnauthorized,
+			responseError: models.ErrorResponse{
+				Message: "test",
+				Errors: []models.ErrorDetail{
+					{
+						Status: http.StatusUnauthorized,
+						Code:   "unauthorized",
+						Title:  "Not Authorized",
+					},
+				},
+			},
+			response: func(messageBytes []byte, errorBytes []byte) []byte {
+				return errorBytes
+			},
+			assert: func(t *testing.T, resp *models.GetAchievementTicketStats, err error) {
+				require.Nil(t, resp)
+				require.EqualError(t, err, "parsing response object: error code 401 returned: {\"message\":\"test\",\"errors\":[{\"status\":401,\"code\":\"unauthorized\",\"title\":\"Not Authorized\"}]}")
+			},
+		},
+		{
+			name: "success",
+			params: models.GetAchievementTicketStatsParameters{
+				AchievementID: 284759,
+			},
+			modifyURL: func(url string) string {
+				return url
+			},
+			responseCode: http.StatusOK,
+			responseMessage: models.GetAchievementTicketStats{
+				AchievementID:          284759,
+				AchievementTitle:       "The End of the Beginning",
+				AchievementDescription: "Receive the package from the King of Baron, and begin your quest to the Mist Cavern.",
+				AchievementType:        &achievementType,
+				URL:                    "https://retroachievements.org/achievement/284759/tickets",
+				OpenTickets:            0,
+			},
+			response: func(messageBytes []byte, errorBytes []byte) []byte {
+				return messageBytes
+			},
+			assert: func(t *testing.T, resp *models.GetAchievementTicketStats, err error) {
+				require.NotNil(t, resp)
+				require.Equal(t, 284759, resp.AchievementID)
+				require.Equal(t, "The End of the Beginning", resp.AchievementTitle)
+				require.Equal(t, "Receive the package from the King of Baron, and begin your quest to the Mist Cavern.", resp.AchievementDescription)
+				require.NotNil(t, resp.AchievementType)
+				require.Equal(t, achievementType, *resp.AchievementType)
+				require.Equal(t, "https://retroachievements.org/achievement/284759/tickets", resp.URL)
+				require.Equal(t, 0, resp.OpenTickets)
+				require.NoError(t, err)
+			},
+		},
+	}
+	for _, test := range tests {
+		tt.Run(test.name, func(t *testing.T) {
+			server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+				expectedPath := "/API/API_GetTicketData.php"
+				if r.URL.Path != expectedPath {
+					t.Errorf("Expected to request '%s', got: %s", expectedPath, r.URL.Path)
+				}
+				w.WriteHeader(test.responseCode)
+				messageBytes, err := json.Marshal(test.responseMessage)
+				require.NoError(t, err)
+				errBytes, err := json.Marshal(test.responseError)
+				require.NoError(t, err)
+				resp := test.response(messageBytes, errBytes)
+				num, err := w.Write(resp)
+				require.NoError(t, err)
+				require.Equal(t, num, len(resp))
+			}))
+			defer server.Close()
+			client := retroachievements.New(test.modifyURL(server.URL), "go-retroachievements/v0.0.0", "some_secret")
+			resp, err := client.GetAchievementTicketStats(test.params)
+			test.assert(t, resp, err)
+		})
+	}
+}

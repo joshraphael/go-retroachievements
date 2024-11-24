@@ -1,5 +1,3 @@
-// getdeveloperticketstats
-
 // Package getdeveloperticketstats provides an example for getting ticket stats for a developer, targeted by that developer's site username.
 package main
 
