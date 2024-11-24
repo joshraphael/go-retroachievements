@@ -97,3 +97,20 @@ func (c *Client) GetClaims(params models.GetClaimsParameters) ([]models.GetClaim
 	}
 	return resp, nil
 }
+
+// GetTopTenUsers gets the current top ten users, ranked by hardcore points, on the site.
+func (c *Client) GetTopTenUsers(params models.GetTopTenUsersParameters) ([]models.GetTopTenUsers, error) {
+	r, err := c.do(
+		raHttp.Method(http.MethodGet),
+		raHttp.Path("/API/API_GetTopTenUsers.php"),
+		raHttp.APIToken(c.Secret),
+	)
+	if err != nil {
+		return nil, fmt.Errorf("calling endpoint: %w", err)
+	}
+	resp, err := raHttp.ResponseList[models.GetTopTenUsers](r)
+	if err != nil {
+		return nil, fmt.Errorf("parsing response list: %w", err)
+	}
+	return resp, nil
+}

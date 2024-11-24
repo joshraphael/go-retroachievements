@@ -458,3 +458,114 @@ func TestGetClaims(tt *testing.T) {
 		})
 	}
 }
+
+func TestGetTopTenUsers(tt *testing.T) {
+	tests := []struct {
+		name            string
+		params          models.GetTopTenUsersParameters
+		modifyURL       func(url string) string
+		responseCode    int
+		responseMessage []models.GetTopTenUsers
+		responseError   models.ErrorResponse
+		response        func(messageBytes []byte, errorBytes []byte) []byte
+		assert          func(t *testing.T, resp []models.GetTopTenUsers, err error)
+	}{
+		{
+			name:   "fail to call endpoint",
+			params: models.GetTopTenUsersParameters{},
+			modifyURL: func(url string) string {
+				return ""
+			},
+			responseCode: http.StatusOK,
+			response: func(messageBytes []byte, errorBytes []byte) []byte {
+				return messageBytes
+			},
+			assert: func(t *testing.T, resp []models.GetTopTenUsers, err error) {
+				require.Nil(t, resp)
+				require.EqualError(t, err, "calling endpoint: Get \"/API/API_GetTopTenUsers.php?y=some_secret\": unsupported protocol scheme \"\"")
+			},
+		},
+		{
+			name:   "error response",
+			params: models.GetTopTenUsersParameters{},
+			modifyURL: func(url string) string {
+				return url
+			},
+			responseCode: http.StatusUnauthorized,
+			responseError: models.ErrorResponse{
+				Message: "test",
+				Errors: []models.ErrorDetail{
+					{
+						Status: http.StatusUnauthorized,
+						Code:   "unauthorized",
+						Title:  "Not Authorized",
+					},
+				},
+			},
+			response: func(messageBytes []byte, errorBytes []byte) []byte {
+				return errorBytes
+			},
+			assert: func(t *testing.T, resp []models.GetTopTenUsers, err error) {
+				require.Nil(t, resp)
+				require.EqualError(t, err, "parsing response list: error code 401 returned: {\"message\":\"test\",\"errors\":[{\"status\":401,\"code\":\"unauthorized\",\"title\":\"Not Authorized\"}]}")
+			},
+		},
+		{
+			name:   "success",
+			params: models.GetTopTenUsersParameters{},
+			modifyURL: func(url string) string {
+				return url
+			},
+			responseCode: http.StatusOK,
+			responseMessage: []models.GetTopTenUsers{
+				{
+					Username:      "MaxMilyin",
+					HarcordPoints: 443235,
+					RetroPoints:   1825214,
+				},
+				{
+					Username:      "Sarconius",
+					HarcordPoints: 427984,
+					RetroPoints:   2913697,
+				},
+			},
+			response: func(messageBytes []byte, errorBytes []byte) []byte {
+				return messageBytes
+			},
+			assert: func(t *testing.T, resp []models.GetTopTenUsers, err error) {
+				require.NotNil(t, resp)
+				require.Len(t, resp, 2)
+				require.Equal(t, resp[0].Username, "MaxMilyin")
+				require.Equal(t, resp[0].HarcordPoints, 443235)
+				require.Equal(t, resp[0].RetroPoints, 1825214)
+				require.Equal(t, resp[1].Username, "Sarconius")
+				require.Equal(t, resp[1].HarcordPoints, 427984)
+				require.Equal(t, resp[1].RetroPoints, 2913697)
+				require.NoError(t, err)
+			},
+		},
+	}
+	for _, test := range tests {
+		tt.Run(test.name, func(t *testing.T) {
+			server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+				expectedPath := "/API/API_GetTopTenUsers.php"
+				if r.URL.Path != expectedPath {
+					t.Errorf("Expected to request '%s', got: %s", expectedPath, r.URL.Path)
+				}
+				w.WriteHeader(test.responseCode)
+				messageBytes, err := json.Marshal(test.responseMessage)
+				require.NoError(t, err)
+				errBytes, err := json.Marshal(test.responseError)
+				require.NoError(t, err)
+				resp := test.response(messageBytes, errBytes)
+				num, err := w.Write(resp)
+				require.NoError(t, err)
+				require.Equal(t, num, len(resp))
+			}))
+			defer server.Close()
+			client := retroachievements.New(test.modifyURL(server.URL), "go-retroachievements/v0.0.0", "some_secret")
+			resp, err := client.GetTopTenUsers(test.params)
+			test.assert(t, resp, err)
+		})
+	}
+}

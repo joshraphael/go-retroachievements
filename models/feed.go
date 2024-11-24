@@ -114,3 +114,11 @@ type GetClaims struct {
 	UserIsJrDev int      `json:"UserIsJrDev"`
 	MinutesLeft int      `json:"MinutesLeft"`
 }
+
+type GetTopTenUsersParameters struct{}
+
+type GetTopTenUsers struct {
+	Username      string `json:"1"`
+	HarcordPoints int    `json:"2"`
+	RetroPoints   int    `json:"3"`
+}
