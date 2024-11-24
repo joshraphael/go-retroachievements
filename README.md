@@ -11,6 +11,7 @@
 <br>
 <hr />
 
+[![godoc](https://pkg.go.dev/badge/github.com/joshraphael/go-retroachievements.svg)](https://pkg.go.dev/github.com/joshraphael/go-retroachievements)
 [![pipeline](https://github.com/joshraphael/go-retroachievements/actions/workflows/ci.yaml/badge.svg)](https://github.com/joshraphael/go-retroachievements/actions)
 
 ## Installation
@@ -40,7 +41,7 @@ profile, err := client.GetUserProfile(models.GetUserProfileParameters{
 })
 ```
 
-Check out the [examples](examples/) directory for how to call each endpoint, as well as our GoDocs (TBD)
+Check out the [examples](examples/) directory for how to call each endpoint, as well as our [GoDocs](https://pkg.go.dev/github.com/joshraphael/go-retroachievements)
 
 ## API
 For convenience, the API docs and examples can be found in the tables below
