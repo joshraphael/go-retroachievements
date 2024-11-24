@@ -4,7 +4,6 @@ import (
 	"fmt"
 	"strconv"
 	"strings"
-	"time"
 )
 
 // Request holds values for an http call
@@ -88,10 +87,10 @@ func T(t int) RequestDetail {
 	})
 }
 
-// D adds a 'd' date to the query parameters
-func D(d time.Time) RequestDetail {
+// D adds a 'd' string to the query parameters
+func D(d string) RequestDetail {
 	return requestDetailFn(func(r *Request) {
-		r.Params["d"] = d.UTC().Format(time.DateOnly)
+		r.Params["d"] = d
 	})
 }
 

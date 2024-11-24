@@ -77,3 +77,28 @@ func (c *Client) GetMostRecentTickets(params models.GetMostRecentTicketsParamete
 	}
 	return resp, nil
 }
+
+// GetGameTicketStats gets ticket stats for a game, targeted by that game's unique ID.
+func (c *Client) GetGameTicketStats(params models.GetGameTicketStatsParameters) (*models.GetGameTicketStats, error) {
+	details := []raHttp.RequestDetail{
+		raHttp.Method(http.MethodGet),
+		raHttp.Path("/API/API_GetTicketData.php"),
+		raHttp.APIToken(c.Secret),
+		raHttp.G(params.GameID),
+	}
+	if params.Unofficial != nil && *params.Unofficial {
+		details = append(details, raHttp.F(5))
+	}
+	if params.IncludeTicketMetadata != nil && *params.IncludeTicketMetadata {
+		details = append(details, raHttp.D(strconv.Itoa(1)))
+	}
+	r, err := c.do(details...)
+	if err != nil {
+		return nil, fmt.Errorf("calling endpoint: %w", err)
+	}
+	resp, err := raHttp.ResponseObject[models.GetGameTicketStats](r)
+	if err != nil {
+		return nil, fmt.Errorf("parsing response object: %w", err)
+	}
+	return resp, nil
+}

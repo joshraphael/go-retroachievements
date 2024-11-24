@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"net/http"
 	"strconv"
+	"time"
 
 	raHttp "github.com/joshraphael/go-retroachievements/http"
 	"github.com/joshraphael/go-retroachievements/models"
@@ -76,7 +77,7 @@ func (c *Client) GetAchievementsEarnedOnDay(params models.GetAchievementsEarnedO
 		raHttp.Path("/API/API_GetAchievementsEarnedOnDay.php"),
 		raHttp.APIToken(c.Secret),
 		raHttp.U(params.Username),
-		raHttp.D(params.Date),
+		raHttp.D(params.Date.UTC().Format(time.DateOnly)),
 	)
 	if err != nil {
 		return nil, fmt.Errorf("calling endpoint: %w", err)

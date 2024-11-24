@@ -90,3 +90,48 @@ type GetMostRecentTicketsRecentTicket struct {
 	ReportStateDescription string    `json:"ReportStateDescription"`
 	ReportTypeDescription  string    `json:"ReportTypeDescription"`
 }
+
+type GetGameTicketStatsParameters struct {
+	// The target game ID
+	GameID int
+
+	// [Optional] Get unofficial achievements (default: false)
+	Unofficial *bool
+
+	// [Optional] Return deep ticket metadata in the response's `Tickets` array (default: false)
+	IncludeTicketMetadata *bool
+}
+
+type GetGameTicketStats struct {
+	GameID      int                        `json:"GameID"`
+	GameTitle   string                     `json:"GameTitle"`
+	ConsoleName string                     `json:"ConsoleName"`
+	OpenTickets int                        `json:"OpenTickets"`
+	URL         string                     `json:"URL"`
+	Tickets     []GetGameTicketStatsTicket `json:"Tickets"`
+}
+
+type GetGameTicketStatsTicket struct {
+	ID                     int       `json:"ID"`
+	AchievementID          int       `json:"AchievementID"`
+	AchievementTitle       string    `json:"AchievementTitle"`
+	AchievementDesc        string    `json:"AchievementDesc"`
+	AchievementType        *string   `json:"AchievementType"`
+	Points                 int       `json:"Points"`
+	BadgeName              string    `json:"BadgeName"`
+	AchievementAuthor      string    `json:"AchievementAuthor"`
+	GameID                 int       `json:"GameID"`
+	ConsoleName            string    `json:"ConsoleName"`
+	GameTitle              string    `json:"GameTitle"`
+	GameIcon               string    `json:"GameIcon"`
+	ReportedAt             DateTime  `json:"ReportedAt"`
+	ReportType             int       `json:"ReportType"`
+	ReportState            int       `json:"ReportState"`
+	Hardcore               *int      `json:"Hardcore"`
+	ReportNotes            string    `json:"ReportNotes"`
+	ReportedBy             string    `json:"ReportedBy"`
+	ResolvedAt             *DateTime `json:"ResolvedAt"`
+	ResolvedBy             *string   `json:"ResolvedBy"`
+	ReportStateDescription string    `json:"ReportStateDescription"`
+	ReportTypeDescription  string    `json:"ReportTypeDescription"`
+}

@@ -25,7 +25,7 @@ func TestNewRequest(t *testing.T) {
 		raHttp.M(10),
 		raHttp.F(int(now.Unix())),
 		raHttp.T(int(later.Unix())),
-		raHttp.D(now),
+		raHttp.D(now.UTC().Format(time.DateOnly)),
 		raHttp.I([]string{strconv.Itoa(2837), strconv.Itoa(4535)}),
 		raHttp.K([]string{"test1", "test2"}),
 		raHttp.G(345),

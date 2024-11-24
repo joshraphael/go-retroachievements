@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"net/http"
 	"strconv"
+	"time"
 
 	raHttp "github.com/joshraphael/go-retroachievements/http"
 	"github.com/joshraphael/go-retroachievements/models"
@@ -17,7 +18,8 @@ func (c *Client) GetRecentGameAwards(params models.GetRecentGameAwardsParameters
 		raHttp.APIToken(c.Secret),
 	}
 	if params.StartingDate != nil {
-		details = append(details, raHttp.D(*params.StartingDate))
+		d := *params.StartingDate
+		details = append(details, raHttp.D(d.UTC().Format(time.DateOnly)))
 	}
 	if params.Count != nil {
 		details = append(details, raHttp.C(*params.Count))
