@@ -45,11 +45,57 @@ type GetRecentGameAwardsResult struct {
 	ConsoleID   int               `json:"ConsoleID"`
 	ConsoleName string            `json:"ConsoleName"`
 }
-
-type GetActiveClaimsParameters struct {
-}
+type GetActiveClaimsParameters struct{}
 
 type GetActiveClaims struct {
+	ID          int      `json:"ID"`
+	User        string   `json:"User"`
+	GameID      int      `json:"GameID"`
+	GameTitle   string   `json:"GameTitle"`
+	GameIcon    string   `json:"GameIcon"`
+	ConsoleID   int      `json:"ConsoleID"`
+	ConsoleName string   `json:"ConsoleName"`
+	ClaimType   int      `json:"ClaimType"`
+	SetType     int      `json:"SetType"`
+	Status      int      `json:"Status"`
+	Extension   int      `json:"Extension"`
+	Special     int      `json:"Special"`
+	Created     DateTime `json:"Created"`
+	DoneTime    DateTime `json:"DoneTime"`
+	Updated     DateTime `json:"Updated"`
+	UserIsJrDev int      `json:"UserIsJrDev"`
+	MinutesLeft int      `json:"MinutesLeft"`
+}
+
+type GetClaimsParametersKind interface {
+	GetClaimsParametersKindID() int
+}
+
+type GetClaimsParametersKindCompleted struct{}
+
+func (c *GetClaimsParametersKindCompleted) GetClaimsParametersKindID() int {
+	return 1
+}
+
+type GetClaimsParametersKindDropped struct{}
+
+func (d *GetClaimsParametersKindDropped) GetClaimsParametersKindID() int {
+	return 2
+}
+
+// NOTE: Expired claims returns a strange format different from the rest, disabling it for now as there is not many available
+// type GetClaimsParametersKindExpired struct{}
+
+// func (e *GetClaimsParametersKindExpired) GetClaimsParametersKindID() int {
+// 	return 3
+// }
+
+type GetClaimsParameters struct {
+	// [Optional] The desired claim kind: completed, dropped, or expired (default: completed).
+	Kind GetClaimsParametersKind
+}
+
+type GetClaims struct {
 	ID          int      `json:"ID"`
 	User        string   `json:"User"`
 	GameID      int      `json:"GameID"`
