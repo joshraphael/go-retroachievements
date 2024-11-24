@@ -166,3 +166,146 @@ func TestGetRecentGameAwards(tt *testing.T) {
 		})
 	}
 }
+
+func TestGetActiveClaims(tt *testing.T) {
+	created, err := time.Parse(time.DateTime, "2024-11-24 13:45:14")
+	require.NoError(tt, err)
+	doneTime, err := time.Parse(time.DateTime, "2025-02-24 13:45:14")
+	require.NoError(tt, err)
+	update, err := time.Parse(time.DateTime, "2024-11-24 13:45:14")
+	require.NoError(tt, err)
+	tests := []struct {
+		name            string
+		params          models.GetActiveClaimsParameters
+		modifyURL       func(url string) string
+		responseCode    int
+		responseMessage []models.GetActiveClaims
+		responseError   models.ErrorResponse
+		response        func(messageBytes []byte, errorBytes []byte) []byte
+		assert          func(t *testing.T, resp []models.GetActiveClaims, err error)
+	}{
+		{
+			name:   "fail to call endpoint",
+			params: models.GetActiveClaimsParameters{},
+			modifyURL: func(url string) string {
+				return ""
+			},
+			responseCode: http.StatusOK,
+			response: func(messageBytes []byte, errorBytes []byte) []byte {
+				return messageBytes
+			},
+			assert: func(t *testing.T, resp []models.GetActiveClaims, err error) {
+				require.Nil(t, resp)
+				require.EqualError(t, err, "calling endpoint: Get \"/API/API_GetActiveClaims.php?y=some_secret\": unsupported protocol scheme \"\"")
+			},
+		},
+		{
+			name:   "error response",
+			params: models.GetActiveClaimsParameters{},
+			modifyURL: func(url string) string {
+				return url
+			},
+			responseCode: http.StatusUnauthorized,
+			responseError: models.ErrorResponse{
+				Message: "test",
+				Errors: []models.ErrorDetail{
+					{
+						Status: http.StatusUnauthorized,
+						Code:   "unauthorized",
+						Title:  "Not Authorized",
+					},
+				},
+			},
+			response: func(messageBytes []byte, errorBytes []byte) []byte {
+				return errorBytes
+			},
+			assert: func(t *testing.T, resp []models.GetActiveClaims, err error) {
+				require.Nil(t, resp)
+				require.EqualError(t, err, "parsing response list: error code 401 returned: {\"message\":\"test\",\"errors\":[{\"status\":401,\"code\":\"unauthorized\",\"title\":\"Not Authorized\"}]}")
+			},
+		},
+		{
+			name:   "success",
+			params: models.GetActiveClaimsParameters{},
+			modifyURL: func(url string) string {
+				return url
+			},
+			responseCode: http.StatusOK,
+			responseMessage: []models.GetActiveClaims{
+				{
+					ID:          14667,
+					User:        "Tayadaoc",
+					GameID:      29805,
+					GameTitle:   "Tetras",
+					GameIcon:    "/Images/097197.png",
+					ConsoleID:   47,
+					ConsoleName: "PC-8000/8800",
+					ClaimType:   0,
+					SetType:     0,
+					Status:      0,
+					Extension:   0,
+					Special:     0,
+					Created: models.DateTime{
+						Time: created,
+					},
+					DoneTime: models.DateTime{
+						Time: doneTime,
+					},
+					Updated: models.DateTime{
+						Time: update,
+					},
+					UserIsJrDev: 0,
+					MinutesLeft: 132413,
+				},
+			},
+			response: func(messageBytes []byte, errorBytes []byte) []byte {
+				return messageBytes
+			},
+			assert: func(t *testing.T, resp []models.GetActiveClaims, err error) {
+				require.NotNil(t, resp)
+				require.Len(t, resp, 1)
+				require.Equal(t, 14667, resp[0].ID)
+				require.Equal(t, "Tayadaoc", resp[0].User)
+				require.Equal(t, 29805, resp[0].GameID)
+				require.Equal(t, "Tetras", resp[0].GameTitle)
+				require.Equal(t, "/Images/097197.png", resp[0].GameIcon)
+				require.Equal(t, 47, resp[0].ConsoleID)
+				require.Equal(t, "PC-8000/8800", resp[0].ConsoleName)
+				require.Equal(t, 0, resp[0].ClaimType)
+				require.Equal(t, 0, resp[0].SetType)
+				require.Equal(t, 0, resp[0].Status)
+				require.Equal(t, 0, resp[0].Extension)
+				require.Equal(t, 0, resp[0].Special)
+				require.Equal(t, created, resp[0].Created.Time)
+				require.Equal(t, doneTime, resp[0].DoneTime.Time)
+				require.Equal(t, update, resp[0].Updated.Time)
+				require.Equal(t, 0, resp[0].UserIsJrDev)
+				require.Equal(t, 132413, resp[0].MinutesLeft)
+				require.NoError(t, err)
+			},
+		},
+	}
+	for _, test := range tests {
+		tt.Run(test.name, func(t *testing.T) {
+			server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+				expectedPath := "/API/API_GetActiveClaims.php"
+				if r.URL.Path != expectedPath {
+					t.Errorf("Expected to request '%s', got: %s", expectedPath, r.URL.Path)
+				}
+				w.WriteHeader(test.responseCode)
+				messageBytes, err := json.Marshal(test.responseMessage)
+				require.NoError(t, err)
+				errBytes, err := json.Marshal(test.responseError)
+				require.NoError(t, err)
+				resp := test.response(messageBytes, errBytes)
+				num, err := w.Write(resp)
+				require.NoError(t, err)
+				require.Equal(t, num, len(resp))
+			}))
+			defer server.Close()
+			client := retroachievements.New(test.modifyURL(server.URL), "go-retroachievements/v0.0.0", "some_secret")
+			resp, err := client.GetActiveClaims(test.params)
+			test.assert(t, resp, err)
+		})
+	}
+}

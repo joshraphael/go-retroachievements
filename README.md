@@ -107,3 +107,4 @@ For convenience, the API docs and examples can be found in the tables below
 |Function|Description|Links|
 |-|-|-|
 |`GetRecentGameAwards()`|Gets all recently granted game awards across the site's userbase.|[docs](https://api-docs.retroachievements.org/v1/get-recent-game-awards.html) \| [example](examples/feed/getrecentgameawards/getrecentgameawards.go)|
+|`GetActiveClaims()`|Gets information about all active set claims (max: 1000).|[docs](https://api-docs.retroachievements.org/v1/get-active-claims.html) \| [example](examples/feed/getactiveclaims/getactiveclaims.go)|

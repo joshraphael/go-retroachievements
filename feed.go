@@ -56,3 +56,20 @@ func (c *Client) GetRecentGameAwards(params models.GetRecentGameAwardsParameters
 	}
 	return resp, nil
 }
+
+// GetActiveClaims gets information about all active set claims (max: 1000).
+func (c *Client) GetActiveClaims(params models.GetActiveClaimsParameters) ([]models.GetActiveClaims, error) {
+	r, err := c.do(
+		raHttp.Method(http.MethodGet),
+		raHttp.Path("/API/API_GetActiveClaims.php"),
+		raHttp.APIToken(c.Secret),
+	)
+	if err != nil {
+		return nil, fmt.Errorf("calling endpoint: %w", err)
+	}
+	resp, err := raHttp.ResponseList[models.GetActiveClaims](r)
+	if err != nil {
+		return nil, fmt.Errorf("parsing response list: %w", err)
+	}
+	return resp, nil
+}
