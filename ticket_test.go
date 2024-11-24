@@ -166,3 +166,125 @@ func TestGetTicketByID(tt *testing.T) {
 		})
 	}
 }
+
+func TestGetMostTicketedGames(tt *testing.T) {
+	count := 10
+	offset := 12
+	tests := []struct {
+		name            string
+		params          models.GetMostTicketedGamesParameters
+		modifyURL       func(url string) string
+		responseCode    int
+		responseMessage models.GetMostTicketedGames
+		responseError   models.ErrorResponse
+		response        func(messageBytes []byte, errorBytes []byte) []byte
+		assert          func(t *testing.T, resp *models.GetMostTicketedGames, err error)
+	}{
+		{
+			name: "fail to call endpoint",
+			params: models.GetMostTicketedGamesParameters{
+				Count:  &count,
+				Offset: &offset,
+			},
+			modifyURL: func(url string) string {
+				return ""
+			},
+			responseCode: http.StatusOK,
+			response: func(messageBytes []byte, errorBytes []byte) []byte {
+				return messageBytes
+			},
+			assert: func(t *testing.T, resp *models.GetMostTicketedGames, err error) {
+				require.Nil(t, resp)
+				require.EqualError(t, err, "calling endpoint: Get \"/API/API_GetTicketData.php?c=10&f=1&o=12&y=some_secret\": unsupported protocol scheme \"\"")
+			},
+		},
+		{
+			name: "error response",
+			params: models.GetMostTicketedGamesParameters{
+				Count:  &count,
+				Offset: &offset,
+			},
+			modifyURL: func(url string) string {
+				return url
+			},
+			responseCode: http.StatusUnauthorized,
+			responseError: models.ErrorResponse{
+				Message: "test",
+				Errors: []models.ErrorDetail{
+					{
+						Status: http.StatusUnauthorized,
+						Code:   "unauthorized",
+						Title:  "Not Authorized",
+					},
+				},
+			},
+			response: func(messageBytes []byte, errorBytes []byte) []byte {
+				return errorBytes
+			},
+			assert: func(t *testing.T, resp *models.GetMostTicketedGames, err error) {
+				require.Nil(t, resp)
+				require.EqualError(t, err, "parsing response object: error code 401 returned: {\"message\":\"test\",\"errors\":[{\"status\":401,\"code\":\"unauthorized\",\"title\":\"Not Authorized\"}]}")
+			},
+		},
+		{
+			name: "success",
+			params: models.GetMostTicketedGamesParameters{
+				Count:  &count,
+				Offset: &offset,
+			},
+			modifyURL: func(url string) string {
+				return url
+			},
+			responseCode: http.StatusOK,
+			responseMessage: models.GetMostTicketedGames{
+				MostReportedGames: []models.GetMostTicketedGamesMostReportedGame{
+					{
+						GameID:      8301,
+						GameTitle:   "Magical Vacation",
+						GameIcon:    "/Images/080447.png",
+						Console:     "Game Boy Advance",
+						OpenTickets: 4,
+					},
+				},
+				URL: "https://retroachievements.org/manage/most-reported-games",
+			},
+			response: func(messageBytes []byte, errorBytes []byte) []byte {
+				return messageBytes
+			},
+			assert: func(t *testing.T, resp *models.GetMostTicketedGames, err error) {
+				require.NotNil(t, resp)
+				require.Len(t, resp.MostReportedGames, 1)
+				require.Equal(t, 8301, resp.MostReportedGames[0].GameID)
+				require.Equal(t, "Magical Vacation", resp.MostReportedGames[0].GameTitle)
+				require.Equal(t, "/Images/080447.png", resp.MostReportedGames[0].GameIcon)
+				require.Equal(t, "Game Boy Advance", resp.MostReportedGames[0].Console)
+				require.Equal(t, 4, resp.MostReportedGames[0].OpenTickets)
+				require.Equal(t, "https://retroachievements.org/manage/most-reported-games", resp.URL)
+				require.NoError(t, err)
+			},
+		},
+	}
+	for _, test := range tests {
+		tt.Run(test.name, func(t *testing.T) {
+			server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+				expectedPath := "/API/API_GetTicketData.php"
+				if r.URL.Path != expectedPath {
+					t.Errorf("Expected to request '%s', got: %s", expectedPath, r.URL.Path)
+				}
+				w.WriteHeader(test.responseCode)
+				messageBytes, err := json.Marshal(test.responseMessage)
+				require.NoError(t, err)
+				errBytes, err := json.Marshal(test.responseError)
+				require.NoError(t, err)
+				resp := test.response(messageBytes, errBytes)
+				num, err := w.Write(resp)
+				require.NoError(t, err)
+				require.Equal(t, num, len(resp))
+			}))
+			defer server.Close()
+			client := retroachievements.New(test.modifyURL(server.URL), "go-retroachievements/v0.0.0", "some_secret")
+			resp, err := client.GetMostTicketedGames(test.params)
+			test.assert(t, resp, err)
+		})
+	}
+}

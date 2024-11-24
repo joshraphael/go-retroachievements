@@ -28,3 +28,28 @@ func (c *Client) GetTicketByID(params models.GetTicketByIDParameters) (*models.G
 	}
 	return resp, nil
 }
+
+// GetMostTicketedGames gets the games on the site with the highest count of opened achievement tickets.
+func (c *Client) GetMostTicketedGames(params models.GetMostTicketedGamesParameters) (*models.GetMostTicketedGames, error) {
+	details := []raHttp.RequestDetail{
+		raHttp.Method(http.MethodGet),
+		raHttp.Path("/API/API_GetTicketData.php"),
+		raHttp.APIToken(c.Secret),
+		raHttp.F(1),
+	}
+	if params.Count != nil {
+		details = append(details, raHttp.C(*params.Count))
+	}
+	if params.Offset != nil {
+		details = append(details, raHttp.O(*params.Offset))
+	}
+	r, err := c.do(details...)
+	if err != nil {
+		return nil, fmt.Errorf("calling endpoint: %w", err)
+	}
+	resp, err := raHttp.ResponseObject[models.GetMostTicketedGames](r)
+	if err != nil {
+		return nil, fmt.Errorf("parsing response object: %w", err)
+	}
+	return resp, nil
+}

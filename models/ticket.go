@@ -30,3 +30,24 @@ type GetTicketByID struct {
 	ReportTypeDescription  string    `json:"ReportTypeDescription"`
 	URL                    string    `json:"URL"`
 }
+
+type GetMostTicketedGamesParameters struct {
+	// [Optional] The number of records to return (default: 10, max: 100).
+	Count *int
+
+	// [Optional] The number of entries to skip (default: 0).
+	Offset *int
+}
+
+type GetMostTicketedGames struct {
+	MostReportedGames []GetMostTicketedGamesMostReportedGame `json:"MostReportedGames"`
+	URL               string                                 `json:"URL"`
+}
+
+type GetMostTicketedGamesMostReportedGame struct {
+	GameID      int    `json:"GameID"`
+	GameTitle   string `json:"GameTitle"`
+	GameIcon    string `json:"GameIcon"`
+	Console     string `json:"Console"`
+	OpenTickets int    `json:"OpenTickets"`
+}

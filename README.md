@@ -122,3 +122,4 @@ For convenience, the API docs and examples can be found in the tables below
 |Function|Description|Links|
 |-|-|-|
 |`GetTicketByID()`|Gets ticket metadata information about a single achievement ticket, targeted by its ticket ID.|[docs](https://api-docs.retroachievements.org/v1/get-ticket-data/get-ticket-by-id.html) \| [example](examples/ticket/getticketbyid/getticketbyid.go)|
+|`GetMostTicketedGames()`|Gets the games on the site with the highest count of opened achievement tickets.|[docs](https://api-docs.retroachievements.org/v1/get-ticket-data/get-most-ticketed-games.html) \| [example](examples/ticket/getmostticketedgames/getmostticketedgames.go)|
