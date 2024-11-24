@@ -51,3 +51,42 @@ type GetMostTicketedGamesMostReportedGame struct {
 	Console     string `json:"Console"`
 	OpenTickets int    `json:"OpenTickets"`
 }
+
+type GetMostRecentTicketsParameters struct {
+	// [Optional] The number of records to return (default: 10, max: 100).
+	Count *int
+
+	// [Optional] The number of entries to skip (default: 0).
+	Offset *int
+}
+
+type GetMostRecentTickets struct {
+	OpenTickets   int                                `json:"OpenTickets"`
+	URL           string                             `json:"URL"`
+	RecentTickets []GetMostRecentTicketsRecentTicket `json:"RecentTickets"`
+}
+
+type GetMostRecentTicketsRecentTicket struct {
+	ID                     int       `json:"ID"`
+	AchievementID          int       `json:"AchievementID"`
+	AchievementTitle       string    `json:"AchievementTitle"`
+	AchievementDesc        string    `json:"AchievementDesc"`
+	AchievementType        *string   `json:"AchievementType"`
+	Points                 int       `json:"Points"`
+	BadgeName              string    `json:"BadgeName"`
+	AchievementAuthor      string    `json:"AchievementAuthor"`
+	GameID                 int       `json:"GameID"`
+	ConsoleName            string    `json:"ConsoleName"`
+	GameTitle              string    `json:"GameTitle"`
+	GameIcon               string    `json:"GameIcon"`
+	ReportedAt             DateTime  `json:"ReportedAt"`
+	ReportType             int       `json:"ReportType"`
+	ReportState            int       `json:"ReportState"`
+	Hardcore               *int      `json:"Hardcore"`
+	ReportNotes            string    `json:"ReportNotes"`
+	ReportedBy             string    `json:"ReportedBy"`
+	ResolvedAt             *DateTime `json:"ResolvedAt"`
+	ResolvedBy             *string   `json:"ResolvedBy"`
+	ReportStateDescription string    `json:"ReportStateDescription"`
+	ReportTypeDescription  string    `json:"ReportTypeDescription"`
+}

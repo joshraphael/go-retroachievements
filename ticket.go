@@ -53,3 +53,27 @@ func (c *Client) GetMostTicketedGames(params models.GetMostTicketedGamesParamete
 	}
 	return resp, nil
 }
+
+// GetMostRecentTickets gets ticket metadata information about the latest opened achievement tickets on RetroAchievements.
+func (c *Client) GetMostRecentTickets(params models.GetMostRecentTicketsParameters) (*models.GetMostRecentTickets, error) {
+	details := []raHttp.RequestDetail{
+		raHttp.Method(http.MethodGet),
+		raHttp.Path("/API/API_GetTicketData.php"),
+		raHttp.APIToken(c.Secret),
+	}
+	if params.Count != nil {
+		details = append(details, raHttp.C(*params.Count))
+	}
+	if params.Offset != nil {
+		details = append(details, raHttp.O(*params.Offset))
+	}
+	r, err := c.do(details...)
+	if err != nil {
+		return nil, fmt.Errorf("calling endpoint: %w", err)
+	}
+	resp, err := raHttp.ResponseObject[models.GetMostRecentTickets](r)
+	if err != nil {
+		return nil, fmt.Errorf("parsing response object: %w", err)
+	}
+	return resp, nil
+}
