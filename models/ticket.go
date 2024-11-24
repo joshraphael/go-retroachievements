@@ -135,3 +135,17 @@ type GetGameTicketStatsTicket struct {
 	ReportStateDescription string    `json:"ReportStateDescription"`
 	ReportTypeDescription  string    `json:"ReportTypeDescription"`
 }
+
+type GetDeveloperTicketStatsParameters struct {
+	// The target username
+	Username string
+}
+
+type GetDeveloperTicketStats struct {
+	User     string `json:"User"`
+	Open     int    `json:"Open"`
+	Closed   int    `json:"Closed"`
+	Resolved int    `json:"Resolved"`
+	Total    int    `json:"Total"`
+	URL      string `json:"URL"`
+}

@@ -639,3 +639,115 @@ func TestGetGameTicketStats(tt *testing.T) {
 		})
 	}
 }
+
+func TestGetDeveloperTicketStats(tt *testing.T) {
+	tests := []struct {
+		name            string
+		params          models.GetDeveloperTicketStatsParameters
+		modifyURL       func(url string) string
+		responseCode    int
+		responseMessage models.GetDeveloperTicketStats
+		responseError   models.ErrorResponse
+		response        func(messageBytes []byte, errorBytes []byte) []byte
+		assert          func(t *testing.T, resp *models.GetDeveloperTicketStats, err error)
+	}{
+		{
+			name: "fail to call endpoint",
+			params: models.GetDeveloperTicketStatsParameters{
+				Username: "jamiras",
+			},
+			modifyURL: func(url string) string {
+				return ""
+			},
+			responseCode: http.StatusOK,
+			response: func(messageBytes []byte, errorBytes []byte) []byte {
+				return messageBytes
+			},
+			assert: func(t *testing.T, resp *models.GetDeveloperTicketStats, err error) {
+				require.Nil(t, resp)
+				require.EqualError(t, err, "calling endpoint: Get \"/API/API_GetTicketData.php?u=jamiras&y=some_secret\": unsupported protocol scheme \"\"")
+			},
+		},
+		{
+			name: "error response",
+			params: models.GetDeveloperTicketStatsParameters{
+				Username: "jamiras",
+			},
+			modifyURL: func(url string) string {
+				return url
+			},
+			responseCode: http.StatusUnauthorized,
+			responseError: models.ErrorResponse{
+				Message: "test",
+				Errors: []models.ErrorDetail{
+					{
+						Status: http.StatusUnauthorized,
+						Code:   "unauthorized",
+						Title:  "Not Authorized",
+					},
+				},
+			},
+			response: func(messageBytes []byte, errorBytes []byte) []byte {
+				return errorBytes
+			},
+			assert: func(t *testing.T, resp *models.GetDeveloperTicketStats, err error) {
+				require.Nil(t, resp)
+				require.EqualError(t, err, "parsing response object: error code 401 returned: {\"message\":\"test\",\"errors\":[{\"status\":401,\"code\":\"unauthorized\",\"title\":\"Not Authorized\"}]}")
+			},
+		},
+		{
+			name: "success",
+			params: models.GetDeveloperTicketStatsParameters{
+				Username: "jamiras",
+			},
+			modifyURL: func(url string) string {
+				return url
+			},
+			responseCode: http.StatusOK,
+			responseMessage: models.GetDeveloperTicketStats{
+				User:     "jamiras",
+				Open:     0,
+				Closed:   46,
+				Resolved: 68,
+				Total:    114,
+				URL:      "https://retroachievements.org/user/jamiras/tickets",
+			},
+			response: func(messageBytes []byte, errorBytes []byte) []byte {
+				return messageBytes
+			},
+			assert: func(t *testing.T, resp *models.GetDeveloperTicketStats, err error) {
+				require.NotNil(t, resp)
+				require.Equal(t, "jamiras", resp.User)
+				require.Equal(t, 0, resp.Open)
+				require.Equal(t, 46, resp.Closed)
+				require.Equal(t, 68, resp.Resolved)
+				require.Equal(t, 114, resp.Total)
+				require.Equal(t, "https://retroachievements.org/user/jamiras/tickets", resp.URL)
+				require.NoError(t, err)
+			},
+		},
+	}
+	for _, test := range tests {
+		tt.Run(test.name, func(t *testing.T) {
+			server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+				expectedPath := "/API/API_GetTicketData.php"
+				if r.URL.Path != expectedPath {
+					t.Errorf("Expected to request '%s', got: %s", expectedPath, r.URL.Path)
+				}
+				w.WriteHeader(test.responseCode)
+				messageBytes, err := json.Marshal(test.responseMessage)
+				require.NoError(t, err)
+				errBytes, err := json.Marshal(test.responseError)
+				require.NoError(t, err)
+				resp := test.response(messageBytes, errBytes)
+				num, err := w.Write(resp)
+				require.NoError(t, err)
+				require.Equal(t, num, len(resp))
+			}))
+			defer server.Close()
+			client := retroachievements.New(test.modifyURL(server.URL), "go-retroachievements/v0.0.0", "some_secret")
+			resp, err := client.GetDeveloperTicketStats(test.params)
+			test.assert(t, resp, err)
+		})
+	}
+}

@@ -102,3 +102,21 @@ func (c *Client) GetGameTicketStats(params models.GetGameTicketStatsParameters) 
 	}
 	return resp, nil
 }
+
+// GetDeveloperTicketStats gets ticket stats for a developer, targeted by that developer's site username.
+func (c *Client) GetDeveloperTicketStats(params models.GetDeveloperTicketStatsParameters) (*models.GetDeveloperTicketStats, error) {
+	r, err := c.do(
+		raHttp.Method(http.MethodGet),
+		raHttp.Path("/API/API_GetTicketData.php"),
+		raHttp.APIToken(c.Secret),
+		raHttp.U(params.Username),
+	)
+	if err != nil {
+		return nil, fmt.Errorf("calling endpoint: %w", err)
+	}
+	resp, err := raHttp.ResponseObject[models.GetDeveloperTicketStats](r)
+	if err != nil {
+		return nil, fmt.Errorf("parsing response object: %w", err)
+	}
+	return resp, nil
+}
