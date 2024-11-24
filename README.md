@@ -116,3 +116,9 @@ For convenience, the API docs and examples can be found in the tables below
 |Function|Description|Links|
 |-|-|-|
 |`GetAchievementOfTheWeek()`|Gets comprehensive metadata about the current Achievement of the Week.|[docs](https://api-docs.retroachievements.org/v1/get-achievement-of-the-week.html) \| [example](examples/event/getachievementoftheweek/getachievementoftheweek.go)|
+
+<h3>Ticket</h3>
+
+|Function|Description|Links|
+|-|-|-|
+|`GetTicketByID()`|Gets ticket metadata information about a single achievement ticket, targeted by its ticket ID.|[docs](https://api-docs.retroachievements.org/v1/get-ticket-data/get-ticket-by-id.html) \| [example](examples/ticket/getticketbyid/getticketbyid.go)|
