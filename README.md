@@ -110,3 +110,9 @@ For convenience, the API docs and examples can be found in the tables below
 |`GetActiveClaims()`|Gets information about all active set claims (max: 1000).|[docs](https://api-docs.retroachievements.org/v1/get-active-claims.html) \| [example](examples/feed/getactiveclaims/getactiveclaims.go)|
 |`GetClaims()`|Gets information about all achievement set development claims of a specified kind: completed, dropped, or expired (max: 1000).|[docs](https://api-docs.retroachievements.org/v1/get-claims.html) \| [example](examples/feed/getclaims/getclaims.go)|
 |`GetTopTenUsers()`|Gets the current top ten users, ranked by hardcore points, on the site.|[docs](https://api-docs.retroachievements.org/v1/get-top-ten-users.html) \| [example](examples/feed/gettoptenusers/gettoptenusers.go)|
+
+<h3>Event</h3>
+
+|Function|Description|Links|
+|-|-|-|
+|`GetAchievementOfTheWeek()`|Gets comprehensive metadata about the current Achievement of the Week.|[docs](https://api-docs.retroachievements.org/v1/get-achievement-of-the-week.html) \| [example](examples/event/getachievementoftheweek/getachievementoftheweek.go)|
