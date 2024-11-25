@@ -14,6 +14,9 @@
 [![godoc](https://pkg.go.dev/badge/github.com/joshraphael/go-retroachievements.svg)](https://pkg.go.dev/github.com/joshraphael/go-retroachievements)
 [![pipeline](https://github.com/joshraphael/go-retroachievements/actions/workflows/ci.yaml/badge.svg)](https://github.com/joshraphael/go-retroachievements/actions)
 [![Go Report Card](https://goreportcard.com/badge/github.com/joshraphael/go-retroachievements)](https://goreportcard.com/report/github.com/joshraphael/go-retroachievements)
+![GitHub License](https://img.shields.io/github/license/joshraphael/go-retroachievements)
+![GitHub Tag](https://img.shields.io/github/v/tag/joshraphael/go-retroachievements)
+![GitHub repo size](https://img.shields.io/github/repo-size/joshraphael/go-retroachievements)
 
 ## Installation
 Use go get to install the latest version of the library.
