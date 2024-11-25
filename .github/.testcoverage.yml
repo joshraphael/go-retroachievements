@@ -4,13 +4,6 @@ threshold:
   package: 50
   total: 80
 
-local:
-  prefix: github.com/joshraphael/go-retroachievements
-
-git:
-  token: ${{ github.ref_name == 'main' && secrets.GITHUB_TOKEN || '' }}
-  branch: badges
-
 exclude:
   paths:
     - ^examples
