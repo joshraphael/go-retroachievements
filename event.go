@@ -12,6 +12,7 @@ import (
 func (c *Client) GetAchievementOfTheWeek(params models.GetAchievementOfTheWeekParameters) (*models.GetAchievementOfTheWeek, error) {
 	r, err := c.do(
 		raHttp.Method(http.MethodGet),
+		raHttp.UserAgent(c.UserAgent),
 		raHttp.Path("/API/API_GetAchievementOfTheWeek.php"),
 		raHttp.APIToken(c.Secret),
 	)

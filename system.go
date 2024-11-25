@@ -13,6 +13,7 @@ import (
 func (c *Client) GetConsoleIDs(params models.GetConsoleIDsParameters) ([]models.GetConsoleIDs, error) {
 	details := []raHttp.RequestDetail{
 		raHttp.Method(http.MethodGet),
+		raHttp.UserAgent(c.UserAgent),
 		raHttp.Path("/API/API_GetConsoleIDs.php"),
 		raHttp.APIToken(c.Secret),
 	}
@@ -45,6 +46,7 @@ func (c *Client) GetConsoleIDs(params models.GetConsoleIDsParameters) ([]models.
 func (c *Client) GetGameList(params models.GetGameListParameters) ([]models.GetGameList, error) {
 	details := []raHttp.RequestDetail{
 		raHttp.Method(http.MethodGet),
+		raHttp.UserAgent(c.UserAgent),
 		raHttp.Path("/API/API_GetGameList.php"),
 		raHttp.APIToken(c.Secret),
 		raHttp.I([]string{strconv.Itoa(params.SystemID)}),

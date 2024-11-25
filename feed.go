@@ -14,6 +14,7 @@ import (
 func (c *Client) GetRecentGameAwards(params models.GetRecentGameAwardsParameters) (*models.GetRecentGameAwards, error) {
 	details := []raHttp.RequestDetail{
 		raHttp.Method(http.MethodGet),
+		raHttp.UserAgent(c.UserAgent),
 		raHttp.Path("/API/API_GetRecentGameAwards.php"),
 		raHttp.APIToken(c.Secret),
 	}
@@ -64,6 +65,7 @@ func (c *Client) GetRecentGameAwards(params models.GetRecentGameAwardsParameters
 func (c *Client) GetActiveClaims(params models.GetActiveClaimsParameters) ([]models.GetActiveClaims, error) {
 	r, err := c.do(
 		raHttp.Method(http.MethodGet),
+		raHttp.UserAgent(c.UserAgent),
 		raHttp.Path("/API/API_GetActiveClaims.php"),
 		raHttp.APIToken(c.Secret),
 	)
@@ -81,6 +83,7 @@ func (c *Client) GetActiveClaims(params models.GetActiveClaimsParameters) ([]mod
 func (c *Client) GetClaims(params models.GetClaimsParameters) ([]models.GetClaims, error) {
 	details := []raHttp.RequestDetail{
 		raHttp.Method(http.MethodGet),
+		raHttp.UserAgent(c.UserAgent),
 		raHttp.Path("/API/API_GetClaims.php"),
 		raHttp.APIToken(c.Secret),
 	}
@@ -104,6 +107,7 @@ func (c *Client) GetClaims(params models.GetClaimsParameters) ([]models.GetClaim
 func (c *Client) GetTopTenUsers(params models.GetTopTenUsersParameters) ([]models.GetTopTenUsers, error) {
 	r, err := c.do(
 		raHttp.Method(http.MethodGet),
+		raHttp.UserAgent(c.UserAgent),
 		raHttp.Path("/API/API_GetTopTenUsers.php"),
 		raHttp.APIToken(c.Secret),
 	)

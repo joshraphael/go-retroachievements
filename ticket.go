@@ -13,6 +13,7 @@ import (
 func (c *Client) GetTicketByID(params models.GetTicketByIDParameters) (*models.GetTicketByID, error) {
 	r, err := c.do(
 		raHttp.Method(http.MethodGet),
+		raHttp.UserAgent(c.UserAgent),
 		raHttp.Path("/API/API_GetTicketData.php"),
 		raHttp.APIToken(c.Secret),
 		raHttp.I([]string{
@@ -33,6 +34,7 @@ func (c *Client) GetTicketByID(params models.GetTicketByIDParameters) (*models.G
 func (c *Client) GetMostTicketedGames(params models.GetMostTicketedGamesParameters) (*models.GetMostTicketedGames, error) {
 	details := []raHttp.RequestDetail{
 		raHttp.Method(http.MethodGet),
+		raHttp.UserAgent(c.UserAgent),
 		raHttp.Path("/API/API_GetTicketData.php"),
 		raHttp.APIToken(c.Secret),
 		raHttp.F(1),
@@ -58,6 +60,7 @@ func (c *Client) GetMostTicketedGames(params models.GetMostTicketedGamesParamete
 func (c *Client) GetMostRecentTickets(params models.GetMostRecentTicketsParameters) (*models.GetMostRecentTickets, error) {
 	details := []raHttp.RequestDetail{
 		raHttp.Method(http.MethodGet),
+		raHttp.UserAgent(c.UserAgent),
 		raHttp.Path("/API/API_GetTicketData.php"),
 		raHttp.APIToken(c.Secret),
 	}
@@ -82,6 +85,7 @@ func (c *Client) GetMostRecentTickets(params models.GetMostRecentTicketsParamete
 func (c *Client) GetGameTicketStats(params models.GetGameTicketStatsParameters) (*models.GetGameTicketStats, error) {
 	details := []raHttp.RequestDetail{
 		raHttp.Method(http.MethodGet),
+		raHttp.UserAgent(c.UserAgent),
 		raHttp.Path("/API/API_GetTicketData.php"),
 		raHttp.APIToken(c.Secret),
 		raHttp.G(params.GameID),
@@ -107,6 +111,7 @@ func (c *Client) GetGameTicketStats(params models.GetGameTicketStatsParameters) 
 func (c *Client) GetDeveloperTicketStats(params models.GetDeveloperTicketStatsParameters) (*models.GetDeveloperTicketStats, error) {
 	r, err := c.do(
 		raHttp.Method(http.MethodGet),
+		raHttp.UserAgent(c.UserAgent),
 		raHttp.Path("/API/API_GetTicketData.php"),
 		raHttp.APIToken(c.Secret),
 		raHttp.U(params.Username),
@@ -125,6 +130,7 @@ func (c *Client) GetDeveloperTicketStats(params models.GetDeveloperTicketStatsPa
 func (c *Client) GetAchievementTicketStats(params models.GetAchievementTicketStatsParameters) (*models.GetAchievementTicketStats, error) {
 	r, err := c.do(
 		raHttp.Method(http.MethodGet),
+		raHttp.UserAgent(c.UserAgent),
 		raHttp.Path("/API/API_GetTicketData.php"),
 		raHttp.APIToken(c.Secret),
 		raHttp.A(params.AchievementID),

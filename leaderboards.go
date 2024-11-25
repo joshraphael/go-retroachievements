@@ -13,6 +13,7 @@ import (
 func (c *Client) GetGameLeaderboards(params models.GetGameLeaderboardsParameters) (*models.GetGameLeaderboards, error) {
 	details := []raHttp.RequestDetail{
 		raHttp.Method(http.MethodGet),
+		raHttp.UserAgent(c.UserAgent),
 		raHttp.Path("/API/API_GetGameLeaderboards.php"),
 		raHttp.APIToken(c.Secret),
 		raHttp.I([]string{strconv.Itoa(params.GameID)}),
@@ -38,6 +39,7 @@ func (c *Client) GetGameLeaderboards(params models.GetGameLeaderboardsParameters
 func (c *Client) GetLeaderboardEntries(params models.GetLeaderboardEntriesParameters) (*models.GetLeaderboardEntries, error) {
 	details := []raHttp.RequestDetail{
 		raHttp.Method(http.MethodGet),
+		raHttp.UserAgent(c.UserAgent),
 		raHttp.Path("/API/API_GetLeaderboardEntries.php"),
 		raHttp.APIToken(c.Secret),
 		raHttp.I([]string{strconv.Itoa(params.LeaderboardID)}),

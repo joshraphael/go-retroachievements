@@ -18,7 +18,7 @@ func TestNewRequest(t *testing.T) {
 		"http://localhost",
 		raHttp.Path("/api/v1/some_resource"),
 		raHttp.Method(http.MethodPost),
-		raHttp.UserAgent(),
+		raHttp.UserAgent("go-retroachievements/v0.0.0"),
 		raHttp.APIToken("secret_token"),
 		raHttp.BearerToken("secret_bearer"),
 		raHttp.U("myUsername"),

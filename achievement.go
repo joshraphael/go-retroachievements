@@ -12,6 +12,7 @@ import (
 func (c *Client) GetAchievementUnlocks(params models.GetAchievementUnlocksParameters) (*models.GetAchievementUnlocks, error) {
 	details := []raHttp.RequestDetail{
 		raHttp.Method(http.MethodGet),
+		raHttp.UserAgent(c.UserAgent),
 		raHttp.Path("/API/API_GetAchievementUnlocks.php"),
 		raHttp.APIToken(c.Secret),
 		raHttp.A(params.AchievementID),

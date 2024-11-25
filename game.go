@@ -13,6 +13,7 @@ import (
 func (c *Client) GetGame(params models.GetGameParameters) (*models.GetGame, error) {
 	resp, err := c.do(
 		raHttp.Method(http.MethodGet),
+		raHttp.UserAgent(c.UserAgent),
 		raHttp.Path("/API/API_GetGame.php"),
 		raHttp.APIToken(c.Secret),
 		raHttp.I([]string{strconv.Itoa(params.GameID)}),
@@ -31,6 +32,7 @@ func (c *Client) GetGame(params models.GetGameParameters) (*models.GetGame, erro
 func (c *Client) GetGameExtended(params models.GetGameExtentedParameters) (*models.GetGameExtented, error) {
 	details := []raHttp.RequestDetail{
 		raHttp.Method(http.MethodGet),
+		raHttp.UserAgent(c.UserAgent),
 		raHttp.Path("/API/API_GetGameExtended.php"),
 		raHttp.APIToken(c.Secret),
 		raHttp.I([]string{strconv.Itoa(params.GameID)}),
@@ -57,6 +59,7 @@ func (c *Client) GetGameExtended(params models.GetGameExtentedParameters) (*mode
 func (c *Client) GetGameHashes(params models.GetGameHashesParameters) (*models.GetGameHashes, error) {
 	r, err := c.do(
 		raHttp.Method(http.MethodGet),
+		raHttp.UserAgent(c.UserAgent),
 		raHttp.Path("/API/API_GetGameHashes.php"),
 		raHttp.APIToken(c.Secret),
 		raHttp.I([]string{strconv.Itoa(params.GameID)}),
@@ -75,6 +78,7 @@ func (c *Client) GetGameHashes(params models.GetGameHashesParameters) (*models.G
 func (c *Client) GetAchievementCount(params models.GetAchievementCountParameters) (*models.GetAchievementCount, error) {
 	r, err := c.do(
 		raHttp.Method(http.MethodGet),
+		raHttp.UserAgent(c.UserAgent),
 		raHttp.Path("/API/API_GetAchievementCount.php"),
 		raHttp.APIToken(c.Secret),
 		raHttp.I([]string{strconv.Itoa(params.GameID)}),
@@ -93,6 +97,7 @@ func (c *Client) GetAchievementCount(params models.GetAchievementCountParameters
 func (c *Client) GetAchievementDistribution(params models.GetAchievementDistributionParameters) (*models.GetAchievementDistribution, error) {
 	details := []raHttp.RequestDetail{
 		raHttp.Method(http.MethodGet),
+		raHttp.UserAgent(c.UserAgent),
 		raHttp.Path("/API/API_GetAchievementDistribution.php"),
 		raHttp.APIToken(c.Secret),
 		raHttp.I([]string{strconv.Itoa(params.GameID)}),
@@ -126,6 +131,7 @@ func (c *Client) GetAchievementDistribution(params models.GetAchievementDistribu
 func (c *Client) GetGameRankAndScore(params models.GetGameRankAndScoreParameters) ([]models.GetGameRankAndScore, error) {
 	details := []raHttp.RequestDetail{
 		raHttp.Method(http.MethodGet),
+		raHttp.UserAgent(c.UserAgent),
 		raHttp.Path("/API/API_GetGameRankAndScore.php"),
 		raHttp.APIToken(c.Secret),
 		raHttp.G(params.GameID),

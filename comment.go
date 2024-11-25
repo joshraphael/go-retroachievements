@@ -13,6 +13,7 @@ import (
 func (c *Client) GetComments(params models.GetCommentsParameters) (*models.GetComments, error) {
 	details := []raHttp.RequestDetail{
 		raHttp.Method(http.MethodGet),
+		raHttp.UserAgent(c.UserAgent),
 		raHttp.Path("/API/API_GetComments.php"),
 		raHttp.APIToken(c.Secret),
 		raHttp.T(params.Type.GetCommentsType()),

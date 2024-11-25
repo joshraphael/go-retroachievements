@@ -53,9 +53,9 @@ func BearerToken(token string) RequestDetail {
 }
 
 // UserAgent adds an User-Agent header with the package version
-func UserAgent() RequestDetail {
+func UserAgent(userAgent string) RequestDetail {
 	return requestDetailFn(func(r *Request) {
-		r.Headers["User-Agent"] = "go-retroachievements/v0.0.0"
+		r.Headers["User-Agent"] = userAgent
 	})
 }
 

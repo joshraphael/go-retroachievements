@@ -14,6 +14,7 @@ import (
 func (c *Client) GetUserProfile(params models.GetUserProfileParameters) (*models.GetUserProfile, error) {
 	r, err := c.do(
 		raHttp.Method(http.MethodGet),
+		raHttp.UserAgent(c.UserAgent),
 		raHttp.Path("/API/API_GetUserProfile.php"),
 		raHttp.APIToken(c.Secret),
 		raHttp.U(params.Username),
@@ -32,6 +33,7 @@ func (c *Client) GetUserProfile(params models.GetUserProfileParameters) (*models
 func (c *Client) GetUserRecentAchievements(params models.GetUserRecentAchievementsParameters) ([]models.GetUserRecentAchievements, error) {
 	details := []raHttp.RequestDetail{
 		raHttp.Method(http.MethodGet),
+		raHttp.UserAgent(c.UserAgent),
 		raHttp.Path("/API/API_GetUserRecentAchievements.php"),
 		raHttp.APIToken(c.Secret),
 		raHttp.U(params.Username),
@@ -54,6 +56,7 @@ func (c *Client) GetUserRecentAchievements(params models.GetUserRecentAchievemen
 func (c *Client) GetAchievementsEarnedBetween(params models.GetAchievementsEarnedBetweenParameters) ([]models.GetAchievementsEarnedBetween, error) {
 	r, err := c.do(
 		raHttp.Method(http.MethodGet),
+		raHttp.UserAgent(c.UserAgent),
 		raHttp.Path("/API/API_GetAchievementsEarnedBetween.php"),
 		raHttp.APIToken(c.Secret),
 		raHttp.U(params.Username),
@@ -74,6 +77,7 @@ func (c *Client) GetAchievementsEarnedBetween(params models.GetAchievementsEarne
 func (c *Client) GetAchievementsEarnedOnDay(params models.GetAchievementsEarnedOnDayParameters) ([]models.GetAchievementsEarnedOnDay, error) {
 	r, err := c.do(
 		raHttp.Method(http.MethodGet),
+		raHttp.UserAgent(c.UserAgent),
 		raHttp.Path("/API/API_GetAchievementsEarnedOnDay.php"),
 		raHttp.APIToken(c.Secret),
 		raHttp.U(params.Username),
@@ -93,6 +97,7 @@ func (c *Client) GetAchievementsEarnedOnDay(params models.GetAchievementsEarnedO
 func (c *Client) GetGameInfoAndUserProgress(params models.GetGameInfoAndUserProgressParameters) (*models.GetGameInfoAndUserProgress, error) {
 	details := []raHttp.RequestDetail{
 		raHttp.Method(http.MethodGet),
+		raHttp.UserAgent(c.UserAgent),
 		raHttp.Path("/API/API_GetGameInfoAndUserProgress.php"),
 		raHttp.APIToken(c.Secret),
 		raHttp.U(params.Username),
@@ -120,6 +125,7 @@ func (c *Client) GetGameInfoAndUserProgress(params models.GetGameInfoAndUserProg
 func (c *Client) GetUserCompletionProgress(params models.GetUserCompletionProgressParameters) (*models.GetUserCompletionProgress, error) {
 	r, err := c.do(
 		raHttp.Method(http.MethodGet),
+		raHttp.UserAgent(c.UserAgent),
 		raHttp.Path("/API/API_GetUserCompletionProgress.php"),
 		raHttp.APIToken(c.Secret),
 		raHttp.U(params.Username),
@@ -138,6 +144,7 @@ func (c *Client) GetUserCompletionProgress(params models.GetUserCompletionProgre
 func (c *Client) GetUserAwards(params models.GetUserAwardsParameters) (*models.GetUserAwards, error) {
 	r, err := c.do(
 		raHttp.Method(http.MethodGet),
+		raHttp.UserAgent(c.UserAgent),
 		raHttp.Path("/API/API_GetUserAwards.php"),
 		raHttp.APIToken(c.Secret),
 		raHttp.U(params.Username),
@@ -156,6 +163,7 @@ func (c *Client) GetUserAwards(params models.GetUserAwardsParameters) (*models.G
 func (c *Client) GetUserClaims(params models.GetUserClaimsParameters) ([]models.GetUserClaims, error) {
 	r, err := c.do(
 		raHttp.Method(http.MethodGet),
+		raHttp.UserAgent(c.UserAgent),
 		raHttp.Path("/API/API_GetUserClaims.php"),
 		raHttp.APIToken(c.Secret),
 		raHttp.U(params.Username),
@@ -174,6 +182,7 @@ func (c *Client) GetUserClaims(params models.GetUserClaimsParameters) ([]models.
 func (c *Client) GetUserGameRankAndScore(params models.GetUserGameRankAndScoreParameters) ([]models.GetUserGameRankAndScore, error) {
 	r, err := c.do(
 		raHttp.Method(http.MethodGet),
+		raHttp.UserAgent(c.UserAgent),
 		raHttp.Path("/API/API_GetUserGameRankAndScore.php"),
 		raHttp.APIToken(c.Secret),
 		raHttp.U(params.Username),
@@ -193,6 +202,7 @@ func (c *Client) GetUserGameRankAndScore(params models.GetUserGameRankAndScorePa
 func (c *Client) GetUserPoints(params models.GetUserPointsParameters) (*models.GetUserPoints, error) {
 	r, err := c.do(
 		raHttp.Method(http.MethodGet),
+		raHttp.UserAgent(c.UserAgent),
 		raHttp.Path("/API/API_GetUserPoints.php"),
 		raHttp.APIToken(c.Secret),
 		raHttp.U(params.Username),
@@ -215,6 +225,7 @@ func (c *Client) GetUserProgress(params models.GetUserProgressParameters) (*map[
 	}
 	r, err := c.do(
 		raHttp.Method(http.MethodGet),
+		raHttp.UserAgent(c.UserAgent),
 		raHttp.Path("/API/API_GetUserProgress.php"),
 		raHttp.APIToken(c.Secret),
 		raHttp.U(params.Username),
@@ -234,6 +245,7 @@ func (c *Client) GetUserProgress(params models.GetUserProgressParameters) (*map[
 func (c *Client) GetUserRecentlyPlayedGames(params models.GetUserRecentlyPlayedGamesParameters) ([]models.GetUserRecentlyPlayedGames, error) {
 	details := []raHttp.RequestDetail{
 		raHttp.Method(http.MethodGet),
+		raHttp.UserAgent(c.UserAgent),
 		raHttp.Path("/API/API_GetUserRecentlyPlayedGames.php"),
 		raHttp.APIToken(c.Secret),
 		raHttp.U(params.Username),
@@ -259,6 +271,7 @@ func (c *Client) GetUserRecentlyPlayedGames(params models.GetUserRecentlyPlayedG
 func (c *Client) GetUserSummary(params models.GetUserSummaryParameters) (*models.GetUserSummary, error) {
 	details := []raHttp.RequestDetail{
 		raHttp.Method(http.MethodGet),
+		raHttp.UserAgent(c.UserAgent),
 		raHttp.Path("/API/API_GetUserSummary.php"),
 		raHttp.APIToken(c.Secret),
 		raHttp.U(params.Username),
@@ -284,6 +297,7 @@ func (c *Client) GetUserSummary(params models.GetUserSummaryParameters) (*models
 func (c *Client) GetUserCompletedGames(params models.GetUserCompletedGamesParameters) ([]models.GetUserCompletedGames, error) {
 	r, err := c.do(
 		raHttp.Method(http.MethodGet),
+		raHttp.UserAgent(c.UserAgent),
 		raHttp.Path("/API/API_GetUserCompletedGames.php"),
 		raHttp.APIToken(c.Secret),
 		raHttp.U(params.Username),
@@ -302,6 +316,7 @@ func (c *Client) GetUserCompletedGames(params models.GetUserCompletedGamesParame
 func (c *Client) GetUserWantToPlayList(params models.GetUserWantToPlayListParameters) (*models.GetUserWantToPlayList, error) {
 	details := []raHttp.RequestDetail{
 		raHttp.Method(http.MethodGet),
+		raHttp.UserAgent(c.UserAgent),
 		raHttp.Path("/API/API_GetUserWantToPlayList.php"),
 		raHttp.APIToken(c.Secret),
 		raHttp.U(params.Username),
