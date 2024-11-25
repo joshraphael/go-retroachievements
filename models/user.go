@@ -109,7 +109,7 @@ type GetUserRecentAchievements struct {
 	// Common name of the console
 	ConsoleName string `json:"ConsoleName"`
 
-	// URL resource to the image used for the achievment badge
+	// URL resource to the image used for the achievement badge
 	BadgeURL string `json:"BadgeURL"`
 
 	// URL resource to the game page
@@ -172,7 +172,7 @@ type GetAchievementsEarnedBetween struct {
 	// Common name of the console
 	ConsoleName string `json:"ConsoleName"`
 
-	// URL resource to the image used for the achievment badge
+	// URL resource to the image used for the achievement badge
 	BadgeURL string `json:"BadgeURL"`
 
 	// URL resource to the game page
@@ -232,7 +232,7 @@ type GetAchievementsEarnedOnDay struct {
 	// Common name of the console
 	ConsoleName string `json:"ConsoleName"`
 
-	// URL resource to the image used for the achievment badge
+	// URL resource to the image used for the achievement badge
 	BadgeURL string `json:"BadgeURL"`
 
 	// URL resource to the game page
