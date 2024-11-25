@@ -11,17 +11,13 @@
 <br>
 <hr />
 
-<p align="center">
-
-![GitHub License](https://img.shields.io/github/license/joshraphael/go-retroachievements)
+[![GitHub License](https://img.shields.io/github/license/joshraphael/go-retroachievements)](https://github.com/joshraphael/go-retroachievements/blob/main/LICENSE)
 [![godoc](https://pkg.go.dev/badge/github.com/joshraphael/go-retroachievements.svg)](https://pkg.go.dev/github.com/joshraphael/go-retroachievements)
 [![pipeline](https://github.com/joshraphael/go-retroachievements/actions/workflows/ci.yaml/badge.svg)](https://github.com/joshraphael/go-retroachievements/actions)
 ![coverage](https://raw.githubusercontent.com/joshraphael/go-retroachievements/badges/.badges/main/coverage.svg)
 [![Go Report Card](https://goreportcard.com/badge/github.com/joshraphael/go-retroachievements)](https://goreportcard.com/report/github.com/joshraphael/go-retroachievements)
-![GitHub Tag](https://img.shields.io/github/v/tag/joshraphael/go-retroachievements)
-![GitHub repo size](https://img.shields.io/github/repo-size/joshraphael/go-retroachievements)
-
-</p>
+[![GitHub Tag](https://img.shields.io/github/v/tag/joshraphael/go-retroachievements)](https://github.com/joshraphael/go-retroachievements/tags)
+[![GitHub repo size](https://img.shields.io/github/repo-size/joshraphael/go-retroachievements)](https://github.com/joshraphael/go-retroachievements/archive/master.zip)
 
 ## Installation
 Use go get to install the latest version of the library.
