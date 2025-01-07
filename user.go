@@ -337,3 +337,30 @@ func (c *Client) GetUserWantToPlayList(params models.GetUserWantToPlayListParame
 	}
 	return resp, nil
 }
+
+// GetUserSetRequests gets a user's list of set requests.
+func (c *Client) GetUserSetRequests(params models.GetUserSetRequestsParameters) (*models.GetUserSetRequests, error) {
+	details := []raHttp.RequestDetail{
+		raHttp.Method(http.MethodGet),
+		raHttp.UserAgent(c.UserAgent),
+		raHttp.Path("/API/API_GetUserSetRequests.php"),
+		raHttp.APIToken(c.Secret),
+		raHttp.U(params.Username),
+	}
+	if params.All != nil {
+		t := 0
+		if *params.All {
+			t = 1
+		}
+		details = append(details, raHttp.T(t))
+	}
+	r, err := c.do(details...)
+	if err != nil {
+		return nil, fmt.Errorf("calling endpoint: %w", err)
+	}
+	resp, err := raHttp.ResponseObject[models.GetUserSetRequests](r)
+	if err != nil {
+		return nil, fmt.Errorf("parsing response object: %w", err)
+	}
+	return resp, nil
+}

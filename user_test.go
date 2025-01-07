@@ -2477,3 +2477,136 @@ func TestGetUserWantToPlayList(tt *testing.T) {
 		})
 	}
 }
+
+func TestGetUserSetRequests(tt *testing.T) {
+	all := true
+	tests := []struct {
+		name            string
+		params          models.GetUserSetRequestsParameters
+		modifyURL       func(url string) string
+		responseCode    int
+		responseMessage models.GetUserSetRequests
+		responseError   models.ErrorResponse
+		response        func(messageBytes []byte, errorBytes []byte) []byte
+		assert          func(t *testing.T, resp *models.GetUserSetRequests, err error)
+	}{
+		{
+			name: "fail to call endpoint",
+			params: models.GetUserSetRequestsParameters{
+				Username: "Test",
+				All:      &all,
+			},
+			modifyURL: func(url string) string {
+				return ""
+			},
+			responseCode: http.StatusUnauthorized,
+			responseError: models.ErrorResponse{
+				Message: "test",
+				Errors: []models.ErrorDetail{
+					{
+						Status: http.StatusUnauthorized,
+						Code:   "unauthorized",
+						Title:  "Not Authorized",
+					},
+				},
+			},
+			response: func(messageBytes []byte, errorBytes []byte) []byte {
+				return errorBytes
+			},
+			assert: func(t *testing.T, resp *models.GetUserSetRequests, err error) {
+				require.Nil(t, resp)
+				require.EqualError(t, err, "calling endpoint: Get \"/API/API_GetUserSetRequests.php?t=1&u=Test&y=some_secret\": unsupported protocol scheme \"\"")
+			},
+		},
+		{
+			name: "error response",
+			params: models.GetUserSetRequestsParameters{
+				Username: "Test",
+				All:      &all,
+			},
+			modifyURL: func(url string) string {
+				return url
+			},
+			responseCode: http.StatusUnauthorized,
+			responseError: models.ErrorResponse{
+				Message: "test",
+				Errors: []models.ErrorDetail{
+					{
+						Status: http.StatusUnauthorized,
+						Code:   "unauthorized",
+						Title:  "Not Authorized",
+					},
+				},
+			},
+			response: func(messageBytes []byte, errorBytes []byte) []byte {
+				return errorBytes
+			},
+			assert: func(t *testing.T, resp *models.GetUserSetRequests, err error) {
+				require.Nil(t, resp)
+				require.EqualError(t, err, "parsing response object: error code 401 returned: {\"message\":\"test\",\"errors\":[{\"status\":401,\"code\":\"unauthorized\",\"title\":\"Not Authorized\"}]}")
+			},
+		},
+		{
+			name: "success",
+			params: models.GetUserSetRequestsParameters{
+				Username: "Test",
+				All:      &all,
+			},
+			modifyURL: func(url string) string {
+				return url
+			},
+			responseCode: http.StatusOK,
+			responseMessage: models.GetUserSetRequests{
+				TotalRequests: 5,
+				PointsForNext: 5000,
+				RequestedSets: []models.GetUserSetRequestsRequestedSet{
+					{
+						GameID:      1,
+						Title:       "Sonic the Hedgehog",
+						ConsoleID:   1,
+						ConsoleName: "Genesis/Mega Drive",
+						ImageIcon:   "/Images/085573.png",
+					},
+				},
+			},
+			response: func(messageBytes []byte, errorBytes []byte) []byte {
+				return messageBytes
+			},
+			assert: func(t *testing.T, resp *models.GetUserSetRequests, err error) {
+				require.NotNil(t, resp)
+				require.Equal(t, 5, resp.TotalRequests)
+				require.Equal(t, 5000, resp.PointsForNext)
+				require.Len(t, resp.RequestedSets, 1)
+				require.Equal(t, 1, resp.RequestedSets[0].GameID)
+				require.Equal(t, "Sonic the Hedgehog", resp.RequestedSets[0].Title)
+				require.Equal(t, 1, resp.RequestedSets[0].ConsoleID)
+				require.Equal(t, "Genesis/Mega Drive", resp.RequestedSets[0].ConsoleName)
+				require.Equal(t, "/Images/085573.png", resp.RequestedSets[0].ImageIcon)
+				require.NoError(t, err)
+			},
+		},
+	}
+	for _, test := range tests {
+		tt.Run(test.name, func(t *testing.T) {
+			server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+				expectedPath := "/API/API_GetUserSetRequests.php"
+				if r.URL.Path != expectedPath {
+					t.Errorf("Expected to request '%s', got: %s", expectedPath, r.URL.Path)
+				}
+				w.WriteHeader(test.responseCode)
+				responseMessage, err := json.Marshal(test.responseMessage)
+				require.NoError(t, err)
+				errBytes, err := json.Marshal(test.responseError)
+				require.NoError(t, err)
+				resp := test.response(responseMessage, errBytes)
+				num, err := w.Write(resp)
+				require.NoError(t, err)
+				require.Equal(t, num, len(resp))
+			}))
+			defer server.Close()
+			client := retroachievements.New(test.modifyURL(server.URL), "go-retroachievements/v0.0.0", "some_secret")
+			resp, err := client.GetUserSetRequests(test.params)
+			test.assert(t, resp, err)
+		})
+	}
+}
