@@ -604,3 +604,25 @@ type GetUserWantToPlayListResult struct {
 	PointsTotal           int    `json:"PointsTotal"`
 	AchievementsPublished int    `json:"AchievementsPublished"`
 }
+
+type GetUserSetRequestsParameters struct {
+	// The target username.
+	Username string
+
+	// [Optional] Set true to get all requests, false gets only active (default: false).
+	All *bool
+}
+
+type GetUserSetRequests struct {
+	TotalRequests int                              `json:"TotalRequests"`
+	PointsForNext int                              `json:"PointsForNext"`
+	RequestedSets []GetUserSetRequestsRequestedSet `json:"RequestedSets"`
+}
+
+type GetUserSetRequestsRequestedSet struct {
+	GameID      int    `json:"GameID"`
+	Title       string `json:"Title"`
+	ImageIcon   string `json:"ImageIcon"`
+	ConsoleID   int    `json:"ConsoleID"`
+	ConsoleName string `json:"ConsoleName"`
+}
