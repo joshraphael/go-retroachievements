@@ -2478,6 +2478,138 @@ func TestGetUserWantToPlayList(tt *testing.T) {
 	}
 }
 
+func TestGetUsersIFollow(tt *testing.T) {
+	count := 10
+	offset := 23
+	tests := []struct {
+		name            string
+		params          models.GetUsersIFollowParameters
+		modifyURL       func(url string) string
+		responseCode    int
+		responseMessage models.GetUsersIFollow
+		responseError   models.ErrorResponse
+		response        func(messageBytes []byte, errorBytes []byte) []byte
+		assert          func(t *testing.T, resp *models.GetUsersIFollow, err error)
+	}{
+		{
+			name: "fail to call endpoint",
+			params: models.GetUsersIFollowParameters{
+				Count:  &count,
+				Offset: &offset,
+			},
+			modifyURL: func(url string) string {
+				return ""
+			},
+			responseCode: http.StatusUnauthorized,
+			responseError: models.ErrorResponse{
+				Message: "test",
+				Errors: []models.ErrorDetail{
+					{
+						Status: http.StatusUnauthorized,
+						Code:   "unauthorized",
+						Title:  "Not Authorized",
+					},
+				},
+			},
+			response: func(messageBytes []byte, errorBytes []byte) []byte {
+				return errorBytes
+			},
+			assert: func(t *testing.T, resp *models.GetUsersIFollow, err error) {
+				require.Nil(t, resp)
+				require.EqualError(t, err, "calling endpoint: Get \"/API/API_GetUsersIFollow.php?c=10&o=23&y=some_secret\": unsupported protocol scheme \"\"")
+			},
+		},
+		{
+			name: "error response",
+			params: models.GetUsersIFollowParameters{
+				Count:  &count,
+				Offset: &offset,
+			},
+			modifyURL: func(url string) string {
+				return url
+			},
+			responseCode: http.StatusUnauthorized,
+			responseError: models.ErrorResponse{
+				Message: "test",
+				Errors: []models.ErrorDetail{
+					{
+						Status: http.StatusUnauthorized,
+						Code:   "unauthorized",
+						Title:  "Not Authorized",
+					},
+				},
+			},
+			response: func(messageBytes []byte, errorBytes []byte) []byte {
+				return errorBytes
+			},
+			assert: func(t *testing.T, resp *models.GetUsersIFollow, err error) {
+				require.Nil(t, resp)
+				require.EqualError(t, err, "parsing response object: error code 401 returned: {\"message\":\"test\",\"errors\":[{\"status\":401,\"code\":\"unauthorized\",\"title\":\"Not Authorized\"}]}")
+			},
+		},
+		{
+			name: "success",
+			params: models.GetUsersIFollowParameters{
+				Count:  &count,
+				Offset: &offset,
+			},
+			modifyURL: func(url string) string {
+				return url
+			},
+			responseCode: http.StatusOK,
+			responseMessage: models.GetUsersIFollow{
+				Count: 20,
+				Total: 120,
+				Results: []models.GetUsersIFollowResult{
+					{
+						User:           "zuliman92",
+						Points:         1882,
+						PointsSoftcore: 258,
+						IsFollowingMe:  true,
+					},
+				},
+			},
+			response: func(messageBytes []byte, errorBytes []byte) []byte {
+				return messageBytes
+			},
+			assert: func(t *testing.T, resp *models.GetUsersIFollow, err error) {
+				require.NotNil(t, resp)
+				require.Equal(t, 20, resp.Count)
+				require.Equal(t, 120, resp.Total)
+				require.Len(t, resp.Results, 1)
+				require.Equal(t, "zuliman92", resp.Results[0].User)
+				require.Equal(t, 1882, resp.Results[0].Points)
+				require.Equal(t, 258, resp.Results[0].PointsSoftcore)
+				require.True(t, resp.Results[0].IsFollowingMe)
+				require.NoError(t, err)
+			},
+		},
+	}
+	for _, test := range tests {
+		tt.Run(test.name, func(t *testing.T) {
+			server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+				expectedPath := "/API/API_GetUsersIFollow.php"
+				if r.URL.Path != expectedPath {
+					t.Errorf("Expected to request '%s', got: %s", expectedPath, r.URL.Path)
+				}
+				w.WriteHeader(test.responseCode)
+				responseMessage, err := json.Marshal(test.responseMessage)
+				require.NoError(t, err)
+				errBytes, err := json.Marshal(test.responseError)
+				require.NoError(t, err)
+				resp := test.response(responseMessage, errBytes)
+				num, err := w.Write(resp)
+				require.NoError(t, err)
+				require.Equal(t, num, len(resp))
+			}))
+			defer server.Close()
+			client := retroachievements.New(test.modifyURL(server.URL), "go-retroachievements/v0.0.0", "some_secret")
+			resp, err := client.GetUsersIFollow(test.params)
+			test.assert(t, resp, err)
+		})
+	}
+}
+
 func TestGetUserSetRequests(tt *testing.T) {
 	all := true
 	tests := []struct {
