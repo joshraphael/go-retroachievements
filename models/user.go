@@ -605,6 +605,27 @@ type GetUserWantToPlayListResult struct {
 	AchievementsPublished int    `json:"AchievementsPublished"`
 }
 
+type GetUsersIFollowParameters struct {
+	// [Optional] The number of records to return (default: 100, max: 500).
+	Count *int
+
+	// [Optional] The number of entries to skip (default: 0).
+	Offset *int
+}
+
+type GetUsersIFollow struct {
+	Count   int                     `json:"Count"`
+	Total   int                     `json:"Total"`
+	Results []GetUsersIFollowResult `json:"Results"`
+}
+
+type GetUsersIFollowResult struct {
+	User           string `json:"User"`
+	Points         int    `json:"Points"`
+	PointsSoftcore int    `json:"PointsSoftcore"`
+	IsFollowingMe  bool   `json:"IsFollowingMe"`
+}
+
 type GetUserSetRequestsParameters struct {
 	// The target username.
 	Username string
