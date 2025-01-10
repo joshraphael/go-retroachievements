@@ -17,7 +17,7 @@
 ![coverage](https://raw.githubusercontent.com/joshraphael/go-retroachievements/badges/.badges/main/coverage.svg)
 [![Go Report Card](https://goreportcard.com/badge/github.com/joshraphael/go-retroachievements)](https://goreportcard.com/report/github.com/joshraphael/go-retroachievements)
 [![GitHub Tag](https://img.shields.io/github/v/tag/joshraphael/go-retroachievements)](https://github.com/joshraphael/go-retroachievements/tags)
-[![GitHub repo size](https://img.shields.io/github/repo-size/joshraphael/go-retroachievements)](https://github.com/joshraphael/go-retroachievements/archive/master.zip)
+[![GitHub repo size](https://img.shields.io/github/repo-size/joshraphael/go-retroachievements)](https://github.com/joshraphael/go-retroachievements/archive/main.zip)
 
 ## Installation
 Use go get to install the latest version of the library.
@@ -71,6 +71,7 @@ For convenience, the API docs and examples can be found in the tables below
 |`GetUserCompletedGames()`|[Deprecated] Get hardcore and softcore completion metadata about games a user has played.|[docs](https://api-docs.retroachievements.org/v1/get-user-completed-games.html) \| [example](examples/user/getusercompletedgames/getusercompletedgames.go)|
 |`GetUserWantToPlayList()`|Get a user's "Want to Play Games" list.|[docs](https://api-docs.retroachievements.org/v1/get-user-want-to-play-list.html) \| [example](examples/user/getuserwanttoplaylist/getuserwanttoplaylist.go)|
 |`GetUsersIFollow()`|Get the caller's "Following" users list.|[docs](https://api-docs.retroachievements.org/v1/get-users-i-follow.html) \| [example](examples/user/getusersifollow/getusersifollow.go)|
+|`GetUsersFollowingMe()`|Get the caller's "Followers" users list.|[docs](https://api-docs.retroachievements.org/v1/get-users-following-me.html) \| [example](examples/user/getusersfollowingme/getusersfollowingme.go)|
 |`GetUserSetRequests()`|Get a user's list of set requests.|[docs](https://api-docs.retroachievements.org/v1/get-user-set-requests.html) \| [example](examples/user/getusersetrequests/getusersetrequests.go)|
 
 <h3>Game</h3>
