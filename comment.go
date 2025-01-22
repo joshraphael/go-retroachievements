@@ -15,8 +15,8 @@ func (c *Client) GetComments(params models.GetCommentsParameters) (*models.GetCo
 		raHttp.Method(http.MethodGet),
 		raHttp.UserAgent(c.UserAgent),
 		raHttp.Path("/API/API_GetComments.php"),
-		raHttp.APIToken(c.Secret),
-		raHttp.T(params.Type.GetCommentsType()),
+		raHttp.Y(c.APISecret),
+		raHttp.T(strconv.Itoa(params.Type.GetCommentsType())),
 	}
 	switch params.Type.(type) {
 	case models.GetCommentsGame:

@@ -16,7 +16,7 @@ func (c *Client) GetRecentGameAwards(params models.GetRecentGameAwardsParameters
 		raHttp.Method(http.MethodGet),
 		raHttp.UserAgent(c.UserAgent),
 		raHttp.Path("/API/API_GetRecentGameAwards.php"),
-		raHttp.APIToken(c.Secret),
+		raHttp.Y(c.APISecret),
 	}
 	if params.StartingDate != nil {
 		d := *params.StartingDate
@@ -67,7 +67,7 @@ func (c *Client) GetActiveClaims(params models.GetActiveClaimsParameters) ([]mod
 		raHttp.Method(http.MethodGet),
 		raHttp.UserAgent(c.UserAgent),
 		raHttp.Path("/API/API_GetActiveClaims.php"),
-		raHttp.APIToken(c.Secret),
+		raHttp.Y(c.APISecret),
 	)
 	if err != nil {
 		return nil, fmt.Errorf("calling endpoint: %w", err)
@@ -85,7 +85,7 @@ func (c *Client) GetClaims(params models.GetClaimsParameters) ([]models.GetClaim
 		raHttp.Method(http.MethodGet),
 		raHttp.UserAgent(c.UserAgent),
 		raHttp.Path("/API/API_GetClaims.php"),
-		raHttp.APIToken(c.Secret),
+		raHttp.Y(c.APISecret),
 	}
 	if params.Kind != nil {
 		details = append(details, raHttp.K([]string{
@@ -109,7 +109,7 @@ func (c *Client) GetTopTenUsers(params models.GetTopTenUsersParameters) ([]model
 		raHttp.Method(http.MethodGet),
 		raHttp.UserAgent(c.UserAgent),
 		raHttp.Path("/API/API_GetTopTenUsers.php"),
-		raHttp.APIToken(c.Secret),
+		raHttp.Y(c.APISecret),
 	)
 	if err != nil {
 		return nil, fmt.Errorf("calling endpoint: %w", err)

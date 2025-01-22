@@ -11,9 +11,11 @@ import (
 
 func TestNew(t *testing.T) {
 	actual := retroachievements.New(
-		retroachievements.RetroAchievementHost,
-		"newUserAgent",
-		"some_secret",
+		retroachievements.ClientConfig{
+			Host:      retroachievements.RetroAchievementHost,
+			UserAgent: "newUserAgent",
+			APISecret: "some_secret",
+		},
 		retroachievements.HttpClient(&http.Client{
 			Transport: http.DefaultTransport,
 			Timeout:   5 * time.Minute,
@@ -21,8 +23,8 @@ func TestNew(t *testing.T) {
 	)
 
 	expected := &retroachievements.Client{
-		Host:   retroachievements.RetroAchievementHost,
-		Secret: "some_secret",
+		Host:      retroachievements.RetroAchievementHost,
+		APISecret: "some_secret",
 		HttpClient: &http.Client{
 			Transport: http.DefaultTransport,
 			Timeout:   5 * time.Minute,
@@ -37,8 +39,8 @@ func TestNewClient(t *testing.T) {
 	actual := retroachievements.NewClient("some_secret")
 
 	expected := &retroachievements.Client{
-		Host:   retroachievements.RetroAchievementHost,
-		Secret: "some_secret",
+		Host:      retroachievements.RetroAchievementHost,
+		APISecret: "some_secret",
 		HttpClient: &http.Client{
 			Transport: http.DefaultTransport,
 		},

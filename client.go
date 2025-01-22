@@ -15,11 +15,25 @@ const (
 	RetroAchievementHost = "https://retroachievements.org"
 )
 
+type ClientConfig struct {
+	Host          string
+	UserAgent     string
+	APISecret     string
+	ConnectConfig *ClientConnectConfig
+}
+
+type ClientConnectConfig struct {
+	ConnectSecret   string
+	ConnectUsername string
+}
+
 type Client struct {
-	UserAgent  string
-	Host       string
-	Secret     string
-	HttpClient *http.Client
+	UserAgent       string
+	Host            string
+	APISecret       string
+	ConnectSecret   string
+	ConnectUsername string
+	HttpClient      *http.Client
 }
 
 type ClientDetail interface {
@@ -62,18 +76,26 @@ var version = sync.OnceValue(func() string {
 
 // NewClient makes a new client using the default retroachievement host
 func NewClient(secret string) *Client {
-	return New(RetroAchievementHost, version(), secret)
+	return New(ClientConfig{
+		Host:      RetroAchievementHost,
+		UserAgent: version(),
+		APISecret: secret,
+	})
 }
 
 // New creates a new client for a given hostname
-func New(host string, userAgent string, secret string, details ...ClientDetail) *Client {
+func New(config ClientConfig, details ...ClientDetail) *Client {
 	client := &Client{
-		UserAgent: userAgent,
-		Host:      host,
-		Secret:    secret,
+		UserAgent: config.UserAgent,
+		Host:      config.Host,
+		APISecret: config.APISecret,
 		HttpClient: &http.Client{
 			Transport: http.DefaultTransport,
 		},
+	}
+	if config.ConnectConfig != nil && len(config.ConnectConfig.ConnectSecret) > 0 && len(config.ConnectConfig.ConnectUsername) > 0 {
+		client.ConnectSecret = config.ConnectConfig.ConnectSecret
+		client.ConnectUsername = config.ConnectConfig.ConnectUsername
 	}
 	for _, detail := range details {
 		detail.detail(client)

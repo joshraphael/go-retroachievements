@@ -14,7 +14,7 @@ func (c *Client) GetAchievementUnlocks(params models.GetAchievementUnlocksParame
 		raHttp.Method(http.MethodGet),
 		raHttp.UserAgent(c.UserAgent),
 		raHttp.Path("/API/API_GetAchievementUnlocks.php"),
-		raHttp.APIToken(c.Secret),
+		raHttp.Y(c.APISecret),
 		raHttp.A(params.AchievementID),
 	}
 	if params.Count != nil {

@@ -15,7 +15,7 @@ func (c *Client) GetGameLeaderboards(params models.GetGameLeaderboardsParameters
 		raHttp.Method(http.MethodGet),
 		raHttp.UserAgent(c.UserAgent),
 		raHttp.Path("/API/API_GetGameLeaderboards.php"),
-		raHttp.APIToken(c.Secret),
+		raHttp.Y(c.APISecret),
 		raHttp.I([]string{strconv.Itoa(params.GameID)}),
 	}
 	if params.Count != nil {
@@ -41,7 +41,7 @@ func (c *Client) GetLeaderboardEntries(params models.GetLeaderboardEntriesParame
 		raHttp.Method(http.MethodGet),
 		raHttp.UserAgent(c.UserAgent),
 		raHttp.Path("/API/API_GetLeaderboardEntries.php"),
-		raHttp.APIToken(c.Secret),
+		raHttp.Y(c.APISecret),
 		raHttp.I([]string{strconv.Itoa(params.LeaderboardID)}),
 	}
 	if params.Count != nil {
@@ -67,7 +67,7 @@ func (c *Client) GetUserGameLeaderboards(params models.GetUserGameLeaderboardsPa
 		raHttp.Method(http.MethodGet),
 		raHttp.UserAgent(c.UserAgent),
 		raHttp.Path("/API/API_GetUserGameLeaderboards.php"),
-		raHttp.APIToken(c.Secret),
+		raHttp.Y(c.APISecret),
 		raHttp.U(params.Username),
 		raHttp.I([]string{strconv.Itoa(params.GameID)}),
 	}

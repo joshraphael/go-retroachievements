@@ -8,18 +8,21 @@ import (
 	"github.com/joshraphael/go-retroachievements/models"
 )
 
-// GetAchievementOfTheWeek gets comprehensive metadata about the current Achievement of the Week.
-func (c *Client) GetAchievementOfTheWeek(params models.GetAchievementOfTheWeekParameters) (*models.GetAchievementOfTheWeek, error) {
+// GetCodeNotes gets the list of code notes for a given game.
+func (c *Client) GetCodeNotes(params models.GetCodeNotesParameters) (*models.GetCodeNotes, error) {
 	r, err := c.do(
 		raHttp.Method(http.MethodGet),
 		raHttp.UserAgent(c.UserAgent),
-		raHttp.Path("/API/API_GetAchievementOfTheWeek.php"),
-		raHttp.Y(c.APISecret),
+		raHttp.Path("/dorequest.php"),
+		raHttp.G(params.GameID),
+		raHttp.R("codenotes2"),
+		raHttp.T(c.ConnectSecret),
+		raHttp.U(c.ConnectUsername),
 	)
 	if err != nil {
 		return nil, fmt.Errorf("calling endpoint: %w", err)
 	}
-	resp, err := raHttp.ResponseObject[models.GetAchievementOfTheWeek](r)
+	resp, err := raHttp.ResponseObject[models.GetCodeNotes](r)
 	if err != nil {
 		return nil, fmt.Errorf("parsing response object: %w", err)
 	}
