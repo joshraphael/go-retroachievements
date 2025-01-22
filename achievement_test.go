@@ -178,7 +178,11 @@ func TestGetAchievementUnlocks(tt *testing.T) {
 				require.Equal(t, num, len(resp))
 			}))
 			defer server.Close()
-			client := retroachievements.New(test.modifyURL(server.URL), "go-retroachievements/v0.0.0", "some_secret")
+			client := retroachievements.New(retroachievements.ClientConfig{
+				Host:      test.modifyURL(server.URL),
+				UserAgent: "go-retroachievements/v0.0.0",
+				APISecret: "some_secret",
+			})
 			resp, err := client.GetAchievementUnlocks(test.params)
 			test.assert(t, resp, err)
 		})

@@ -160,7 +160,11 @@ func TestGetRecentGameAwards(tt *testing.T) {
 				require.Equal(t, num, len(resp))
 			}))
 			defer server.Close()
-			client := retroachievements.New(test.modifyURL(server.URL), "go-retroachievements/v0.0.0", "some_secret")
+			client := retroachievements.New(retroachievements.ClientConfig{
+				Host:      test.modifyURL(server.URL),
+				UserAgent: "go-retroachievements/v0.0.0",
+				APISecret: "some_secret",
+			})
 			resp, err := client.GetRecentGameAwards(test.params)
 			test.assert(t, resp, err)
 		})
@@ -303,7 +307,11 @@ func TestGetActiveClaims(tt *testing.T) {
 				require.Equal(t, num, len(resp))
 			}))
 			defer server.Close()
-			client := retroachievements.New(test.modifyURL(server.URL), "go-retroachievements/v0.0.0", "some_secret")
+			client := retroachievements.New(retroachievements.ClientConfig{
+				Host:      test.modifyURL(server.URL),
+				UserAgent: "go-retroachievements/v0.0.0",
+				APISecret: "some_secret",
+			})
 			resp, err := client.GetActiveClaims(test.params)
 			test.assert(t, resp, err)
 		})
@@ -452,7 +460,11 @@ func TestGetClaims(tt *testing.T) {
 				require.Equal(t, num, len(resp))
 			}))
 			defer server.Close()
-			client := retroachievements.New(test.modifyURL(server.URL), "go-retroachievements/v0.0.0", "some_secret")
+			client := retroachievements.New(retroachievements.ClientConfig{
+				Host:      test.modifyURL(server.URL),
+				UserAgent: "go-retroachievements/v0.0.0",
+				APISecret: "some_secret",
+			})
 			resp, err := client.GetClaims(test.params)
 			test.assert(t, resp, err)
 		})
@@ -563,7 +575,11 @@ func TestGetTopTenUsers(tt *testing.T) {
 				require.Equal(t, num, len(resp))
 			}))
 			defer server.Close()
-			client := retroachievements.New(test.modifyURL(server.URL), "go-retroachievements/v0.0.0", "some_secret")
+			client := retroachievements.New(retroachievements.ClientConfig{
+				Host:      test.modifyURL(server.URL),
+				UserAgent: "go-retroachievements/v0.0.0",
+				APISecret: "some_secret",
+			})
 			resp, err := client.GetTopTenUsers(test.params)
 			test.assert(t, resp, err)
 		})

@@ -15,7 +15,7 @@ func (c *Client) GetTicketByID(params models.GetTicketByIDParameters) (*models.G
 		raHttp.Method(http.MethodGet),
 		raHttp.UserAgent(c.UserAgent),
 		raHttp.Path("/API/API_GetTicketData.php"),
-		raHttp.APIToken(c.Secret),
+		raHttp.Y(c.APISecret),
 		raHttp.I([]string{
 			strconv.Itoa(params.TicketID),
 		}),
@@ -36,7 +36,7 @@ func (c *Client) GetMostTicketedGames(params models.GetMostTicketedGamesParamete
 		raHttp.Method(http.MethodGet),
 		raHttp.UserAgent(c.UserAgent),
 		raHttp.Path("/API/API_GetTicketData.php"),
-		raHttp.APIToken(c.Secret),
+		raHttp.Y(c.APISecret),
 		raHttp.F(1),
 	}
 	if params.Count != nil {
@@ -62,7 +62,7 @@ func (c *Client) GetMostRecentTickets(params models.GetMostRecentTicketsParamete
 		raHttp.Method(http.MethodGet),
 		raHttp.UserAgent(c.UserAgent),
 		raHttp.Path("/API/API_GetTicketData.php"),
-		raHttp.APIToken(c.Secret),
+		raHttp.Y(c.APISecret),
 	}
 	if params.Count != nil {
 		details = append(details, raHttp.C(*params.Count))
@@ -87,7 +87,7 @@ func (c *Client) GetGameTicketStats(params models.GetGameTicketStatsParameters) 
 		raHttp.Method(http.MethodGet),
 		raHttp.UserAgent(c.UserAgent),
 		raHttp.Path("/API/API_GetTicketData.php"),
-		raHttp.APIToken(c.Secret),
+		raHttp.Y(c.APISecret),
 		raHttp.G(params.GameID),
 	}
 	if params.Unofficial != nil && *params.Unofficial {
@@ -113,7 +113,7 @@ func (c *Client) GetDeveloperTicketStats(params models.GetDeveloperTicketStatsPa
 		raHttp.Method(http.MethodGet),
 		raHttp.UserAgent(c.UserAgent),
 		raHttp.Path("/API/API_GetTicketData.php"),
-		raHttp.APIToken(c.Secret),
+		raHttp.Y(c.APISecret),
 		raHttp.U(params.Username),
 	)
 	if err != nil {
@@ -132,7 +132,7 @@ func (c *Client) GetAchievementTicketStats(params models.GetAchievementTicketSta
 		raHttp.Method(http.MethodGet),
 		raHttp.UserAgent(c.UserAgent),
 		raHttp.Path("/API/API_GetTicketData.php"),
-		raHttp.APIToken(c.Secret),
+		raHttp.Y(c.APISecret),
 		raHttp.A(params.AchievementID),
 	)
 	if err != nil {

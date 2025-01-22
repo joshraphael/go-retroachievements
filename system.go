@@ -15,7 +15,7 @@ func (c *Client) GetConsoleIDs(params models.GetConsoleIDsParameters) ([]models.
 		raHttp.Method(http.MethodGet),
 		raHttp.UserAgent(c.UserAgent),
 		raHttp.Path("/API/API_GetConsoleIDs.php"),
-		raHttp.APIToken(c.Secret),
+		raHttp.Y(c.APISecret),
 	}
 	if params.OnlyActive != nil {
 		active := 0
@@ -48,7 +48,7 @@ func (c *Client) GetGameList(params models.GetGameListParameters) ([]models.GetG
 		raHttp.Method(http.MethodGet),
 		raHttp.UserAgent(c.UserAgent),
 		raHttp.Path("/API/API_GetGameList.php"),
-		raHttp.APIToken(c.Secret),
+		raHttp.Y(c.APISecret),
 		raHttp.I([]string{strconv.Itoa(params.SystemID)}),
 	}
 	if params.HasAchievements != nil {

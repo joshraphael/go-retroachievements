@@ -151,7 +151,11 @@ func TestGetUserProfile(tt *testing.T) {
 				require.Equal(t, num, len(resp))
 			}))
 			defer server.Close()
-			client := retroachievements.New(test.modifyURL(server.URL), "go-retroachievements/v0.0.0", "some_secret")
+			client := retroachievements.New(retroachievements.ClientConfig{
+				Host:      test.modifyURL(server.URL),
+				UserAgent: "go-retroachievements/v0.0.0",
+				APISecret: "some_secret",
+			})
 			profile, err := client.GetUserProfile(test.params)
 			test.assert(t, profile, err)
 		})
@@ -304,7 +308,11 @@ func TestGetUserRecentAchievements(tt *testing.T) {
 				require.Equal(t, num, len(resp))
 			}))
 			defer server.Close()
-			client := retroachievements.New(test.modifyURL(server.URL), "go-retroachievements/v0.0.0", "some_secret")
+			client := retroachievements.New(retroachievements.ClientConfig{
+				Host:      test.modifyURL(server.URL),
+				UserAgent: "go-retroachievements/v0.0.0",
+				APISecret: "some_secret",
+			})
 			achievements, err := client.GetUserRecentAchievements(test.params)
 			test.assert(t, achievements, err)
 		})
@@ -462,7 +470,11 @@ func TestGetAchievementsEarnedBetween(tt *testing.T) {
 				require.Equal(t, num, len(resp))
 			}))
 			defer server.Close()
-			client := retroachievements.New(test.modifyURL(server.URL), "go-retroachievements/v0.0.0", "some_secret")
+			client := retroachievements.New(retroachievements.ClientConfig{
+				Host:      test.modifyURL(server.URL),
+				UserAgent: "go-retroachievements/v0.0.0",
+				APISecret: "some_secret",
+			})
 			achievements, err := client.GetAchievementsEarnedBetween(test.params)
 			test.assert(t, achievements, err)
 		})
@@ -616,7 +628,11 @@ func TestGetAchievementsEarnedOnDay(tt *testing.T) {
 				require.Equal(t, num, len(resp))
 			}))
 			defer server.Close()
-			client := retroachievements.New(test.modifyURL(server.URL), "go-retroachievements/v0.0.0", "some_secret")
+			client := retroachievements.New(retroachievements.ClientConfig{
+				Host:      test.modifyURL(server.URL),
+				UserAgent: "go-retroachievements/v0.0.0",
+				APISecret: "some_secret",
+			})
 			achievements, err := client.GetAchievementsEarnedOnDay(test.params)
 			test.assert(t, achievements, err)
 		})
@@ -845,7 +861,11 @@ func TestGetGameInfoAndUserProgress(tt *testing.T) {
 				require.Equal(t, num, len(resp))
 			}))
 			defer server.Close()
-			client := retroachievements.New(test.modifyURL(server.URL), "go-retroachievements/v0.0.0", "some_secret")
+			client := retroachievements.New(retroachievements.ClientConfig{
+				Host:      test.modifyURL(server.URL),
+				UserAgent: "go-retroachievements/v0.0.0",
+				APISecret: "some_secret",
+			})
 			gameProgress, err := client.GetGameInfoAndUserProgress(test.params)
 			test.assert(t, gameProgress, err)
 		})
@@ -993,7 +1013,11 @@ func TestGetUserCompletionProgress(tt *testing.T) {
 				require.Equal(t, num, len(resp))
 			}))
 			defer server.Close()
-			client := retroachievements.New(test.modifyURL(server.URL), "go-retroachievements/v0.0.0", "some_secret")
+			client := retroachievements.New(retroachievements.ClientConfig{
+				Host:      test.modifyURL(server.URL),
+				UserAgent: "go-retroachievements/v0.0.0",
+				APISecret: "some_secret",
+			})
 			userCompletionProgress, err := client.GetUserCompletionProgress(test.params)
 			test.assert(t, userCompletionProgress, err)
 		})
@@ -1153,7 +1177,11 @@ func TestGetUserAwards(tt *testing.T) {
 				require.Equal(t, num, len(resp))
 			}))
 			defer server.Close()
-			client := retroachievements.New(test.modifyURL(server.URL), "go-retroachievements/v0.0.0", "some_secret")
+			client := retroachievements.New(retroachievements.ClientConfig{
+				Host:      test.modifyURL(server.URL),
+				UserAgent: "go-retroachievements/v0.0.0",
+				APISecret: "some_secret",
+			})
 			userAwards, err := client.GetUserAwards(test.params)
 			test.assert(t, userAwards, err)
 		})
@@ -1310,7 +1338,11 @@ func TestGetUserClaims(tt *testing.T) {
 				require.Equal(t, num, len(resp))
 			}))
 			defer server.Close()
-			client := retroachievements.New(test.modifyURL(server.URL), "go-retroachievements/v0.0.0", "some_secret")
+			client := retroachievements.New(retroachievements.ClientConfig{
+				Host:      test.modifyURL(server.URL),
+				UserAgent: "go-retroachievements/v0.0.0",
+				APISecret: "some_secret",
+			})
 			userClaims, err := client.GetUserClaims(test.params)
 			test.assert(t, userClaims, err)
 		})
@@ -1438,7 +1470,11 @@ func TestGetUserGameRankAndScore(tt *testing.T) {
 				require.Equal(t, num, len(resp))
 			}))
 			defer server.Close()
-			client := retroachievements.New(test.modifyURL(server.URL), "go-retroachievements/v0.0.0", "some_secret")
+			client := retroachievements.New(retroachievements.ClientConfig{
+				Host:      test.modifyURL(server.URL),
+				UserAgent: "go-retroachievements/v0.0.0",
+				APISecret: "some_secret",
+			})
 			userGameRankScore, err := client.GetUserGameRankAndScore(test.params)
 			test.assert(t, userGameRankScore, err)
 		})
@@ -1552,7 +1588,11 @@ func TestGetUserPoints(tt *testing.T) {
 				require.Equal(t, num, len(resp))
 			}))
 			defer server.Close()
-			client := retroachievements.New(test.modifyURL(server.URL), "go-retroachievements/v0.0.0", "some_secret")
+			client := retroachievements.New(retroachievements.ClientConfig{
+				Host:      test.modifyURL(server.URL),
+				UserAgent: "go-retroachievements/v0.0.0",
+				APISecret: "some_secret",
+			})
 			points, err := client.GetUserPoints(test.params)
 			test.assert(t, points, err)
 		})
@@ -1719,7 +1759,11 @@ func TestGetUserProgress(tt *testing.T) {
 				require.Equal(t, num, len(resp))
 			}))
 			defer server.Close()
-			client := retroachievements.New(test.modifyURL(server.URL), "go-retroachievements/v0.0.0", "some_secret")
+			client := retroachievements.New(retroachievements.ClientConfig{
+				Host:      test.modifyURL(server.URL),
+				UserAgent: "go-retroachievements/v0.0.0",
+				APISecret: "some_secret",
+			})
 			resp, err := client.GetUserProgress(test.params)
 			test.assert(t, resp, err)
 		})
@@ -1913,7 +1957,11 @@ func TestGetUserRecentlyPlayedGames(tt *testing.T) {
 				require.Equal(t, num, len(resp))
 			}))
 			defer server.Close()
-			client := retroachievements.New(test.modifyURL(server.URL), "go-retroachievements/v0.0.0", "some_secret")
+			client := retroachievements.New(retroachievements.ClientConfig{
+				Host:      test.modifyURL(server.URL),
+				UserAgent: "go-retroachievements/v0.0.0",
+				APISecret: "some_secret",
+			})
 			resp, err := client.GetUserRecentlyPlayedGames(test.params)
 			test.assert(t, resp, err)
 		})
@@ -2201,7 +2249,11 @@ func TestGetUserSummary(tt *testing.T) {
 				require.Equal(t, num, len(resp))
 			}))
 			defer server.Close()
-			client := retroachievements.New(test.modifyURL(server.URL), "go-retroachievements/v0.0.0", "some_secret")
+			client := retroachievements.New(retroachievements.ClientConfig{
+				Host:      test.modifyURL(server.URL),
+				UserAgent: "go-retroachievements/v0.0.0",
+				APISecret: "some_secret",
+			})
 			resp, err := client.GetUserSummary(test.params)
 			test.assert(t, resp, err)
 		})
@@ -2331,7 +2383,11 @@ func TestGetUserCompletedGames(tt *testing.T) {
 				require.Equal(t, num, len(resp))
 			}))
 			defer server.Close()
-			client := retroachievements.New(test.modifyURL(server.URL), "go-retroachievements/v0.0.0", "some_secret")
+			client := retroachievements.New(retroachievements.ClientConfig{
+				Host:      test.modifyURL(server.URL),
+				UserAgent: "go-retroachievements/v0.0.0",
+				APISecret: "some_secret",
+			})
 			resp, err := client.GetUserCompletedGames(test.params)
 			test.assert(t, resp, err)
 		})
@@ -2471,7 +2527,11 @@ func TestGetUserWantToPlayList(tt *testing.T) {
 				require.Equal(t, num, len(resp))
 			}))
 			defer server.Close()
-			client := retroachievements.New(test.modifyURL(server.URL), "go-retroachievements/v0.0.0", "some_secret")
+			client := retroachievements.New(retroachievements.ClientConfig{
+				Host:      test.modifyURL(server.URL),
+				UserAgent: "go-retroachievements/v0.0.0",
+				APISecret: "some_secret",
+			})
 			resp, err := client.GetUserWantToPlayList(test.params)
 			test.assert(t, resp, err)
 		})
@@ -2603,7 +2663,11 @@ func TestGetUsersIFollow(tt *testing.T) {
 				require.Equal(t, num, len(resp))
 			}))
 			defer server.Close()
-			client := retroachievements.New(test.modifyURL(server.URL), "go-retroachievements/v0.0.0", "some_secret")
+			client := retroachievements.New(retroachievements.ClientConfig{
+				Host:      test.modifyURL(server.URL),
+				UserAgent: "go-retroachievements/v0.0.0",
+				APISecret: "some_secret",
+			})
 			resp, err := client.GetUsersIFollow(test.params)
 			test.assert(t, resp, err)
 		})
@@ -2735,7 +2799,11 @@ func TestGetUsersFollowingMe(tt *testing.T) {
 				require.Equal(t, num, len(resp))
 			}))
 			defer server.Close()
-			client := retroachievements.New(test.modifyURL(server.URL), "go-retroachievements/v0.0.0", "some_secret")
+			client := retroachievements.New(retroachievements.ClientConfig{
+				Host:      test.modifyURL(server.URL),
+				UserAgent: "go-retroachievements/v0.0.0",
+				APISecret: "some_secret",
+			})
 			resp, err := client.GetUsersFollowingMe(test.params)
 			test.assert(t, resp, err)
 		})
@@ -2868,7 +2936,11 @@ func TestGetUserSetRequests(tt *testing.T) {
 				require.Equal(t, num, len(resp))
 			}))
 			defer server.Close()
-			client := retroachievements.New(test.modifyURL(server.URL), "go-retroachievements/v0.0.0", "some_secret")
+			client := retroachievements.New(retroachievements.ClientConfig{
+				Host:      test.modifyURL(server.URL),
+				UserAgent: "go-retroachievements/v0.0.0",
+				APISecret: "some_secret",
+			})
 			resp, err := client.GetUserSetRequests(test.params)
 			test.assert(t, resp, err)
 		})

@@ -15,7 +15,7 @@ func (c *Client) GetGame(params models.GetGameParameters) (*models.GetGame, erro
 		raHttp.Method(http.MethodGet),
 		raHttp.UserAgent(c.UserAgent),
 		raHttp.Path("/API/API_GetGame.php"),
-		raHttp.APIToken(c.Secret),
+		raHttp.Y(c.APISecret),
 		raHttp.I([]string{strconv.Itoa(params.GameID)}),
 	)
 	if err != nil {
@@ -34,7 +34,7 @@ func (c *Client) GetGameExtended(params models.GetGameExtentedParameters) (*mode
 		raHttp.Method(http.MethodGet),
 		raHttp.UserAgent(c.UserAgent),
 		raHttp.Path("/API/API_GetGameExtended.php"),
-		raHttp.APIToken(c.Secret),
+		raHttp.Y(c.APISecret),
 		raHttp.I([]string{strconv.Itoa(params.GameID)}),
 	}
 	if params.Unofficial != nil {
@@ -61,7 +61,7 @@ func (c *Client) GetGameHashes(params models.GetGameHashesParameters) (*models.G
 		raHttp.Method(http.MethodGet),
 		raHttp.UserAgent(c.UserAgent),
 		raHttp.Path("/API/API_GetGameHashes.php"),
-		raHttp.APIToken(c.Secret),
+		raHttp.Y(c.APISecret),
 		raHttp.I([]string{strconv.Itoa(params.GameID)}),
 	)
 	if err != nil {
@@ -80,7 +80,7 @@ func (c *Client) GetAchievementCount(params models.GetAchievementCountParameters
 		raHttp.Method(http.MethodGet),
 		raHttp.UserAgent(c.UserAgent),
 		raHttp.Path("/API/API_GetAchievementCount.php"),
-		raHttp.APIToken(c.Secret),
+		raHttp.Y(c.APISecret),
 		raHttp.I([]string{strconv.Itoa(params.GameID)}),
 	)
 	if err != nil {
@@ -99,7 +99,7 @@ func (c *Client) GetAchievementDistribution(params models.GetAchievementDistribu
 		raHttp.Method(http.MethodGet),
 		raHttp.UserAgent(c.UserAgent),
 		raHttp.Path("/API/API_GetAchievementDistribution.php"),
-		raHttp.APIToken(c.Secret),
+		raHttp.Y(c.APISecret),
 		raHttp.I([]string{strconv.Itoa(params.GameID)}),
 	}
 	if params.Unofficial != nil {
@@ -133,13 +133,13 @@ func (c *Client) GetGameRankAndScore(params models.GetGameRankAndScoreParameters
 		raHttp.Method(http.MethodGet),
 		raHttp.UserAgent(c.UserAgent),
 		raHttp.Path("/API/API_GetGameRankAndScore.php"),
-		raHttp.APIToken(c.Secret),
+		raHttp.Y(c.APISecret),
 		raHttp.G(params.GameID),
 	}
 	if params.LatestMasters != nil {
-		t := 0
+		t := "0"
 		if *params.LatestMasters {
-			t = 1
+			t = "1"
 		}
 		details = append(details, raHttp.T(t))
 	}

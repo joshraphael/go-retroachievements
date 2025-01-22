@@ -16,7 +16,7 @@ func (c *Client) GetUserProfile(params models.GetUserProfileParameters) (*models
 		raHttp.Method(http.MethodGet),
 		raHttp.UserAgent(c.UserAgent),
 		raHttp.Path("/API/API_GetUserProfile.php"),
-		raHttp.APIToken(c.Secret),
+		raHttp.Y(c.APISecret),
 		raHttp.U(params.Username),
 	)
 	if err != nil {
@@ -35,7 +35,7 @@ func (c *Client) GetUserRecentAchievements(params models.GetUserRecentAchievemen
 		raHttp.Method(http.MethodGet),
 		raHttp.UserAgent(c.UserAgent),
 		raHttp.Path("/API/API_GetUserRecentAchievements.php"),
-		raHttp.APIToken(c.Secret),
+		raHttp.Y(c.APISecret),
 		raHttp.U(params.Username),
 	}
 	if params.LookbackMinutes != nil {
@@ -58,10 +58,10 @@ func (c *Client) GetAchievementsEarnedBetween(params models.GetAchievementsEarne
 		raHttp.Method(http.MethodGet),
 		raHttp.UserAgent(c.UserAgent),
 		raHttp.Path("/API/API_GetAchievementsEarnedBetween.php"),
-		raHttp.APIToken(c.Secret),
+		raHttp.Y(c.APISecret),
 		raHttp.U(params.Username),
 		raHttp.F(int(params.From.Unix())),
-		raHttp.T(int(params.To.Unix())),
+		raHttp.T(strconv.Itoa(int(params.To.Unix()))),
 	)
 	if err != nil {
 		return nil, fmt.Errorf("calling endpoint: %w", err)
@@ -79,7 +79,7 @@ func (c *Client) GetAchievementsEarnedOnDay(params models.GetAchievementsEarnedO
 		raHttp.Method(http.MethodGet),
 		raHttp.UserAgent(c.UserAgent),
 		raHttp.Path("/API/API_GetAchievementsEarnedOnDay.php"),
-		raHttp.APIToken(c.Secret),
+		raHttp.Y(c.APISecret),
 		raHttp.U(params.Username),
 		raHttp.D(params.Date.UTC().Format(time.DateOnly)),
 	)
@@ -99,7 +99,7 @@ func (c *Client) GetGameInfoAndUserProgress(params models.GetGameInfoAndUserProg
 		raHttp.Method(http.MethodGet),
 		raHttp.UserAgent(c.UserAgent),
 		raHttp.Path("/API/API_GetGameInfoAndUserProgress.php"),
-		raHttp.APIToken(c.Secret),
+		raHttp.Y(c.APISecret),
 		raHttp.U(params.Username),
 		raHttp.G(params.GameID),
 	}
@@ -127,7 +127,7 @@ func (c *Client) GetUserCompletionProgress(params models.GetUserCompletionProgre
 		raHttp.Method(http.MethodGet),
 		raHttp.UserAgent(c.UserAgent),
 		raHttp.Path("/API/API_GetUserCompletionProgress.php"),
-		raHttp.APIToken(c.Secret),
+		raHttp.Y(c.APISecret),
 		raHttp.U(params.Username),
 	)
 	if err != nil {
@@ -146,7 +146,7 @@ func (c *Client) GetUserAwards(params models.GetUserAwardsParameters) (*models.G
 		raHttp.Method(http.MethodGet),
 		raHttp.UserAgent(c.UserAgent),
 		raHttp.Path("/API/API_GetUserAwards.php"),
-		raHttp.APIToken(c.Secret),
+		raHttp.Y(c.APISecret),
 		raHttp.U(params.Username),
 	)
 	if err != nil {
@@ -165,7 +165,7 @@ func (c *Client) GetUserClaims(params models.GetUserClaimsParameters) ([]models.
 		raHttp.Method(http.MethodGet),
 		raHttp.UserAgent(c.UserAgent),
 		raHttp.Path("/API/API_GetUserClaims.php"),
-		raHttp.APIToken(c.Secret),
+		raHttp.Y(c.APISecret),
 		raHttp.U(params.Username),
 	)
 	if err != nil {
@@ -184,7 +184,7 @@ func (c *Client) GetUserGameRankAndScore(params models.GetUserGameRankAndScorePa
 		raHttp.Method(http.MethodGet),
 		raHttp.UserAgent(c.UserAgent),
 		raHttp.Path("/API/API_GetUserGameRankAndScore.php"),
-		raHttp.APIToken(c.Secret),
+		raHttp.Y(c.APISecret),
 		raHttp.U(params.Username),
 		raHttp.G(params.GameID),
 	)
@@ -204,7 +204,7 @@ func (c *Client) GetUserPoints(params models.GetUserPointsParameters) (*models.G
 		raHttp.Method(http.MethodGet),
 		raHttp.UserAgent(c.UserAgent),
 		raHttp.Path("/API/API_GetUserPoints.php"),
-		raHttp.APIToken(c.Secret),
+		raHttp.Y(c.APISecret),
 		raHttp.U(params.Username),
 	)
 	if err != nil {
@@ -227,7 +227,7 @@ func (c *Client) GetUserProgress(params models.GetUserProgressParameters) (*map[
 		raHttp.Method(http.MethodGet),
 		raHttp.UserAgent(c.UserAgent),
 		raHttp.Path("/API/API_GetUserProgress.php"),
-		raHttp.APIToken(c.Secret),
+		raHttp.Y(c.APISecret),
 		raHttp.U(params.Username),
 		raHttp.I(strIDs),
 	)
@@ -247,7 +247,7 @@ func (c *Client) GetUserRecentlyPlayedGames(params models.GetUserRecentlyPlayedG
 		raHttp.Method(http.MethodGet),
 		raHttp.UserAgent(c.UserAgent),
 		raHttp.Path("/API/API_GetUserRecentlyPlayedGames.php"),
-		raHttp.APIToken(c.Secret),
+		raHttp.Y(c.APISecret),
 		raHttp.U(params.Username),
 	}
 	if params.Count != nil {
@@ -273,7 +273,7 @@ func (c *Client) GetUserSummary(params models.GetUserSummaryParameters) (*models
 		raHttp.Method(http.MethodGet),
 		raHttp.UserAgent(c.UserAgent),
 		raHttp.Path("/API/API_GetUserSummary.php"),
-		raHttp.APIToken(c.Secret),
+		raHttp.Y(c.APISecret),
 		raHttp.U(params.Username),
 	}
 	if params.GamesCount != nil {
@@ -299,7 +299,7 @@ func (c *Client) GetUserCompletedGames(params models.GetUserCompletedGamesParame
 		raHttp.Method(http.MethodGet),
 		raHttp.UserAgent(c.UserAgent),
 		raHttp.Path("/API/API_GetUserCompletedGames.php"),
-		raHttp.APIToken(c.Secret),
+		raHttp.Y(c.APISecret),
 		raHttp.U(params.Username),
 	)
 	if err != nil {
@@ -318,7 +318,7 @@ func (c *Client) GetUserWantToPlayList(params models.GetUserWantToPlayListParame
 		raHttp.Method(http.MethodGet),
 		raHttp.UserAgent(c.UserAgent),
 		raHttp.Path("/API/API_GetUserWantToPlayList.php"),
-		raHttp.APIToken(c.Secret),
+		raHttp.Y(c.APISecret),
 		raHttp.U(params.Username),
 	}
 	if params.Count != nil {
@@ -344,7 +344,7 @@ func (c *Client) GetUsersIFollow(params models.GetUsersIFollowParameters) (*mode
 		raHttp.Method(http.MethodGet),
 		raHttp.UserAgent(c.UserAgent),
 		raHttp.Path("/API/API_GetUsersIFollow.php"),
-		raHttp.APIToken(c.Secret),
+		raHttp.Y(c.APISecret),
 	}
 	if params.Count != nil {
 		details = append(details, raHttp.C(*params.Count))
@@ -369,7 +369,7 @@ func (c *Client) GetUsersFollowingMe(params models.GetUsersFollowingMeParameters
 		raHttp.Method(http.MethodGet),
 		raHttp.UserAgent(c.UserAgent),
 		raHttp.Path("/API/API_GetUsersFollowingMe.php"),
-		raHttp.APIToken(c.Secret),
+		raHttp.Y(c.APISecret),
 	}
 	if params.Count != nil {
 		details = append(details, raHttp.C(*params.Count))
@@ -394,13 +394,13 @@ func (c *Client) GetUserSetRequests(params models.GetUserSetRequestsParameters) 
 		raHttp.Method(http.MethodGet),
 		raHttp.UserAgent(c.UserAgent),
 		raHttp.Path("/API/API_GetUserSetRequests.php"),
-		raHttp.APIToken(c.Secret),
+		raHttp.Y(c.APISecret),
 		raHttp.U(params.Username),
 	}
 	if params.All != nil {
-		t := 0
+		t := "0"
 		if *params.All {
-			t = 1
+			t = "1"
 		}
 		details = append(details, raHttp.T(t))
 	}
