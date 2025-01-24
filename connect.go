@@ -16,8 +16,6 @@ func (c *Client) GetCodeNotes(params models.GetCodeNotesParameters) (*models.Get
 		raHttp.Path("/dorequest.php"),
 		raHttp.G(params.GameID),
 		raHttp.R("codenotes2"),
-		raHttp.T(c.ConnectSecret),
-		raHttp.U(c.ConnectUsername),
 	)
 	if err != nil {
 		return nil, fmt.Errorf("calling endpoint: %w", err)
