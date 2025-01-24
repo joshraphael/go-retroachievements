@@ -36,7 +36,7 @@ func TestGetCodeNotes(tt *testing.T) {
 			},
 			assert: func(t *testing.T, resp *models.GetCodeNotes, err error) {
 				require.Nil(t, resp)
-				require.EqualError(t, err, "calling endpoint: Get \"/dorequest.php?g=13214&r=codenotes2&t=some_other_secret&u=jamiras\": unsupported protocol scheme \"\"")
+				require.EqualError(t, err, "calling endpoint: Get \"/dorequest.php?g=13214&r=codenotes2\": unsupported protocol scheme \"\"")
 			},
 		},
 		{
