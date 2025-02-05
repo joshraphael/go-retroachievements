@@ -222,7 +222,7 @@ func TestGetGameExtended(tt *testing.T) {
 					Time: released,
 				},
 				ID:                 2991,
-				IsFinal:            0,
+				IsFinal:            false,
 				RichPresencePatch:  "e7a5e12072a6c976a1146756726fdd8c",
 				Updated:            &updated,
 				ConsoleName:        "PlayStation 2",
@@ -311,7 +311,7 @@ func TestGetGameExtended(tt *testing.T) {
 					Time: released,
 				},
 				ID:                 2991,
-				IsFinal:            0,
+				IsFinal:            false,
 				RichPresencePatch:  "e7a5e12072a6c976a1146756726fdd8c",
 				Updated:            &updated,
 				ConsoleName:        "PlayStation 2",
@@ -359,7 +359,7 @@ func TestGetGameExtended(tt *testing.T) {
 				require.Equal(t, "Vehicular Combat", resp.Genre)
 				require.Equal(t, released, resp.Released.Time)
 				require.Equal(t, 2991, resp.ID)
-				require.Equal(t, 0, resp.IsFinal)
+				require.False(t, resp.IsFinal)
 				require.Equal(t, "e7a5e12072a6c976a1146756726fdd8c", resp.RichPresencePatch)
 				require.Equal(t, updated, *resp.Updated)
 				require.Equal(t, "PlayStation 2", resp.ConsoleName)

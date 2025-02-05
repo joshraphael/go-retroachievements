@@ -640,8 +640,7 @@ func TestGetAchievementsEarnedOnDay(tt *testing.T) {
 }
 
 func TestGetGameInfoAndUserProgress(tt *testing.T) {
-	released, err := time.Parse(models.LongMonthDateFormat, "June 18, 2001")
-	require.NoError(tt, err)
+	released, err := time.Parse(time.DateOnly, "2001-06-18")
 	require.NoError(tt, err)
 	modified, err := time.Parse(time.DateTime, "2022-10-25 17:00:49")
 	require.NoError(tt, err)
@@ -746,7 +745,7 @@ func TestGetGameInfoAndUserProgress(tt *testing.T) {
 				Developer:          "Incognito Entertainment",
 				Genre:              "Vehicular Combat",
 				ID:                 2991,
-				IsFinal:            0,
+				IsFinal:            false,
 				RichPresencePatch:  "e7a5e12072a6c976a1146756726fdd8c",
 				ConsoleName:        "PlayStation 2",
 				NumDistinctPlayers: 1287,
@@ -807,7 +806,7 @@ func TestGetGameInfoAndUserProgress(tt *testing.T) {
 				require.Equal(t, "Vehicular Combat", gameProgress.Genre)
 				require.Equal(t, released, gameProgress.Released.Time)
 				require.Equal(t, 2991, gameProgress.ID)
-				require.Equal(t, 0, gameProgress.IsFinal)
+				require.False(t, gameProgress.IsFinal)
 				require.Equal(t, "e7a5e12072a6c976a1146756726fdd8c", gameProgress.RichPresencePatch)
 				require.Equal(t, "PlayStation 2", gameProgress.ConsoleName)
 				require.Equal(t, 1287, gameProgress.NumDistinctPlayers)
@@ -1976,8 +1975,6 @@ func TestGetUserSummary(tt *testing.T) {
 	require.NoError(tt, err)
 	lastPlayed, err := time.Parse(time.DateTime, "2024-11-17 04:00:35")
 	require.NoError(tt, err)
-	releaseDate, err := time.Parse(models.LongMonthDateFormat, "September 27, 2011")
-	require.NoError(tt, err)
 	cheevoType := "progression"
 	tests := []struct {
 		name            string
@@ -2129,25 +2126,6 @@ func TestGetUserSummary(tt *testing.T) {
 						},
 					},
 				},
-				LastGame: models.GetUserSummaryLastGame{
-					ID:           9404,
-					Title:        "Solatorobo: Red the Hunter",
-					ConsoleID:    18,
-					ConsoleName:  "Nintendo DS",
-					ForumTopicID: 21569,
-					Flags:        0,
-					ImageIcon:    "/Images/088320.png",
-					ImageTitle:   "/Images/073286.png",
-					ImageIngame:  "/Images/073287.png",
-					ImageBoxArt:  "/Images/028653.png",
-					Publisher:    "XSEED Games",
-					Developer:    "CyberConnect2 | CyberConnect",
-					Genre:        "Action RPG",
-					Released: models.LongMonthDate{
-						Time: releaseDate,
-					},
-					IsFinal: 0,
-				},
 			},
 			response: func(messageBytes []byte, errorBytes []byte) []byte {
 				return messageBytes
@@ -2213,21 +2191,6 @@ func TestGetUserSummary(tt *testing.T) {
 				require.NotNil(t, cheevo.Type)
 				require.Equal(t, cheevoType, *cheevo.Type)
 				require.Equal(t, lastPlayed, cheevo.DateAwarded.Time)
-				require.Equal(t, 9404, resp.LastGame.ID)
-				require.Equal(t, "Solatorobo: Red the Hunter", resp.LastGame.Title)
-				require.Equal(t, 18, resp.LastGame.ConsoleID)
-				require.Equal(t, "Nintendo DS", resp.LastGame.ConsoleName)
-				require.Equal(t, 21569, resp.LastGame.ForumTopicID)
-				require.Equal(t, 0, resp.LastGame.Flags)
-				require.Equal(t, "/Images/088320.png", resp.LastGame.ImageIcon)
-				require.Equal(t, "/Images/073286.png", resp.LastGame.ImageTitle)
-				require.Equal(t, "/Images/073287.png", resp.LastGame.ImageIngame)
-				require.Equal(t, "/Images/028653.png", resp.LastGame.ImageBoxArt)
-				require.Equal(t, "XSEED Games", resp.LastGame.Publisher)
-				require.Equal(t, "CyberConnect2 | CyberConnect", resp.LastGame.Developer)
-				require.Equal(t, "Action RPG", resp.LastGame.Genre)
-				require.Equal(t, releaseDate, resp.LastGame.Released.Time)
-				require.Equal(t, 0, resp.LastGame.IsFinal)
 			},
 		},
 	}

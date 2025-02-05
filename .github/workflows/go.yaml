@@ -41,3 +41,15 @@ jobs:
           local-prefix: github.com/joshraphael/go-retroachievements
           git-token: ${{ github.ref_name == 'main' && secrets.GITHUB_TOKEN || '' }}
           git-branch: badges
+    
+  smoke:
+    name: smoke
+    runs-on: ubuntu-latest
+    env:
+      RA_API_KEY: ${{ secrets.RA_API_KEY }}
+    steps:
+      - uses: actions/checkout@v3
+      - uses: actions/setup-go@v3
+  
+      - name: smoke test endpoints
+        run: bash ./scripts/smoke.sh

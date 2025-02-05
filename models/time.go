@@ -60,37 +60,6 @@ func (do *DateOnly) String() string {
 	return fmt.Sprintf("%q", do.Format(time.DateOnly))
 }
 
-// LongMonthDate is a time data structure that can be used for string dates formatted as "January 02, 2006"
-type LongMonthDate struct {
-	time.Time
-}
-
-const (
-	LongMonthDateFormat = "January 2, 2006"
-)
-
-func (lmd *LongMonthDate) UnmarshalJSON(b []byte) (err error) {
-	s := strings.Trim(string(b), `"`)
-	if s == "" {
-		*lmd = LongMonthDate{time.Time{}}
-		return nil
-	}
-	nt, err := time.Parse(LongMonthDateFormat, s)
-	if err != nil {
-		return err
-	}
-	*lmd = LongMonthDate{nt}
-	return nil
-}
-
-func (lmd LongMonthDate) MarshalJSON() ([]byte, error) {
-	return []byte(lmd.String()), nil
-}
-
-func (lmd *LongMonthDate) String() string {
-	return fmt.Sprintf("%q", lmd.Format(LongMonthDateFormat))
-}
-
 // RFC3339NumColonTZ is a time data structure that can be used for string dates formatted as "2006-01-02T15:04:05-07:00"
 type RFC3339NumColonTZ struct {
 	time.Time

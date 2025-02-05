@@ -14,9 +14,9 @@ import (
 
 func TestGetAchievementOfTheWeek(tt *testing.T) {
 	achievementType := "progression"
-	dateCreated, err := time.Parse(time.DateTime, "2012-11-02 00:03:12")
+	dateCreated, err := time.Parse(time.DateOnly, "2012-11-02")
 	require.NoError(tt, err)
-	dateModified, err := time.Parse(time.DateTime, "2023-09-30 02:00:49")
+	dateModified, err := time.Parse(time.DateOnly, "2023-09-30")
 	require.NoError(tt, err)
 	dateAwarded, err := time.Parse(time.RFC3339Nano, "2024-11-22T17:25:17.000000Z")
 	require.NoError(tt, err)
@@ -88,10 +88,10 @@ func TestGetAchievementOfTheWeek(tt *testing.T) {
 					Points:      5,
 					TrueRatio:   7,
 					Author:      "Scott",
-					DateCreated: models.DateTime{
+					DateCreated: &models.DateOnly{
 						Time: dateCreated,
 					},
-					DateModified: models.DateTime{
+					DateModified: &models.DateOnly{
 						Time: dateModified,
 					},
 					Type: &achievementType,

@@ -286,7 +286,7 @@ type GetGameInfoAndUserProgress struct {
 	Genre                      string                                        `json:"Genre"`
 	Released                   *DateOnly                                     `json:"Released"`
 	ReleasedAtGranularity      *string                                       `json:"ReleasedAtGranularity"`
-	IsFinal                    int                                           `json:"IsFinal"`
+	IsFinal                    bool                                          `json:"IsFinal"`
 	RichPresencePatch          string                                        `json:"RichPresencePatch"`
 	GuideURL                   *string                                       `json:"GuideURL"`
 	ConsoleName                string                                        `json:"ConsoleName"`
@@ -499,7 +499,6 @@ type GetUserSummary struct {
 	RecentlyPlayed      []GetUserSummaryRecentlyPlayed                         `json:"RecentlyPlayed"`
 	Awarded             map[string]GetUserSummaryAwarded                       `json:"Awarded"`
 	RecentAchievements  map[string]map[string]GetUserSummaryRecentAchievements `json:"RecentAchievements"`
-	LastGame            GetUserSummaryLastGame                                 `json:"LastGame"`
 }
 
 type GetUserSummaryLastActivity struct {
@@ -541,24 +540,6 @@ type GetUserSummaryRecentAchievements struct {
 	IsAwarded        string   `json:"IsAwarded"`
 	DateAwarded      DateTime `json:"DateAwarded"`
 	HardcoreAchieved int      `json:"HardcoreAchieved"`
-}
-
-type GetUserSummaryLastGame struct {
-	ID           int           `json:"ID"`
-	Title        string        `json:"Title"`
-	ConsoleID    int           `json:"ConsoleID"`
-	ConsoleName  string        `json:"ConsoleName"`
-	ForumTopicID int           `json:"ForumTopicID"`
-	Flags        int           `json:"Flags"`
-	ImageIcon    string        `json:"ImageIcon"`
-	ImageTitle   string        `json:"ImageTitle"`
-	ImageIngame  string        `json:"ImageIngame"`
-	ImageBoxArt  string        `json:"ImageBoxArt"`
-	Publisher    string        `json:"Publisher"`
-	Developer    string        `json:"Developer"`
-	Genre        string        `json:"Genre"`
-	Released     LongMonthDate `json:"Released"`
-	IsFinal      int           `json:"IsFinal"`
 }
 
 type GetUserCompletedGamesParameters struct {

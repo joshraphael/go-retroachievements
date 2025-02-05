@@ -15,15 +15,15 @@ type GetAchievementOfTheWeek struct {
 }
 
 type GetAchievementOfTheWeekAchievement struct {
-	ID           int      `json:"ID"`
-	Title        string   `json:"Title"`
-	Description  string   `json:"Description"`
-	Points       int      `json:"Points"`
-	TrueRatio    int      `json:"TrueRatio"`
-	Author       string   `json:"Author"`
-	DateCreated  DateTime `json:"DateCreated"`
-	DateModified DateTime `json:"DateModified"`
-	Type         *string  `json:"Type"`
+	ID           int       `json:"ID"`
+	Title        string    `json:"Title"`
+	Description  string    `json:"Description"`
+	Points       int       `json:"Points"`
+	TrueRatio    int       `json:"TrueRatio"`
+	Author       string    `json:"Author"`
+	DateCreated  *DateOnly `json:"DateCreated"`
+	DateModified *DateOnly `json:"DateModified"`
+	Type         *string   `json:"Type"`
 }
 
 type GetAchievementOfTheWeekConsole struct {

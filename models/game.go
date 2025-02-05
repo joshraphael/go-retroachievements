@@ -50,7 +50,7 @@ type GetGameExtented struct {
 	Genre                      string                             `json:"Genre"`
 	Released                   *DateOnly                          `json:"Released"`
 	ID                         int                                `json:"ID"`
-	IsFinal                    int                                `json:"IsFinal"`
+	IsFinal                    bool                               `json:"IsFinal"`
 	RichPresencePatch          string                             `json:"RichPresencePatch"`
 	GuideURL                   *string                            `json:"GuideURL"`
 	Updated                    *time.Time                         `json:"Updated"`
