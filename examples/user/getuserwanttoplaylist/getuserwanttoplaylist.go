@@ -18,7 +18,7 @@ func main() {
 	client := retroachievements.NewClient(secret)
 
 	resp, err := client.GetUserWantToPlayList(models.GetUserWantToPlayListParameters{
-		Username: "jamiras",
+		Username: "spoony",
 	})
 	if err != nil {
 		panic(err)

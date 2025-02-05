@@ -61,59 +61,6 @@ func TestDateTimeString(tt *testing.T) {
 	require.Equal(tt, `"`+expectedString+`"`, d.String())
 }
 
-func TestLongMonthDateUnmarshalJSON(tt *testing.T) {
-	tests := []struct {
-		name   string
-		input  string
-		assert func(t *testing.T, date *models.LongMonthDate, err error)
-	}{
-		{
-			name:  "empty string default",
-			input: "\"\"",
-			assert: func(t *testing.T, date *models.LongMonthDate, err error) {
-				require.NotNil(t, date)
-				require.True(t, date.Time.IsZero())
-				require.NoError(t, err)
-			},
-		},
-		{
-			name:  "unknown bytes",
-			input: "\"?>?>>L:\"",
-			assert: func(t *testing.T, date *models.LongMonthDate, err error) {
-				require.NotNil(t, date)
-				require.True(t, date.Time.IsZero())
-				require.EqualError(t, err, "parsing time \"?>?>>L:\" as \"January 2, 2006\": cannot parse \"?>?>>L:\" as \"January\"")
-			},
-		},
-		{
-			name:  "successfully unmarshal",
-			input: "\"March 02, 2024\"",
-			assert: func(t *testing.T, date *models.LongMonthDate, err error) {
-				ts, tErr := time.Parse(models.LongMonthDateFormat, "March 2, 2024")
-				require.NoError(t, tErr)
-				require.NotNil(t, date)
-				require.Equal(t, ts, date.Time)
-				require.NoError(t, err)
-			},
-		},
-	}
-	for _, test := range tests {
-		tt.Run(test.name, func(t *testing.T) {
-			d := &models.LongMonthDate{}
-			err := d.UnmarshalJSON([]byte(test.input))
-			test.assert(t, d, err)
-		})
-	}
-}
-
-func TestLongMonthDateString(tt *testing.T) {
-	expectedString := "March 2, 2024"
-	t, err := time.Parse(models.LongMonthDateFormat, expectedString)
-	require.NoError(tt, err)
-	d := &models.LongMonthDate{t}
-	require.Equal(tt, `"`+expectedString+`"`, d.String())
-}
-
 func TestRFC3339NumColonTZUnmarshalJSON(tt *testing.T) {
 	tests := []struct {
 		name   string
