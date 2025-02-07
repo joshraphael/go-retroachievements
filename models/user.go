@@ -1,6 +1,9 @@
 package models
 
-import "time"
+import (
+	"encoding/json"
+	"time"
+)
 
 // GetUserProfileParameters contains the parameters needed for getting a users profile
 type GetUserProfileParameters struct {
@@ -476,29 +479,59 @@ type GetUserSummaryParameters struct {
 }
 
 type GetUserSummary struct {
-	User                string                                                 `json:"User"`
-	UserPic             string                                                 `json:"UserPic"`
-	TotalRanked         int                                                    `json:"TotalRanked"`
-	Status              string                                                 `json:"Status"`
-	RichPresenceMsg     string                                                 `json:"RichPresenceMsg"`
-	LastGameID          int                                                    `json:"LastGameID"`
-	ContribCount        int                                                    `json:"ContribCount"`
-	ContribYield        int                                                    `json:"ContribYield"`
-	TotalPoints         int                                                    `json:"TotalPoints"`
-	TotalSoftcorePoints int                                                    `json:"TotalSoftcorePoints"`
-	TotalTruePoints     int                                                    `json:"TotalTruePoints"`
-	Permissions         int                                                    `json:"Permissions"`
-	Untracked           int                                                    `json:"Untracked"`
-	ID                  int                                                    `json:"ID"`
-	UserWallActive      int                                                    `json:"UserWallActive"`
-	Motto               string                                                 `json:"Motto"`
-	RecentlyPlayedCount int                                                    `json:"RecentlyPlayedCount"`
-	Rank                *int                                                   `json:"Rank"`
-	MemberSince         DateTime                                               `json:"MemberSince"`
-	LastActivity        GetUserSummaryLastActivity                             `json:"LastActivity"`
-	RecentlyPlayed      []GetUserSummaryRecentlyPlayed                         `json:"RecentlyPlayed"`
-	Awarded             map[string]GetUserSummaryAwarded                       `json:"Awarded"`
-	RecentAchievements  map[string]map[string]GetUserSummaryRecentAchievements `json:"RecentAchievements"`
+	User                string                           `json:"User"`
+	UserPic             string                           `json:"UserPic"`
+	TotalRanked         int                              `json:"TotalRanked"`
+	Status              string                           `json:"Status"`
+	RichPresenceMsg     string                           `json:"RichPresenceMsg"`
+	LastGameID          int                              `json:"LastGameID"`
+	ContribCount        int                              `json:"ContribCount"`
+	ContribYield        int                              `json:"ContribYield"`
+	TotalPoints         int                              `json:"TotalPoints"`
+	TotalSoftcorePoints int                              `json:"TotalSoftcorePoints"`
+	TotalTruePoints     int                              `json:"TotalTruePoints"`
+	Permissions         int                              `json:"Permissions"`
+	Untracked           int                              `json:"Untracked"`
+	ID                  int                              `json:"ID"`
+	UserWallActive      int                              `json:"UserWallActive"`
+	Motto               string                           `json:"Motto"`
+	RecentlyPlayedCount int                              `json:"RecentlyPlayedCount"`
+	Rank                *int                             `json:"Rank"`
+	MemberSince         DateTime                         `json:"MemberSince"`
+	LastActivity        GetUserSummaryLastActivity       `json:"LastActivity"`
+	RecentlyPlayed      []GetUserSummaryRecentlyPlayed   `json:"RecentlyPlayed"`
+	Awarded             map[string]GetUserSummaryAwarded `json:"Awarded"`
+	RecentAchievements  GetUserSummaryRecentAchievements `json:"RecentAchievements"`
+	LastGame            *GetUserSummaryLastGame          `json:"LastGame"`
+}
+
+type GetUserSummaryRecentAchievement struct {
+	ID               int      `json:"ID"`
+	GameID           int      `json:"GameID"`
+	GameTitle        string   `json:"GameTitle"`
+	Title            string   `json:"Title"`
+	Description      string   `json:"Description"`
+	Points           int      `json:"Points"`
+	Type             *string  `json:"Type"`
+	BadgeName        string   `json:"BadgeName"`
+	IsAwarded        string   `json:"IsAwarded"`
+	DateAwarded      DateTime `json:"DateAwarded"`
+	HardcoreAchieved int      `json:"HardcoreAchieved"`
+}
+
+type GetUserSummaryRecentAchievements map[string]map[string]GetUserSummaryRecentAchievement
+
+func (g *GetUserSummaryRecentAchievements) UnmarshalJSON(d []byte) error {
+	if d[0] == '[' {
+		*g = GetUserSummaryRecentAchievements{}
+		return nil
+	}
+	var i map[string]map[string]GetUserSummaryRecentAchievement
+	if err := json.Unmarshal(d, &i); err != nil {
+		return err
+	}
+	*g = i
+	return nil
 }
 
 type GetUserSummaryLastActivity struct {
@@ -528,18 +561,38 @@ type GetUserSummaryAwarded struct {
 	ScoreAchievedHardcore   int `json:"ScoreAchievedHardcore"`
 }
 
-type GetUserSummaryRecentAchievements struct {
-	ID               int      `json:"ID"`
-	GameID           int      `json:"GameID"`
-	GameTitle        string   `json:"GameTitle"`
-	Title            string   `json:"Title"`
-	Description      string   `json:"Description"`
-	Points           int      `json:"Points"`
-	Type             *string  `json:"Type"`
-	BadgeName        string   `json:"BadgeName"`
-	IsAwarded        string   `json:"IsAwarded"`
-	DateAwarded      DateTime `json:"DateAwarded"`
-	HardcoreAchieved int      `json:"HardcoreAchieved"`
+type GetUserSummaryLastGame struct {
+	ID                    int       `json:"ID"`
+	Title                 string    `json:"Title"`
+	ConsoleID             int       `json:"ConsoleID"`
+	ConsoleName           string    `json:"ConsoleName"`
+	ForumTopicID          int       `json:"ForumTopicID"`
+	Flags                 int       `json:"Flags"`
+	ImageIcon             string    `json:"ImageIcon"`
+	ImageTitle            string    `json:"ImageTitle"`
+	ImageIngame           string    `json:"ImageIngame"`
+	ImageBoxArt           string    `json:"ImageBoxArt"`
+	Publisher             *string   `json:"Publisher"`
+	Developer             *string   `json:"Developer"`
+	Genre                 *string   `json:"Genre"`
+	Released              *DateOnly `json:"Released"`
+	ReleasedAtGranularity *string   `json:"ReleasedAtGranularity"`
+	IsFinal               int       `json:"IsFinal"`
+}
+
+type internalGetUserSummaryLastGame GetUserSummaryLastGame
+
+func (g *GetUserSummaryLastGame) UnmarshalJSON(d []byte) error {
+	if d[0] == '[' {
+		*g = GetUserSummaryLastGame{}
+		return nil
+	}
+	var i internalGetUserSummaryLastGame
+	if err := json.Unmarshal(d, &i); err != nil {
+		return err
+	}
+	*g = GetUserSummaryLastGame(i)
+	return nil
 }
 
 type GetUserCompletedGamesParameters struct {

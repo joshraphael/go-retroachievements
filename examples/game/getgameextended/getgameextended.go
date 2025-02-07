@@ -18,7 +18,7 @@ func main() {
 	client := retroachievements.NewClient(secret)
 
 	resp, err := client.GetGameExtended(models.GetGameExtentedParameters{
-		GameID: 18166,
+		GameID: 234234324,
 	})
 	if err != nil {
 		panic(err)

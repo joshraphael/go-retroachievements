@@ -17,10 +17,10 @@ func main() {
 
 	client := retroachievements.NewClient(secret)
 
-	games := 10
+	games := 1
 	achievements := 10
 	resp, err := client.GetUserSummary(models.GetUserSummaryParameters{
-		Username:          "jamiras",
+		Username:          "paulocastor",
 		GamesCount:        &games,
 		AchievementsCount: &achievements,
 	})

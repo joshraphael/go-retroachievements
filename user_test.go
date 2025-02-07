@@ -2107,7 +2107,7 @@ func TestGetUserSummary(tt *testing.T) {
 						ScoreAchievedHardcore:   95,
 					},
 				},
-				RecentAchievements: map[string]map[string]models.GetUserSummaryRecentAchievements{
+				RecentAchievements: models.GetUserSummaryRecentAchievements{
 					"9404": {
 						"328833": {
 							ID:          328833,
