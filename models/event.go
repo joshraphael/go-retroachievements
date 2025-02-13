@@ -21,6 +21,8 @@ type GetAchievementOfTheWeekAchievement struct {
 	Points       int       `json:"Points"`
 	TrueRatio    int       `json:"TrueRatio"`
 	Author       string    `json:"Author"`
+	BadgeName    string    `json:"BadgeName"`
+	BadgeURL     string    `json:"BadgeURL"`
 	DateCreated  *DateOnly `json:"DateCreated"`
 	DateModified *DateOnly `json:"DateModified"`
 	Type         *string   `json:"Type"`
