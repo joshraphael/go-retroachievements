@@ -88,6 +88,8 @@ func TestGetAchievementOfTheWeek(tt *testing.T) {
 					Points:      5,
 					TrueRatio:   7,
 					Author:      "Scott",
+					BadgeName:   "250341",
+					BadgeURL:    "/Badge/250341.png",
 					DateCreated: &models.DateOnly{
 						Time: dateCreated,
 					},
@@ -128,6 +130,8 @@ func TestGetAchievementOfTheWeek(tt *testing.T) {
 				require.Equal(t, 5, resp.Achievement.Points)
 				require.Equal(t, 7, resp.Achievement.TrueRatio)
 				require.Equal(t, "Scott", resp.Achievement.Author)
+				require.Equal(t, "250341", resp.Achievement.BadgeName)
+				require.Equal(t, "/Badge/250341.png", resp.Achievement.BadgeURL)
 				require.Equal(t, dateCreated, resp.Achievement.DateCreated.Time)
 				require.Equal(t, dateModified, resp.Achievement.DateModified.Time)
 				require.NotNil(t, resp.Achievement.Type)
