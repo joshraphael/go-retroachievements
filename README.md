@@ -137,3 +137,5 @@ For convenience, the API docs and examples can be found in the tables below
 |`GetGameTicketStats()`|Gets ticket stats for a game, targeted by that game's unique ID.|[docs](https://api-docs.retroachievements.org/v1/get-ticket-data/get-game-ticket-stats.html) \| [example](examples/ticket/getgameticketstats/getgameticketstats.go)|
 |`GetDeveloperTicketStats()`|Gets ticket stats for a developer, targeted by that developer's site username.|[docs](https://api-docs.retroachievements.org/v1/get-ticket-data/get-developer-ticket-stats.html) \| [example](examples/ticket/getdeveloperticketstats/getdeveloperticketstats.go)|
 |`GetAchievementTicketStats()`|Gets ticket stats for an achievement, targeted by that achievement's unique ID.|[docs](https://api-docs.retroachievements.org/v1/get-ticket-data/get-achievement-ticket-stats.html) \| [example](examples/ticket/getachievementticketstats/getachievementticketstats.go)|
+
+DONT MERGE
