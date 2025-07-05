@@ -14,14 +14,14 @@ type Response struct {
 }
 
 func checkNotFoundResponse(data []byte) bool {
-	l, err := unmarshalResponseList[interface{}](data)
+	l, err := unmarshalResponseList[any](data)
 	if err != nil {
 		return false
 	}
 	return len(l) == 0
 }
 
-func unmarshalResponseObject[Obj interface{}](data []byte) (*Obj, error) {
+func unmarshalResponseObject[Obj any](data []byte) (*Obj, error) {
 	// for some reason this api returns a 200 and empty list on some endpoints when the resource is not found
 	emptyResp := checkNotFoundResponse(data)
 	if emptyResp {
@@ -37,7 +37,7 @@ func unmarshalResponseObject[Obj interface{}](data []byte) (*Obj, error) {
 	return obj, nil
 }
 
-func unmarshalResponseList[Obj interface{}](data []byte) ([]Obj, error) {
+func unmarshalResponseList[Obj any](data []byte) ([]Obj, error) {
 	body := io.NopCloser(bytes.NewReader(data))
 	defer body.Close()
 	objs := []Obj{}
@@ -49,7 +49,7 @@ func unmarshalResponseList[Obj interface{}](data []byte) ([]Obj, error) {
 }
 
 // ResponseObject parses a http response and converts it to a generic object
-func ResponseObject[Obj interface{}](resp *Response) (*Obj, error) {
+func ResponseObject[Obj any](resp *Response) (*Obj, error) {
 	switch resp.StatusCode {
 	case http.StatusOK:
 		return unmarshalResponseObject[Obj](resp.Data)
@@ -61,7 +61,7 @@ func ResponseObject[Obj interface{}](resp *Response) (*Obj, error) {
 }
 
 // ResponseList parses a http response and converts it to a generic list of objects
-func ResponseList[Obj interface{}](resp *Response) ([]Obj, error) {
+func ResponseList[Obj any](resp *Response) ([]Obj, error) {
 	switch resp.StatusCode {
 	case http.StatusOK:
 		return unmarshalResponseList[Obj](resp.Data)
