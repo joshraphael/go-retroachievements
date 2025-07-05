@@ -19,7 +19,7 @@ func TestDateTimeUnmarshalJSON(tt *testing.T) {
 			input: "\"\"",
 			assert: func(t *testing.T, date *models.DateTime, err error) {
 				require.NotNil(t, date)
-				require.True(t, date.Time.IsZero())
+				require.True(t, date.IsZero())
 				require.NoError(t, err)
 			},
 		},
@@ -28,7 +28,7 @@ func TestDateTimeUnmarshalJSON(tt *testing.T) {
 			input: "\"?>?>>L:\"",
 			assert: func(t *testing.T, date *models.DateTime, err error) {
 				require.NotNil(t, date)
-				require.True(t, date.Time.IsZero())
+				require.True(t, date.IsZero())
 				require.EqualError(t, err, "parsing time \"?>?>>L:\" as \"2006-01-02 15:04:05\": cannot parse \"?>?>>L:\" as \"2006\"")
 			},
 		},
@@ -72,7 +72,7 @@ func TestRFC3339NumColonTZUnmarshalJSON(tt *testing.T) {
 			input: "\"\"",
 			assert: func(t *testing.T, date *models.RFC3339NumColonTZ, err error) {
 				require.NotNil(t, date)
-				require.True(t, date.Time.IsZero())
+				require.True(t, date.IsZero())
 				require.NoError(t, err)
 			},
 		},
@@ -81,7 +81,7 @@ func TestRFC3339NumColonTZUnmarshalJSON(tt *testing.T) {
 			input: "\"?>?>>L:\"",
 			assert: func(t *testing.T, date *models.RFC3339NumColonTZ, err error) {
 				require.NotNil(t, date)
-				require.True(t, date.Time.IsZero())
+				require.True(t, date.IsZero())
 				require.EqualError(t, err, "parsing time \"?>?>>L:\" as \"2006-01-02T15:04:05-07:00\": cannot parse \"?>?>>L:\" as \"2006\"")
 			},
 		},

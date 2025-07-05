@@ -127,8 +127,11 @@ func (c *Client) do(details ...raHttp.RequestDetail) (*raHttp.Response, error) {
 	if err != nil {
 		return nil, err
 	}
-	defer resp.Body.Close()
 	data, err := io.ReadAll(resp.Body)
+	if err != nil {
+		return nil, err
+	}
+	err = resp.Body.Close()
 	if err != nil {
 		return nil, err
 	}
