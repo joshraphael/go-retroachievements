@@ -28,9 +28,12 @@ func unmarshalResponseObject[Obj any](data []byte) (*Obj, error) {
 		return nil, nil
 	}
 	body := io.NopCloser(bytes.NewReader(data))
-	defer body.Close()
 	obj := new(Obj)
 	err := json.NewDecoder(body).Decode(&obj)
+	if err != nil {
+		return nil, err
+	}
+	err = body.Close()
 	if err != nil {
 		return nil, err
 	}
@@ -39,9 +42,12 @@ func unmarshalResponseObject[Obj any](data []byte) (*Obj, error) {
 
 func unmarshalResponseList[Obj any](data []byte) ([]Obj, error) {
 	body := io.NopCloser(bytes.NewReader(data))
-	defer body.Close()
 	objs := []Obj{}
 	err := json.NewDecoder(body).Decode(&objs)
+	if err != nil {
+		return nil, err
+	}
+	err = body.Close()
 	if err != nil {
 		return nil, err
 	}
